@@ -70,8 +70,8 @@ importers:
         specifier: ^1.122.14
         version: 1.122.14(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67))
       n8n-workflow:
-        specifier: ^1.120.8
-        version: 1.120.8
+        specifier: ^2.7.1
+        version: 2.7.1
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -1693,6 +1693,9 @@ packages:
 
   '@n8n/errors@0.5.0':
     resolution: {integrity: sha512-0Vk1Eb3Uor+zeF/WVnuhFgJc51wEBTZNBlVQy3mvyr3sGmW86bP1jA7wmRsd0DZbswPwN0vNOl/TmkDTEopOtQ==}
+
+  '@n8n/errors@0.6.0':
+    resolution: {integrity: sha512-oVJ0lgRYJY6/aPOW2h37ea5T+nX7/wULRn5FymwYeaiYlsLdqwIQEtGwZrajpzxJB0Os74u4lSH3WWQgZCkgxQ==}
 
   '@n8n/imap@0.16.0':
     resolution: {integrity: sha512-zBIvVYqbQiSdnPyH/t+XGyJcI4yIBbzsPml5fENW/oB3RAk3UriCqIrTVLjTyLwIxOB8UX3iKcXrJNHO13deyg==}
@@ -4241,6 +4244,10 @@ packages:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
 
+  form-data@4.0.4:
+    resolution: {integrity: sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==}
+    engines: {node: '>= 6'}
+
   form-data@4.0.5:
     resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
     engines: {node: '>= 6'}
@@ -5460,6 +5467,10 @@ packages:
     resolution: {integrity: sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==}
     engines: {node: '>=12'}
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   mailparser@3.6.7:
     resolution: {integrity: sha512-/3x8HW70DNehw+3vdOPKdlLuxOHoWcGB5jfx5vJ5XUbY9/2jUJbrrhda5Si8Dj/3w08U0y5uGAkqs5+SPTPKoA==}
 
@@ -5758,6 +5769,9 @@ packages:
 
   n8n-workflow@1.120.8:
     resolution: {integrity: sha512-dKKLocJYCcgBPmNsbgf2YfWqqPp2nuy5Vr6mIBKgS4ArJETyugajRf13eW/YJCn1Yfggb50xpMPfl6jkxOtA+w==}
+
+  n8n-workflow@2.7.1:
+    resolution: {integrity: sha512-cylvQG9vn8qfPFKszgvtatT1raaau1AFywuEOanLuysVeiqz9d7VdI08dLnodKt/U9yikf4qqqTt+Lo7NwYszQ==}
 
   n8n@1.123.20:
     resolution: {integrity: sha512-zCdE8QSgZoFNCboooe56NP8H4MhbwK/DL9Bq3VJMv02xkWCiAJowS7xBRJvcDdQ8m+6DFJF2Ei4KA4F6S+O1yQ==}
@@ -9732,7 +9746,7 @@ snapshots:
       node-fetch: 2.7.0(encoding@0.1.13)
       qs: 6.11.2
       url-join: 4.0.1
-      zod: 3.25.67
+      zod: 3.25.76
     optionalDependencies:
       '@langchain/core': 1.1.8(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67))
       langchain: 1.1.1(@langchain/core@1.1.8(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67)))(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67))(zod-to-json-schema@3.23.3(zod@3.25.67))
@@ -10387,8 +10401,8 @@ snapshots:
   '@mistralai/mistralai@1.14.0':
     dependencies:
       ws: 8.19.0
-      zod: 3.25.67
-      zod-to-json-schema: 3.25.1(zod@3.25.67)
+      zod: 4.3.6
+      zod-to-json-schema: 3.25.1(zod@4.3.6)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -10405,8 +10419,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.25.67
-      zod-to-json-schema: 3.25.1(zod@3.25.67)
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.1(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -10545,6 +10559,10 @@ snapshots:
       reflect-metadata: 0.2.2
 
   '@n8n/errors@0.5.0':
+    dependencies:
+      callsites: 3.1.0
+
+  '@n8n/errors@0.6.0':
     dependencies:
       callsites: 3.1.0
 
@@ -12889,7 +12907,7 @@ snapshots:
       '@aws-sdk/credential-providers': 3.985.0
       '@aws-sdk/protocol-http': 3.374.0
       '@aws-sdk/signature-v4': 3.374.0
-      form-data: 4.0.0
+      form-data: 4.0.5
       form-data-encoder: 4.1.0
       formdata-node: 6.0.3
       js-base64: 3.7.2
@@ -13046,7 +13064,7 @@ snapshots:
 
   cron-parser@4.9.0:
     dependencies:
-      luxon: 3.4.4
+      luxon: 3.7.2
 
   cron@3.1.7:
     dependencies:
@@ -13847,6 +13865,14 @@ snapshots:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
+      mime-types: 2.1.35
+
+  form-data@4.0.4:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.2
       mime-types: 2.1.35
 
   form-data@4.0.5:
@@ -15444,6 +15470,8 @@ snapshots:
 
   luxon@3.4.4: {}
 
+  luxon@3.7.2: {}
+
   mailparser@3.6.7:
     dependencies:
       encoding-japanese: 2.0.0
@@ -15920,6 +15948,27 @@ snapshots:
       jssha: 3.3.1
       lodash: 4.17.23
       luxon: 3.4.4
+      md5: 2.3.0
+      recast: 0.22.0
+      title-case: 3.0.3
+      transliteration: 2.3.5
+      xml2js: 0.6.2
+      zod: 3.25.67
+
+  n8n-workflow@2.7.1:
+    dependencies:
+      '@n8n/errors': 0.6.0
+      '@n8n/tournament': 1.0.6
+      ast-types: 0.16.1
+      callsites: 3.1.0
+      esprima-next: 5.8.4
+      form-data: 4.0.4
+      jmespath: 0.16.0
+      js-base64: 3.7.2
+      jsonrepair: 3.13.1
+      jssha: 3.3.1
+      lodash: 4.17.23
+      luxon: 3.7.2
       md5: 2.3.0
       recast: 0.22.0
       title-case: 3.0.3
@@ -18359,6 +18408,14 @@ snapshots:
   zod-to-json-schema@3.25.1(zod@3.25.67):
     dependencies:
       zod: 3.25.67
+
+  zod-to-json-schema@3.25.1(zod@3.25.76):
+    dependencies:
+      zod: 3.25.76
+
+  zod-to-json-schema@3.25.1(zod@4.3.6):
+    dependencies:
+      zod: 4.3.6
 
   zod@3.25.67: {}
 
