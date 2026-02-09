@@ -47,7 +47,7 @@
 		"@atproto/api": "^0.15.27",
 		"@atproto/lex-cbor": "^0.0.11",
 		"@atproto/syntax": "^0.4.3",
-		"image-size": "^1.2.1",
+		"image-size": "^2.0.2",
 		"open-graph-scraper": "^6.11.0",
 		"ws": "^8.18.0"
 	},
