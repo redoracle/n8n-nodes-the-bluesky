@@ -67,7 +67,7 @@ A community maintained n8n node pack for interacting with the Bluesky (AT Protoc
 
 ```bash
 # From your n8n project root:
-npm install n8n-nodes-the-bluesky
+pnpm install n8n-nodes-the-bluesky
 ```
 
 ### Building the image with or without the plugin
@@ -307,10 +307,10 @@ Automated tests are provided using [Jest](https://jestjs.io/).
 
 ```bash
 # Install dev dependencies
-npm install
+pnpm install
 
 # Run tests
-npm test
+pnpm test
 ```
 
 Test files are located in the `__tests__` directory.
@@ -323,16 +323,63 @@ Contributions are welcome! Please abide by our [Code of Conduct](CODE_OF_CONDUCT
 
 1. Fork the repository & clone locally.
 2. Create a feature branch: `git checkout -b feature-name`.
-3. Install dependencies: `npm install`.
-4. Build & lint: `npm run build && npm run lint`.
-5. Run tests: `npm test`.
+3. Install dependencies: `pnpm install`.
+4. Build & lint: `pnpm run build && pnpm run lint`.
+5. Run tests: `pnpm test`.
 6. Commit & push your changes, then open a Pull Request.
 
 **Code style**: ESLint and Prettier are configured. Run:
 
 ```bash
-npm run lint
-npm run format
+pnpm run lint
+pnpm run format
+```
+
+### Makefile (developer helper targets)
+
+This repository includes a `Makefile` with convenient developer shortcuts. Run `make help` to list available targets and descriptions.
+
+Common targets:
+
+- `make install` — install dependencies (uses `pnpm install` by default)
+- `make deps` — ensure build/test tooling is present (`npm run deps:ensure`)
+- `make build` — build TypeScript and assets
+- `make dev` — start TypeScript watch mode for iterative development
+- `make test` — run the Jest test suite
+- `make lint` / `make lintfix` — run ESLint (and apply fixes)
+- `make format` / `make format-ts` — run Prettier formatting
+- `make pack` — build and create an npm tarball (`npm pack`)
+- `make clean` — remove build artifacts
+
+Docker & dev helpers:
+
+- `make docker-build` — build the development Docker image
+- `make docker-up` — start the Docker compose stack for development
+- `make dev-bind` — run a bind-mounted dev compose (local edits reflected)
+- `make dev-plugin` — run the plugin compose (requires a built tarball)
+
+Examples:
+
+```bash
+# show available Makefile targets
+make help
+
+# install deps and run tests
+make install
+make test
+
+# run watch build during development
+make dev
+```
+
+Notes:
+
+- The Makefile forwards to `pnpm` / `npm` scripts defined in `package.json` so you can also run those scripts directly.
+- You can override the command variables at invocation time, for example:
+
+```bash
+# use a different package manager command if needed
+PNPM=yarn make install
 ```
 
 ### TypeScript Configuration
@@ -340,7 +387,7 @@ npm run format
 This project uses a dual-typeRoots approach in `tsconfig.json`:
 
 - **`./types`**: Custom type shims providing minimal declarations for editor-only type checking (e.g., `n8n-workflow-shim.d.ts`, `jest.d.ts`, `node-globals.d.ts`)
-- **`./node_modules/@types`**: Standard third-party type definitions from npm
+- **`./node_modules/@types`**: Standard third-party type definitions from pnpm
 
 This configuration allows the project to:
 
