@@ -4,7 +4,7 @@
 [![Downloads](https://img.shields.io/npm/dm/n8n-nodes-the-bluesky.svg)](https://www.npmjs.com/package/n8n-nodes-the-bluesky)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-A community maintained n8n node pack for interacting with the Bluesky (AT Protocol) API. This package provides robust posting, feed, list, search, and analytics operations—integrated into your n8n workflows.
+A community maintained n8n node pack for interacting with the Bluesky (AT Protocol) API. This package provides robust posting, feed, list, search, and analytics operations integrated into your n8n workflows.
 
 ---
 
@@ -72,7 +72,7 @@ pnpm install n8n-nodes-the-bluesky
 
 ### Building the image with or without the plugin
 
-The Dockerfiles in this repository provide a safe multi-stage build that supports an optional plugin install.
+The Dockerfiles in this repository provide a safe multi stage build that supports an optional plugin install.
 
 Usage patterns:
 
@@ -178,7 +178,7 @@ Before using the Bluesky node, create a Bluesky App Password and configure crede
 
 ### Monitor Posts in Real-Time (Trigger Node)
 
-The Bluesky Trigger node enables real-time monitoring of Bluesky events via WebSocket connections:
+The Bluesky Trigger node enables real time monitoring of Bluesky events via WebSocket connections:
 
 #### Example 1: Monitor All New Posts
 

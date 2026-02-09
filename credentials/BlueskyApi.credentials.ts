@@ -1,7 +1,7 @@
 import { ICredentialTestRequest, ICredentialType, INodeProperties, Icon } from 'n8n-workflow';
 
 export class BlueskyApi implements ICredentialType {
-	displayName = 'Bluesky API';
+	displayName = 'Bluesky';
 	name = 'blueskyApi';
 	documentationUrl = 'https://docs.bsky.app/docs/get-started';
 	// Relative to this credentials file, go up to nodes/Bluesky for the icon
