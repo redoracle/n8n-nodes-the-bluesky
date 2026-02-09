@@ -30,19 +30,28 @@ A community maintained n8n node pack for interacting with the Bluesky (AT Protoc
 
 - **Posting**: Create posts, replies, quotes, and reposts (with media or website cards). Full support for likes, unlikes, and post deletion.
 - **Media**: Image uploads with auto aspect ratio; video upload support (feature availability depends on Bluesky).
-- **Feeds**: Author feeds, timelines, thread contexts, list feeds, suggested feeds, and pagination support.
+- **Feeds**: Author feeds, timelines, thread contexts, list feeds, suggested feeds, feed skeletons, and pagination support.
 - **Search**: Search users and posts with filtering.
 - **Lists**: Create and manage lists, add/remove users, list feeds.
 - **Notifications**: Fetch notifications, unread counts, mark as seen.
-- **Authentication**: Session management (create, refresh, delete) and app password creation.
+- **Analytics**: Post interactions and enhanced notification workflows.
+- **Authentication**: Session management (create, refresh, delete), app password creation, invite codes, and signing key rotation.
+- **Account**: Repository transfer requests (experimental).
 - **User Management**: Profile operations (get, update), follow/unfollow, block/unblock, mute/unmute.
 - **Chat**: Full conversation and message management (list, get, send, delete, mute).
 - **Repository**: Direct record operations (create, update, delete, list) and blob management.
 - **Moderation**: Create reports for content or accounts.
+- **Labels**: Query and apply labels (labeler/admin).
+- **Lexicon**: Resolve lexicon schemas by URL or NSID.
 - **Identity**: Resolve handles and DIDs.
 - **Preferences**: Get and update user preferences.
-- **Sync**: Repository synchronization and crawling operations.
-- **Labels**: Query content labels.
+- **Sync**: Repository synchronization, crawling, and status checks.
+- **🔥 Trigger Node (NEW)**: Real-time streaming support via WebSocket connections:
+  - **Firehose**: Subscribe to the Bluesky repository events firehose (all public posts, likes, follows, etc.)
+  - **Label Updates**: Subscribe to moderation label updates
+  - **Filtering**: Filter events by collection type, DID, or operation
+  - **Auto-reconnect**: Automatic reconnection on connection loss
+  - **Event Limits**: Set maximum events to capture or run continuously
 
 ---
 
@@ -167,37 +176,126 @@ Before using the Bluesky node, create a Bluesky App Password and configure crede
     userDid: 'did:plc:...'
 ```
 
+### Monitor Posts in Real-Time (Trigger Node)
+
+The Bluesky Trigger node enables real-time monitoring of Bluesky events via WebSocket connections:
+
+#### Example 1: Monitor All New Posts
+
+```yaml
+- name: Bluesky Firehose Trigger
+  type: n8n-nodes-community/n8n-nodes-the-bluesky:BlueskyTrigger
+  parameters:
+    stream: subscribeRepos
+    serviceEndpoint: 'wss://bsky.network'
+    filterCollection: 'app.bsky.feed.post'
+    maxEvents: 100 # Stop after 100 posts
+```
+
+#### Example 2: Monitor Specific User Activity
+
+```yaml
+- name: Watch User Activity
+  type: n8n-nodes-community/n8n-nodes-the-bluesky:BlueskyTrigger
+  parameters:
+    stream: subscribeRepos
+    serviceEndpoint: 'wss://bsky.network'
+    filterDid: 'did:plc:...'
+    filterOperation: 'create'
+    maxEvents: 0 # Run continuously
+```
+
+#### Example 3: Monitor Continuous Firehose
+
+```yaml
+- name: Continuous Firehose
+  type: n8n-nodes-community/n8n-nodes-the-bluesky:BlueskyTrigger
+  parameters:
+    stream: subscribeRepos
+    serviceEndpoint: 'wss://bsky.network'
+    maxEvents: 0
+    autoReconnect: true
+    reconnectInterval: 5000
+```
+
+**Key Features:**
+
+#### Bluesky Trigger — Endpoint, Auth & Limits
+
+- **Default endpoint:** The examples use `wss://bsky.network` as a convenient public relay. Whether a relay requires Bluesky credentials or an app token depends on the relay/service — some relays permit unauthenticated read-only subscriptions, while others require a valid session or app password. If the endpoint rejects your connection, supply your Bluesky credentials (App Password / service URL) in the node and retry.
+- **Rate / connection limits:** Public relays commonly enforce per-connection, per-IP, or per-account limits (events/sec, maximum concurrent connections, or message size quotas). These limits vary by relay and can change. Recommended practices:
+  - Start with `autoReconnect: true` and `reconnectInterval` of ~5000 ms (5s).
+  - Use exponential backoff for repeated reconnects (e.g., 5s → 10s → 20s, cap ~60s) to avoid hammering the relay.
+  - Avoid opening many parallel trigger connections to the same relay from one host — prefer a single shared connection or dedicated relay per worker.
+- **Continuous monitoring (cost & sizing):** Running the firehose continuously (`maxEvents=0`) can produce very high event volumes. Expect increased CPU, memory, network bandwidth, and downstream processing costs. Recommendations:
+  - Use `maxEvents` for development and testing; only enable continuous mode in production when you have capacity planning in place.
+  - Batch or debounce downstream processing and use queuing to smooth bursts.
+  - Run trigger nodes on dedicated, scalable worker instances and set per-worker concurrency limits.
+
+#### Troubleshooting
+
+- **Connection refused / cannot connect:**
+  - Confirm the WebSocket URL is correct and reachable from the host running n8n (test with `wscat` or equivalent).
+  - Ensure the URL uses `wss://` for secure WebSocket when required by the relay.
+- **Authentication errors (401/403 / immediate disconnect):**
+  - If the relay requires authentication, make sure your Bluesky credentials (App Password) and `Service URL` are correct in n8n credentials.
+  - Some relays accept an app token instead of an App Password; consult the relay documentation and provide the expected token if required.
+- **Frequent disconnects or rate-limited responses:**
+  - Increase `reconnectInterval`, enable `autoReconnect`, and add exponential backoff to reduce reconnect frequency.
+  - Apply stricter filters (collection, DID, operation) to reduce event volume.
+- **High downstream load or queue buildup:**
+  - Throttle or batch events, add durable queues (Redis, RabbitMQ), and scale workers to handle processing load.
+  - Consider sampling the feed (e.g., only specific collections or DIDs) to reduce throughput.
+
+**Key Features:**
+
+- **Stream Types**: Repository events (posts, likes, follows) or label updates
+- **Filtering**: By collection type (`app.bsky.feed.post`, `app.bsky.feed.like`, etc.), DID, or operation
+- **Event Limits**: Set maximum events or run continuously (0 = unlimited)
+- **Auto-reconnect**: Automatically reconnect on connection loss
+
+**Common Use Cases:**
+
+- Real-time content moderation
+- Custom notification systems
+- Analytics and trending topic detection
+- Building custom feeds
+- Automated responses to mentions or keywords
+
 ---
 
 ## Available Resources & Operations
 
-| Resource      | Operations                                                                                                      |
-| ------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Auth**      | createSession, refreshSession, deleteSession, createAppPassword                                                 |
-| **Post**      | create, delete, reply, quote, repost, like, unlike, get                                                         |
-| **Feed**      | getAuthorFeed, getTimeline, getPostThread, getPosts, getLikes, getRepostedBy, getSuggestedFeeds, getFeedGenerators, getFeed, describeFeedGenerator |
-| **User**      | getProfile, getProfiles, updateProfile, follow, unfollow, block, unblock, mute, unmute, listFollowers, listFollows, getSuggestions |
-| **Search**    | searchUsers, searchPosts                                                                                        |
-| **List**      | create, update, delete, addUser, removeUser, get, getList, getListFeed                                          |
-| **Notification** | listNotifications, getUnreadCount, updateSeen                                                                 |
-| **Chat**      | listConvos, getConvo, getConvoForMembers, leaveConvo, muteConvo, unmuteConvo, getMessages, sendMessage, deleteMessage, getLog |
-| **Graph**     | muteThread, unmuteThread, getBlocks, getMutes                                                                   |
-| **Repo**      | createRecord, putRecord, deleteRecord, getRecord, listRecords, applyWrites, uploadBlob                          |
-| **Moderation** | createReport                                                                                                   |
-| **Label**     | queryLabels                                                                                                     |
-| **Identity**  | resolveHandle, resolveDid, resolveIdentity                                                                      |
-| **Preferences** | getPreferences, putPreferences                                                                                |
-| **Sync**      | getRepo, getRecord, getLatestCommit, getBlob, listBlobs, listRepos, notifyOfUpdate, requestCrawl               |
+| Resource         | Operations                                                                                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Auth**         | createSession, refreshSession, deleteSession, createAppPassword                                                                                    |
+| **Post**         | create, delete, reply, quote, repost, like, unlike, get                                                                                            |
+| **Feed**         | getAuthorFeed, getTimeline, getPostThread, getPosts, getLikes, getRepostedBy, getSuggestedFeeds, getFeedGenerators, getFeed, describeFeedGenerator |
+| **User**         | getProfile, getProfiles, updateProfile, follow, unfollow, block, unblock, mute, unmute, listFollowers, listFollows, getSuggestions                 |
+| **Search**       | searchUsers, searchPosts                                                                                                                           |
+| **List**         | create, update, delete, addUser, removeUser, get, getList, getListFeed                                                                             |
+| **Notification** | listNotifications, getUnreadCount, updateSeen                                                                                                      |
+| **Chat**         | listConvos, getConvo, getConvoForMembers, leaveConvo, muteConvo, unmuteConvo, getMessages, sendMessage, deleteMessage, getLog                      |
+| **Graph**        | muteThread, unmuteThread, getBlocks, getMutes                                                                                                      |
+| **Repo**         | createRecord, putRecord, deleteRecord, getRecord, listRecords, applyWrites, uploadBlob                                                             |
+| **Moderation**   | createReport                                                                                                                                       |
+| **Label**        | queryLabels                                                                                                                                        |
+| **Identity**     | resolveHandle, resolveDid, resolveIdentity                                                                                                         |
+| **Preferences**  | getPreferences, putPreferences                                                                                                                     |
+| **Sync**         | getRepo, getRecord, getLatestCommit, getBlob, listBlobs, listRepos, notifyOfUpdate, requestCrawl                                                   |
+| **Trigger**      | subscribeRepos, subscribeLabels (real-time WebSocket streaming)                                                                                    |
+| **Preferences**  | getPreferences, putPreferences                                                                                                                     |
+| **Sync**         | getRepo, getRecord, getRepoStatus, getLatestCommit, getBlob, listBlobs, listRepos, notifyOfUpdate, requestCrawl                                    |
 
 ### Comprehensive API Coverage
 
 This node provides extensive coverage of the AT Protocol API, including:
 
 - **Social Operations**: Full post lifecycle, user relationships (follow/block/mute), conversations
-- **Content Discovery**: Multiple feed types with pagination, search, suggested content
-- **Data Access**: Direct repository operations for advanced use cases
-- **Administration**: Session management, app passwords, moderation tools
-- **Advanced Features**: Identity resolution, label queries, repository synchronization
+- **Content Discovery**: Multiple feed types with pagination, search, suggested content, feed skeletons
+- **Data Access**: Direct repository operations and lexicon resolution for advanced use cases
+- **Administration**: Sessions, app passwords, invite codes, signing key rotation, moderation tools
+- **Advanced Features**: Identity resolution, label queries/apply, repository sync status, analytics
 
 For detailed field descriptions and parameter options, refer to the code under `nodes/Bluesky/*`.
 

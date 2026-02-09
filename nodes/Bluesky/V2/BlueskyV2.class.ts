@@ -1,136 +1,147 @@
 import type {
-    IExecuteFunctions,
-    INodeExecutionData,
-    INodeType,
-    INodeTypeBaseDescription,
-    INodeTypeDescription,
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeBaseDescription,
+	INodeTypeDescription,
 } from 'n8n-workflow';
 
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { LoggerProxy, NodeOperationError } from 'n8n-workflow';
 
 import { AtpAgent, CredentialSession } from '@atproto/api';
 
 import { resourcesProperty } from './resources';
 
 // Operations
+import { accountProperties, requestTransferOperation } from './accountOperations';
 import {
-    // listNotificationsOperation, // This was the one from analytics, ensure we use the one from notificationOperations
-    getUnreadCountOperation as analyticsGetUnreadCountOperation,
-    analyticsProperties,
-    getPostInteractionsOperation,
-    updateSeenNotificationsOperation,
+	// listNotificationsOperation, // This was the one from analytics, ensure we use the one from notificationOperations
+	getUnreadCountOperation as analyticsGetUnreadCountOperation,
+	analyticsProperties,
+	getPostInteractionsOperation,
+	updateSeenNotificationsOperation,
 } from './analyticsOperations';
 import {
-    authProperties,
-    createAppPasswordOperation,
-    createSessionOperation,
-    deleteSessionOperation,
-    refreshSessionOperation,
+	authProperties,
+	createAppPasswordOperation,
+	createInviteCodeOperation,
+	createSessionOperation,
+	deleteSessionOperation,
+	refreshSessionOperation,
+	rotateSigningKeyOperation,
 } from './authOperations';
 import {
-    acceptConversationOperation,
-    chatProperties,
-    deleteMessageOperation,
-    getConversationOperation,
-    getConvoForMembersOperation,
-    getMessagesOperation,
-    leaveConversationOperation,
-    listConversationsOperation,
-    muteConversationOperation,
-    sendMessageOperation,
-    unmuteConversationOperation,
-    updateReadStatusOperation,
+	acceptConversationOperation,
+	chatProperties,
+	deleteMessageOperation,
+	getConversationOperation,
+	getConvoForMembersOperation,
+	getMessagesOperation,
+	leaveConversationOperation,
+	listConversationsOperation,
+	muteConversationOperation,
+	sendMessageOperation,
+	unmuteConversationOperation,
+	updateReadStatusOperation,
 } from './chatOperations';
 import {
-    describeFeedGeneratorOperation,
-    feedProperties,
-    getAuthorFeed,
-    getFeedGeneratorsOperation,
-    getFeedOperation,
-    getLikesOperation,
-    getPostThread,
-    getPostsOperation,
-    getRepostedByOperation,
-    getSuggestedFeedsOperation,
-    getTimeline,
+	describeFeedGeneratorOperation,
+	feedProperties,
+	getAuthorFeed,
+	getFeedGeneratorsOperation,
+	getFeedOperation,
+	getFeedSkeletonOperation,
+	getLikesOperation,
+	getPostThread,
+	getPostsOperation,
+	getRepostedByOperation,
+	getSuggestedFeedsOperation,
+	getTimeline,
 } from './feedOperations';
-import { getBlocksOperation, getMutesOperation, graphProperties, muteThreadOperation } from './graphOperations';
 import {
-    identityProperties,
-    resolveDidOperation,
-    resolveHandleOperation,
-    resolveIdentityOperation,
+	getBlocksOperation,
+	getMutesOperation,
+	graphProperties,
+	muteThreadOperation,
+} from './graphOperations';
+import {
+	identityProperties,
+	resolveDidOperation,
+	resolveHandleOperation,
+	resolveIdentityOperation,
 } from './identityOperations';
-import { labelProperties, queryLabelsOperation } from './labelOperations';
+import { applyLabelsOperation, labelProperties, queryLabelsOperation } from './labelOperations';
+import { lexiconProperties, resolveLexiconOperation } from './lexiconOperations';
 import {
-    addUserToListOperation,
-    createListOperation,
-    deleteListOperation,
-    getListFeedOperation,
-    getListsOperation,
-    listProperties,
-    removeUserFromListOperation,
-    updateListOperation,
+	addUserToListOperation,
+	createListOperation,
+	deleteListOperation,
+	getListFeedOperation,
+	getListsOperation,
+	listProperties,
+	removeUserFromListOperation,
+	updateListOperation,
 } from './listOperations';
 import { createReportOperation, moderationProperties } from './moderationOperations';
 import {
-    // getNotificationsOperation, // Removed as it's no longer exported / replaced by enhanced listNotificationsOperation
-    listNotificationsOperation as enhancedListNotifications, // Renamed for clarity and to point to the enhanced version
-    notificationProperties,
+	// getNotificationsOperation, // Removed as it's no longer exported / replaced by enhanced listNotificationsOperation
+	listNotificationsOperation as enhancedListNotifications, // Renamed for clarity and to point to the enhanced version
+	notificationProperties,
 } from './notificationOperations';
 import {
-    deleteLikeOperation,
-    deletePostOperation,
-    deleteRepostOperation,
-    likeOperation,
-    postOperation,
-    postProperties,
-    quoteOperation,
-    replyOperation,
-    repostOperation,
+	deleteLikeOperation,
+	deletePostOperation,
+	deleteRepostOperation,
+	likeOperation,
+	postOperation,
+	postProperties,
+	quoteOperation,
+	replyOperation,
+	repostOperation,
 } from './postOperations';
 import {
-    getPreferencesOperation,
-    preferenceProperties,
-    putPreferencesOperation,
+	getPreferencesOperation,
+	preferenceProperties,
+	putPreferencesOperation,
 } from './preferenceOperations';
 import {
-    applyWritesOperation,
-    createRecordOperation,
-    deleteRecordOperation,
-    getRecordOperation,
-    listRecordsOperation,
-    putRecordOperation,
-    repoProperties,
-    uploadBlobOperation,
+	applyWritesOperation,
+	createRecordOperation,
+	deleteRecordOperation,
+	getRecordOperation,
+	listRecordsOperation,
+	putRecordOperation,
+	repoProperties,
+	uploadBlobOperation,
 } from './repoOperations';
 import { searchPostsOperation, searchProperties, searchUsersOperation } from './searchOperations';
 import {
-    getBlobOperation,
-    getLatestCommitOperation,
-    getRecordSyncOperation,
-    getRepoOperation,
-    listBlobsOperation,
-    listReposOperation,
-    notifyOfUpdateOperation,
-    requestCrawlOperation,
-    syncProperties,
+	getBlobOperation,
+	getLatestCommitOperation,
+	getRecordSyncOperation,
+	getRepoOperation,
+	getRepoStatusOperation,
+	listBlobsOperation,
+	listReposOperation,
+	notifyOfUpdateOperation,
+	requestCrawlOperation,
+	syncProperties,
 } from './syncOperations';
 import {
-    blockOperation,
-    followOperation,
-    getProfileOperation,
-    getProfilesOperation,
-    listAllFollowersOperation,
-    listAllFollowsOperation,
-    listFollowersOperation,
-    listFollowsOperation,
-    muteOperation,
-    unblockOperation,
-    unfollowOperation,
-    unmuteOperation,
-    updateProfileOperation,
-    userProperties,
+	blockOperation,
+	followOperation,
+	getProfileOperation,
+	getProfilesOperation,
+	listAllFollowersOperation,
+	listAllFollowsOperation,
+	listFollowersOperation,
+	listFollowsOperation,
+	muteOperation,
+	unblockOperation,
+	unfollowOperation,
+	unmuteOperation,
+	updateProfileOperation,
+	userProperties,
 } from './userOperations';
 
 export class BlueskyV2 implements INodeType {
@@ -143,8 +154,8 @@ export class BlueskyV2 implements INodeType {
 			defaults: {
 				name: 'Bluesky',
 			},
-			inputs: [NodeConnectionType.Main],
-			outputs: [NodeConnectionType.Main],
+			inputs: ['main'],
+			outputs: ['main'],
 			credentials: [
 				{
 					name: 'blueskyApi',
@@ -153,6 +164,7 @@ export class BlueskyV2 implements INodeType {
 			],
 			properties: [
 				resourcesProperty,
+				...accountProperties,
 				...authProperties,
 				...userProperties,
 				...postProperties,
@@ -165,6 +177,7 @@ export class BlueskyV2 implements INodeType {
 				...repoProperties,
 				...moderationProperties,
 				...labelProperties,
+				...lexiconProperties,
 				...syncProperties,
 				...identityProperties,
 				...preferenceProperties,
@@ -254,6 +267,23 @@ export class BlueskyV2 implements INodeType {
 						const appPasswordName = this.getNodeParameter('appPasswordName', i) as string;
 						const created = await createAppPasswordOperation(agent, appPasswordName);
 						returnData.push(...created);
+						break;
+					}
+					case 'createInviteCode': {
+						const useCount = this.getNodeParameter('inviteUseCount', i) as number;
+						const forAccount = this.getNodeParameter('inviteForAccount', i, '') as string;
+						const created = await createInviteCodeOperation(
+							agent,
+							useCount,
+							forAccount || undefined,
+						);
+						returnData.push(...created);
+						break;
+					}
+					case 'rotateSigningKey': {
+						const bodyJson = this.getNodeParameter('rotateSigningKeyBody', i, '') as string;
+						const data = await rotateSigningKeyOperation(agent, bodyJson || undefined);
+						returnData.push(...data);
 						break;
 					}
 					default:
@@ -456,6 +486,56 @@ export class BlueskyV2 implements INodeType {
 						returnData.push(...data);
 						break;
 					}
+					case 'applyLabels': {
+						const labelsJson = this.getNodeParameter('labelsJson', i) as string;
+						const data = await applyLabelsOperation(agent, labelsJson);
+						returnData.push(...data);
+						break;
+					}
+					default:
+						throw new NodeOperationError(
+							this.getNode(),
+							`The operation "${operation}" is not supported for resource "${resource}"!`,
+						);
+				}
+				continue;
+			}
+
+			if (resource === 'account') {
+				switch (operation) {
+					case 'requestTransfer': {
+						const requestBodyJson = this.getNodeParameter('requestBodyJson', i) as string;
+						const data = await requestTransferOperation(agent, requestBodyJson);
+						returnData.push(...data);
+						break;
+					}
+					default:
+						throw new NodeOperationError(
+							this.getNode(),
+							`The operation "${operation}" is not supported for resource "${resource}"!`,
+						);
+				}
+				continue;
+			}
+
+			if (resource === 'lexicon') {
+				switch (operation) {
+					case 'resolveLexicon': {
+						const lexiconUrl = this.getNodeParameter('lexiconUrl', i) as string;
+						const paramsJson = this.getNodeParameter('lexiconParamsJson', i, '') as string;
+
+						// Validate lexiconUrl is provided to avoid passing an empty string into resolveLexiconOperation
+						if (!lexiconUrl) {
+							throw new NodeOperationError(
+								this.getNode(),
+								`resolveLexicon requires a valid "lexiconUrl" parameter; got: ${String(lexiconUrl)}`,
+							);
+						}
+
+						const data = await resolveLexiconOperation(agent, lexiconUrl, paramsJson || undefined);
+						returnData.push(...data);
+						break;
+					}
 					default:
 						throw new NodeOperationError(
 							this.getNode(),
@@ -638,6 +718,12 @@ export class BlueskyV2 implements INodeType {
 						returnData.push(...data);
 						break;
 					}
+					case 'getRepoStatus': {
+						const did = this.getNodeParameter('did', i) as string;
+						const data = await getRepoStatusOperation(agent, did);
+						returnData.push(...data);
+						break;
+					}
 					case 'getLatestCommit': {
 						const did = this.getNodeParameter('did', i) as string;
 						const data = await getLatestCommitOperation(agent, did);
@@ -794,6 +880,11 @@ export class BlueskyV2 implements INodeType {
 							const postText = this.getNodeParameter('postText', i) as string;
 							const langs = this.getNodeParameter('langs', i) as string[];
 							const includeMedia = this.getNodeParameter('includeMedia', i, false) as boolean;
+							const failOnMediaProcessingError = this.getNodeParameter(
+								'failOnMediaProcessingError',
+								i,
+								false,
+							) as boolean;
 
 							let mediaItemsInput: any = undefined;
 							if (includeMedia) {
@@ -830,15 +921,23 @@ export class BlueskyV2 implements INodeType {
 										Array.isArray(mediaItemsInput.mediaItems) &&
 										mediaItemsInput.mediaItems.length > 0
 									) {
-										console.log(
-											`[INFO] Processing ${mediaItemsInput.mediaItems.length} media item(s) for Bluesky post`,
+										LoggerProxy.info(
+											`Processing ${mediaItemsInput.mediaItems.length} media item(s) for Bluesky post`,
 										);
 									} else {
 										// Ensure we have a valid array even if empty
 										mediaItemsInput = { mediaItems: [] };
 									}
 								} catch (error) {
-									console.error(`[ERROR] Error processing media items:`, error);
+									LoggerProxy.error(`Error processing media items`, {
+										error,
+										message: error instanceof Error ? error.message : String(error),
+										stack: error instanceof Error ? error.stack : undefined,
+									});
+									// Respect the failOnMediaProcessingError flag: rethrow when true
+									if (failOnMediaProcessingError) {
+										throw error;
+									}
 									// Ensure mediaItems is a valid array in case of any error
 									mediaItemsInput = { mediaItems: [] };
 								}
@@ -874,11 +973,16 @@ export class BlueskyV2 implements INodeType {
 								websiteCardData,
 								includeMedia,
 								mediaItemsInput,
+								failOnMediaProcessingError,
 							);
 
 							returnData.push(...postData);
 						} catch (error) {
-							console.error(`[ERROR] Bluesky post operation failed: ${error.message}`, error);
+							LoggerProxy.error(`Bluesky post operation failed`, {
+								error,
+								message: error instanceof Error ? error.message : String(error),
+								stack: error instanceof Error ? error.stack : undefined,
+							});
 							throw error;
 						}
 						break;
@@ -922,6 +1026,11 @@ export class BlueskyV2 implements INodeType {
 							const replyText = this.getNodeParameter('replyText', i) as string;
 							const replyLangs = this.getNodeParameter('replyLangs', i) as string[];
 							const includeMediaReply = this.getNodeParameter('includeMedia', i, false) as boolean;
+							const failOnMediaProcessingErrorReply = this.getNodeParameter(
+								'failOnMediaProcessingError',
+								i,
+								false,
+							) as boolean;
 							let mediaItemsInputReply: any = undefined;
 							if (includeMediaReply) {
 								try {
@@ -932,7 +1041,14 @@ export class BlueskyV2 implements INodeType {
 									}
 									mediaItemsInputReply = { mediaItems: mediaArray };
 								} catch (error) {
-									console.error(`[ERROR] Error processing media items:`, error);
+									LoggerProxy.error(`Error processing media items`, {
+										error,
+										message: error instanceof Error ? error.message : String(error),
+										stack: error instanceof Error ? error.stack : undefined,
+									});
+									if (failOnMediaProcessingErrorReply) {
+										throw error;
+									}
 									mediaItemsInputReply = { mediaItems: [] };
 								}
 							}
@@ -967,10 +1083,15 @@ export class BlueskyV2 implements INodeType {
 								websiteCardDataReply,
 								includeMediaReply,
 								mediaItemsInputReply,
+								failOnMediaProcessingErrorReply,
 							);
 							returnData.push(...replyData);
 						} catch (error) {
-							console.error(`[ERROR] Bluesky reply operation failed: ${error.message}`, error);
+							LoggerProxy.error(`Bluesky reply operation failed`, {
+								error,
+								message: error instanceof Error ? error.message : String(error),
+								stack: error instanceof Error ? error.stack : undefined,
+							});
 							throw error;
 						}
 						break;
@@ -1016,7 +1137,11 @@ export class BlueskyV2 implements INodeType {
 					case 'getTimeline':
 						const timelinePostLimit = this.getNodeParameter('limit', i) as number;
 						const timelineCursor = this.getNodeParameter('cursor', i, '') as string;
-						const timelineData = await getTimeline(agent, timelinePostLimit, timelineCursor || undefined);
+						const timelineData = await getTimeline(
+							agent,
+							timelinePostLimit,
+							timelineCursor || undefined,
+						);
 						returnData.push(...timelineData);
 						break;
 
@@ -1086,6 +1211,14 @@ export class BlueskyV2 implements INodeType {
 						const limit = this.getNodeParameter('limit', i, 50) as number;
 						const cursor = this.getNodeParameter('cursor', i, '') as string;
 						const data = await getFeedOperation(agent, feed, limit, cursor || undefined);
+						returnData.push(...data);
+						break;
+					}
+					case 'getFeedSkeleton': {
+						const feed = this.getNodeParameter('feed', i) as string;
+						const limit = this.getNodeParameter('limit', i, 50) as number;
+						const cursor = this.getNodeParameter('cursor', i, '') as string;
+						const data = await getFeedSkeletonOperation(agent, feed, limit, cursor || undefined);
 						returnData.push(...data);
 						break;
 					}

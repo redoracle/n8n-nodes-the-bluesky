@@ -2,7 +2,7 @@ import { INodeProperties } from 'n8n-workflow';
 import { BlueskyV2 } from '../nodes/Bluesky/V2/BlueskyV2.class';
 
 describe('Bluesky V2 - List Properties', () => {
-	const baseDescription = {
+	const baseDescription: any = {
 		displayName: 'Bluesky',
 		name: 'bluesky',
 		icon: 'file:bluesky.svg',

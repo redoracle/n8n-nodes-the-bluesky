@@ -2,14 +2,15 @@
 // It will help debug and fix the issue with image uploads
 
 import { BskyAgent, ComAtprotoRepoUploadBlob } from '@atproto/api';
-import { IExecuteFunctions, NodeOperationError } from 'n8n-workflow';
+import { IExecuteFunctions, LoggerProxy, NodeOperationError } from 'n8n-workflow';
 import sizeOf from 'image-size';
 
 // Additional logging function to provide better debug info
-function logDebug(message: string, data?: any): void {
-	console.log(`[BLUESKY DEBUG] ${message}`);
-	if (data !== undefined) {
-		console.log(JSON.stringify(data, null, 2));
+function logDebug(message: string, data?: Record<string, unknown>): void {
+	if (data) {
+		LoggerProxy.debug(message, data);
+	} else {
+		LoggerProxy.debug(message);
 	}
 }
 
@@ -40,7 +41,9 @@ export async function improvedUploadImageHelper(
 		}
 
 		const item = items[itemIndex];
-		logDebug(`Item binary properties available:`, Object.keys(item.binary || {}));
+		logDebug(`Item binary properties available`, {
+			properties: Object.keys(item.binary || {}),
+		});
 
 		if (!item.binary || !item.binary[binaryPropertyName]) {
 			throw new NodeOperationError(
@@ -52,7 +55,7 @@ export async function improvedUploadImageHelper(
 
 		// Log binary metadata if available
 		const binaryMetadata = item.binary[binaryPropertyName];
-		logDebug(`Binary metadata for ${binaryPropertyName}:`, {
+		logDebug(`Binary metadata for ${binaryPropertyName}`, {
 			fileName: binaryMetadata.fileName,
 			mimeType: binaryMetadata.mimeType,
 			fileSize: binaryMetadata.fileSize,
@@ -87,7 +90,9 @@ export async function improvedUploadImageHelper(
 				logDebug(`Could not determine image dimensions`);
 			}
 		} catch (error) {
-			logDebug(`Error reading image dimensions: ${error.message}`);
+			logDebug(`Error reading image dimensions`, {
+				error: error instanceof Error ? error.message : String(error),
+			});
 			// Continue without aspect ratio - not a critical failure
 		}
 
@@ -97,7 +102,10 @@ export async function improvedUploadImageHelper(
 		const uploadResponse = await agent.uploadBlob(binaryData);
 		const uploadDuration = Date.now() - uploadStartTime;
 
-		logDebug(`Upload successful in ${uploadDuration}ms. Response:`, uploadResponse.data.blob);
+		logDebug(`Upload successful in ${uploadDuration}ms`, {
+			mimeType: uploadResponse.data.blob?.mimeType,
+			size: uploadResponse.data.blob?.size,
+		});
 
 		return {
 			blob: uploadResponse.data.blob,
@@ -105,10 +113,9 @@ export async function improvedUploadImageHelper(
 			aspectRatio: aspectRatio,
 		};
 	} catch (error) {
-		logDebug(`Error uploading image: ${error.message}`);
-		if (error.stack) {
-			logDebug(`Stack trace: ${error.stack}`);
-		}
+		logDebug(`Error uploading image`, {
+			error: error instanceof Error ? error.message : String(error),
+		});
 
 		// Re-throw as a NodeOperationError with helpful message
 		throw new NodeOperationError(node, error, {

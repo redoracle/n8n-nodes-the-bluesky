@@ -26,6 +26,12 @@ export const syncProperties: INodeProperties[] = [
 				action: 'Get record (sync)',
 			},
 			{
+				name: 'Get Repo Status',
+				value: 'getRepoStatus',
+				description: 'Get current hosting status for a repo',
+				action: 'Get repo status',
+			},
+			{
 				name: 'Get Latest Commit',
 				value: 'getLatestCommit',
 				description: 'Get the latest commit CID for a repo',
@@ -74,7 +80,14 @@ export const syncProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['sync'],
-				operation: ['getRepo', 'getRecord', 'getLatestCommit', 'getBlob', 'listBlobs'],
+				operation: [
+					'getRepo',
+					'getRecord',
+					'getRepoStatus',
+					'getLatestCommit',
+					'getBlob',
+					'listBlobs',
+				],
 			},
 		},
 	},
@@ -196,6 +209,18 @@ export async function getRecordSyncOperation(
 		{
 			json: { did, collection, rkey } as IDataObject,
 			binary: { data: binary },
+		},
+	];
+}
+
+export async function getRepoStatusOperation(
+	agent: AtpAgent,
+	did: string,
+): Promise<INodeExecutionData[]> {
+	const response = await agent.com.atproto.sync.getRepoStatus({ did });
+	return [
+		{
+			json: response.data as unknown as IDataObject,
 		},
 	];
 }

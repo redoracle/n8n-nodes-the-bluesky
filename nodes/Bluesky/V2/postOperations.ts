@@ -1,9 +1,10 @@
 import { AtpAgent, ComAtprotoRepoUploadBlob, RichText } from '@atproto/api';
 import {
-    IExecuteFunctions,
-    INodeExecutionData,
-    INodeProperties,
-    NodeOperationError,
+	IDataObject,
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeProperties,
+	NodeOperationError,
 } from 'n8n-workflow';
 import ogs from 'open-graph-scraper';
 import { improvedUploadImageHelper } from './binaryUploadHelper';
@@ -166,6 +167,17 @@ export const postProperties: INodeProperties[] = [
 		default: false,
 		description: 'Whether to include media in the post',
 		displayOptions: { show: { resource: ['post'], operation: ['post', 'reply'] } },
+	},
+	{
+		displayName: 'Fail on Media Processing Error',
+		name: 'failOnMediaProcessingError',
+		type: 'boolean',
+		default: false,
+		description:
+			'Whether to fail the entire operation if media processing encounters an error. If disabled, the post will continue without media and a warning will be added to the result.',
+		displayOptions: {
+			show: { resource: ['post'], operation: ['post', 'reply'], includeMedia: [true] },
+		},
 	},
 	{
 		displayName: 'Media Items',
@@ -391,6 +403,30 @@ async function buildWebsiteCardEmbed(
 	};
 }
 
+/**
+ * Attempt to build a media embed and handle errors according to `failOnError`.
+ * Returns an object with either `embed` or `warning` set.
+ */
+async function tryBuildMediaEmbed(
+	context: IExecuteFunctions,
+	agent: AtpAgent,
+	includeMedia?: boolean,
+	mediaItemsInput?: { mediaItems?: any[] },
+	failOnError?: boolean,
+	operationType: 'Post' | 'Reply' | string = 'Post',
+): Promise<{ embed?: any; warning?: string }> {
+	try {
+		const embed = await buildMediaEmbed(context, agent, includeMedia, mediaItemsInput);
+		return { embed };
+	} catch (error: any) {
+		if (failOnError) throw error;
+		const message = error instanceof Error ? error.message : String(error);
+		return {
+			warning: `Media processing failed: ${message}. ${operationType} continued without media.`,
+		};
+	}
+}
+
 export async function postOperation(
 	this: IExecuteFunctions,
 	agent: AtpAgent,
@@ -405,6 +441,7 @@ export async function postOperation(
 	},
 	includeMedia?: boolean,
 	mediaItemsInput?: { mediaItems?: any[] },
+	failOnMediaProcessingError?: boolean,
 ): Promise<INodeExecutionData[]> {
 	const rt = new RichText({ text: postText });
 	await rt.detectFacets(agent as AtpAgent);
@@ -415,14 +452,34 @@ export async function postOperation(
 		facets: rt.facets,
 		createdAt: new Date().toISOString(),
 	};
-	const mediaEmbed = await buildMediaEmbed(this, agent, includeMedia, mediaItemsInput);
+	let mediaEmbed: any;
+	let mediaWarning: string | undefined;
+	{
+		const res = await tryBuildMediaEmbed(
+			this,
+			agent,
+			includeMedia,
+			mediaItemsInput,
+			failOnMediaProcessingError,
+			'Post',
+		);
+		mediaEmbed = res.embed;
+		mediaWarning = res.warning;
+	}
 	if (mediaEmbed) postData.embed = mediaEmbed;
 	else {
 		const websiteEmbed = await buildWebsiteCardEmbed(this, agent, websiteCard);
 		if (websiteEmbed) postData.embed = websiteEmbed;
 	}
 	const postResponse: { uri: string; cid: string } = await agent.post(postData);
-	return [{ json: { uri: postResponse.uri, cid: postResponse.cid } }];
+	const result: INodeExecutionData = {
+		json: {
+			uri: postResponse.uri,
+			cid: postResponse.cid,
+			...(mediaWarning ? { warning: mediaWarning } : {}),
+		},
+	};
+	return [result];
 }
 
 export async function deletePostOperation(
@@ -483,6 +540,7 @@ export async function replyOperation(
 	},
 	includeMedia?: boolean,
 	mediaItemsInput?: { mediaItems?: any[] },
+	failOnMediaProcessingError?: boolean,
 ): Promise<INodeExecutionData[]> {
 	const rt = new RichText({ text: replyText });
 	await rt.detectFacets(agent as AtpAgent);
@@ -507,14 +565,31 @@ export async function replyOperation(
 		createdAt: new Date().toISOString(),
 		reply: { root, parent: { uri: parentUri, cid: parentCid } },
 	};
-	const mediaEmbed = await buildMediaEmbed(this, agent, includeMedia, mediaItemsInput);
+	let mediaEmbed: any;
+	let mediaWarning: string | undefined;
+	{
+		const res = await tryBuildMediaEmbed(
+			this,
+			agent,
+			includeMedia,
+			mediaItemsInput,
+			failOnMediaProcessingError,
+			'Reply',
+		);
+		mediaEmbed = res.embed;
+		mediaWarning = res.warning;
+	}
 	if (mediaEmbed) replyData.embed = mediaEmbed;
 	else {
 		const websiteEmbed = await buildWebsiteCardEmbed(this, agent, websiteCard);
 		if (websiteEmbed) replyData.embed = websiteEmbed;
 	}
 	const replyResponse: { uri: string; cid: string } = await agent.post(replyData);
-	return [{ json: { uri: replyResponse.uri, cid: replyResponse.cid } }];
+	const result: INodeExecutionData = { json: { uri: replyResponse.uri, cid: replyResponse.cid } };
+	if (mediaWarning) {
+		(result.json as IDataObject).warning = mediaWarning;
+	}
+	return [result];
 }
 
 export async function quoteOperation(

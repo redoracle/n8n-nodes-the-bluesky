@@ -11,7 +11,11 @@
  */
 
 import { BskyAgent } from '@atproto/api';
-import { IExecuteFunctions, NodeOperationError } from 'n8n-workflow';
+import { IExecuteFunctions, LoggerProxy, NodeOperationError } from 'n8n-workflow';
+
+// URL documenting current Bluesky video processing status and recommended workarounds.
+// Update this constant as server-side support evolves.
+const VIDEO_STATUS_DOC_URL = 'https://github.com/bluesky-social/docs/blob/main/video-processing.md';
 
 /**
  * Upload a video to Bluesky using the current available infrastructure
@@ -77,13 +81,13 @@ export async function uploadVideo(
 			);
 		}
 
-		console.log(
-			`[INFO] Uploading video: ${binaryData.length} bytes, MIME: ${binaryMetadata.mimeType}`,
+		LoggerProxy.info(
+			`Uploading video: ${binaryData.length} bytes, MIME: ${binaryMetadata.mimeType}`,
 		);
 
 		// First try the proper video upload API (optimistic approach)
 		try {
-			console.log(`[INFO] Attempting proper video upload API...`);
+			LoggerProxy.info(`Attempting video upload API...`);
 
 			// Check if video APIs are now available
 			if (typeof agent.api?.app?.bsky?.video?.uploadVideo === 'function') {
@@ -92,7 +96,7 @@ export async function uploadVideo(
 				});
 
 				if (videoUpload.success) {
-					console.log(`[SUCCESS] Video processing initiated via video API`);
+					LoggerProxy.info(`Video processing initiated via video API`);
 
 					// The response should contain job status information
 					const jobStatus = videoUpload.data.jobStatus;
@@ -112,12 +116,14 @@ export async function uploadVideo(
 				}
 			}
 		} catch (videoApiError: any) {
-			console.log(`[INFO] Video API not yet available: ${videoApiError.message}`);
+			LoggerProxy.info(
+				`Video API not yet available: ${videoApiError instanceof Error ? videoApiError.message : String(videoApiError)}`,
+			);
 			// Fall through to blob upload approach
 		}
 
 		// Fallback to blob upload (current working approach)
-		console.log(`[INFO] Using blob upload for video (video processing API not yet available)`);
+		LoggerProxy.info(`Using blob upload for video (video processing API not yet available)`);
 
 		const uploadResponse = await agent.api.com.atproto.repo.uploadBlob(binaryData, {
 			encoding: binaryMetadata.mimeType,
@@ -127,12 +133,12 @@ export async function uploadVideo(
 			throw new NodeOperationError(node, 'Video upload failed - no blob returned');
 		}
 
-		console.log(`[INFO] Video blob upload completed successfully`);
-		console.log(`[WARNING] Video will show "Video not found" on Bluesky platform`);
-		console.log(
-			`[STATUS] Video APIs previously XRPCNotSupported (May 25, 2025). As of Sep 10, 2025 unauthenticated probes return 401 AuthMissing. Try authenticated getUploadLimits/uploadVideo/getJobStatus to confirm processing availability.`,
+		// Consolidated status message: upload succeeded but processing may be unavailable.
+		LoggerProxy.warn(
+			`Video blob uploaded successfully, but Bluesky's server-side video processing may not be available yet. ` +
+				`Uploaded blobs can be used, but they may not be playable on the platform until processing is enabled. ` +
+				`See ${VIDEO_STATUS_DOC_URL} for current status and recommended workarounds.`,
 		);
-		console.log(`[INFO] Infrastructure exists in Bluesky codebase - server deployment pending`);
 
 		return {
 			blob: uploadResponse.data.blob,
@@ -140,7 +146,9 @@ export async function uploadVideo(
 			// Note: aspectRatio will be handled by Bluesky when video processing is enabled
 		};
 	} catch (error) {
-		console.error(`[ERROR] Video upload failed:`, error);
+		LoggerProxy.error(`Video upload failed`, {
+			error: error instanceof Error ? error.message : String(error),
+		});
 		throw new NodeOperationError(node, error, {
 			message: `Failed to upload video from binary property '${binaryPropertyName}': ${error.message}`,
 			itemIndex: itemIndex,
@@ -163,23 +171,26 @@ export async function getVideoUploadLimits(agent: BskyAgent): Promise<{
 	try {
 		// Try to use the proper video upload limits API
 		if (typeof agent.api?.app?.bsky?.video?.getUploadLimits === 'function') {
-			console.log(`[INFO] Attempting to get video upload limits via API...`);
+			LoggerProxy.info(`Attempting to get video upload limits via API...`);
 
 			const limits = await agent.api.app.bsky.video.getUploadLimits();
 			if (limits.success) {
-				console.log(`[SUCCESS] Retrieved video upload limits from API`);
+				LoggerProxy.info(`Retrieved video upload limits from API`);
 				return limits.data;
 			}
 		}
 	} catch (error: any) {
-		console.log(`[INFO] Video upload limits API not yet available: ${error.message}`);
+		LoggerProxy.info(
+			`Video upload limits API not yet available: ${
+				error instanceof Error ? error.message : String(error)
+			}`,
+		);
 		// Fall through to default limits
 	}
 
 	// Return default limits based on current understanding and AT Protocol blob upload specifications
 	return {
 		canUpload: true,
-		message:
-			'Video uploads currently use blob upload (100MB max per file). NOTE: Videos will show "Video not found" on Bluesky until server-side video processing APIs are deployed (confirmed not available as of May 25, 2025).',
+		message: `Video uploads currently use blob upload (100MB max per file). Server-side video processing may not be available as of this writing; see ${VIDEO_STATUS_DOC_URL} for current status and workarounds.`,
 	};
 }

@@ -1,5 +1,5 @@
 import { AtpAgent } from '@atproto/api';
-import { INodeExecutionData, INodeProperties } from 'n8n-workflow';
+import { INodeExecutionData, INodeProperties, LoggerProxy } from 'n8n-workflow';
 
 export const notificationProperties: INodeProperties[] = [
 	{
@@ -182,8 +182,19 @@ export async function listNotificationsOperation(
 				});
 			} catch (e: any) {
 				// Log or handle error from updateSeen, but don't fail the whole operation
-				console.warn(
-					`Failed to mark notifications as seen up to ${lastRetrievedUnreadNotificationTimestamp}: ${e.message}`,
+				const safeMessage =
+					e?.message ??
+					(typeof e === 'string'
+						? e
+						: (() => {
+								try {
+									return JSON.stringify(e);
+								} catch (_) {
+									return String(e);
+								}
+							})());
+				LoggerProxy.warn(
+					`Failed to mark notifications as seen up to ${lastRetrievedUnreadNotificationTimestamp}: ${safeMessage}`,
 				);
 			}
 		}
@@ -232,7 +243,18 @@ export async function listNotificationsOperation(
 				await agent.app.bsky.notification.updateSeen({ seenAt: new Date().toISOString() });
 			} catch (e: any) {
 				// Log or handle error from updateSeen, but don't fail the whole operation
-				console.warn(`Failed to mark notifications as seen: ${e.message}`);
+				const safeMessage =
+					e?.message ??
+					(typeof e === 'string'
+						? e
+						: (() => {
+								try {
+									return JSON.stringify(e);
+								} catch (_) {
+									return String(e);
+								}
+							})());
+				LoggerProxy.warn(`Failed to mark notifications as seen: ${safeMessage}`);
 			}
 		}
 	}

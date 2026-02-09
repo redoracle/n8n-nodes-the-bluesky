@@ -1,4 +1,4 @@
-import { INodeProperties } from 'n8n-workflow';
+import { INodeProperties, INodeTypeBaseDescription } from 'n8n-workflow';
 import { BlueskyV2 } from '../nodes/Bluesky/V2/BlueskyV2.class';
 import { searchPostsOperation, searchUsersOperation } from '../nodes/Bluesky/V2/searchOperations';
 
@@ -11,7 +11,7 @@ describe('Bluesky V2 - Search Properties', () => {
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: 'Interact with the Bluesky social platform',
 		defaultVersion: 2,
-	};
+	} as unknown as INodeTypeBaseDescription;
 
 	test('should define search operations and query fields', () => {
 		const node = new BlueskyV2(baseDescription);

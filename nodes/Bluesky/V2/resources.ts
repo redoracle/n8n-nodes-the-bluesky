@@ -7,6 +7,10 @@ export const resourcesProperty: INodeProperties = {
 	noDataExpression: true,
 	options: [
 		{
+			name: 'Account',
+			value: 'account',
+		},
+		{
 			name: 'Auth',
 			value: 'auth',
 		},
@@ -37,6 +41,10 @@ export const resourcesProperty: INodeProperties = {
 		{
 			name: 'Label',
 			value: 'label',
+		},
+		{
+			name: 'Lexicon',
+			value: 'lexicon',
 		},
 		{
 			name: 'Moderation',

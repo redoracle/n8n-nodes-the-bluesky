@@ -47,9 +47,7 @@ export const preferenceProperties: INodeProperties[] = [
 	},
 ];
 
-export async function getPreferencesOperation(
-	agent: AtpAgent,
-): Promise<INodeExecutionData[]> {
+export async function getPreferencesOperation(agent: AtpAgent): Promise<INodeExecutionData[]> {
 	const response = await agent.getPreferences();
 	return [{ json: response as unknown as IDataObject }];
 }

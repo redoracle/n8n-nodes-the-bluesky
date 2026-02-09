@@ -24,10 +24,8 @@
 		// Include both custom type shims (./types) and standard @types packages (./node_modules/@types)
 		// Custom shims in ./types provide minimal declarations for editor-only type checking
 		// while node_modules/@types provides full third-party type definitions
-		"typeRoots": ["./types", "./node_modules/@types"],
-		"paths": {
-			"n8n-workflow": ["types/n8n-workflow-shim.d.ts"]
-		}
+		"typeRoots": ["./types", "./node_modules/@types"]
+		// Note: Removed path mapping for n8n-workflow to use real types from node_modules
 	},
 	"include": [
 		"types/**/*.d.ts",
@@ -37,5 +35,6 @@
 		"package.json",
 		"__tests__/**/*",
 		"src/**/*"
-	]
+	],
+	"exclude": ["node_modules", "dist"]
 }

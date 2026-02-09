@@ -1,6 +1,6 @@
-import { INodePropertyOptions } from 'n8n-workflow';
+import type { INodePropertyOptions } from 'n8n-workflow';
 
-const languageCodes: any = {
+const languageCodes: Record<string, string> = {
 	af: 'Afrikaans',
 	'af-ZA': 'Afrikaans (South Africa)',
 	ar: 'Arabic',
@@ -235,14 +235,8 @@ const languageCodes: any = {
 };
 
 export function getLanguageOptions(): INodePropertyOptions[] {
-	let options = [];
-
-	for (const code in languageCodes) {
-		options.push({
-			name: languageCodes[code] as string,
-			value: code as string,
-		} as INodePropertyOptions);
-	}
-
-	return options;
+	return Object.entries(languageCodes).map(([code, name]) => ({
+		name: name,
+		value: code,
+	}));
 }

@@ -1,12 +1,17 @@
 import type {
-    IExecuteFunctions,
-    INodeExecutionData,
-    INodeType,
-    INodeTypeBaseDescription,
-    INodeTypeDescription,
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeBaseDescription,
+	INodeTypeDescription,
 } from 'n8n-workflow';
 
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { LoggerProxy, NodeOperationError } from 'n8n-workflow';
+// `NodeConnectionTypes` is not always visible to the TypeScript language server
+// when imported from the package root due to how `n8n-workflow` exposes its
+// types. Import from the CJS interface declaration to ensure the symbol is
+// available in both the editor and CommonJS build output.
+import { NodeConnectionTypes } from 'n8n-workflow/dist/cjs/interfaces';
 
 import { AtpAgent, CredentialSession } from '@atproto/api';
 
@@ -14,131 +19,150 @@ import { resourcesProperty } from '../../../nodes/Bluesky/V2/resources';
 
 // Operations
 import {
-    getUnreadCountOperation as analyticsGetUnreadCountOperation,
-    analyticsProperties,
-    getPostInteractionsOperation,
-    updateSeenNotificationsOperation,
+	accountProperties,
+	requestTransferOperation,
+} from '../../../nodes/Bluesky/V2/accountOperations';
+import {
+	getUnreadCountOperation as analyticsGetUnreadCountOperation,
+	analyticsProperties,
+	getPostInteractionsOperation,
+	updateSeenNotificationsOperation,
 } from '../../../nodes/Bluesky/V2/analyticsOperations';
 import {
-    authProperties,
-    createAppPasswordOperation,
-    createSessionOperation,
-    deleteSessionOperation,
-    refreshSessionOperation,
+	authProperties,
+	createAppPasswordOperation,
+	createInviteCodeOperation,
+	createSessionOperation,
+	deleteSessionOperation,
+	refreshSessionOperation,
+	rotateSigningKeyOperation,
 } from '../../../nodes/Bluesky/V2/authOperations';
 import {
-    acceptConversationOperation,
-    chatProperties,
-    deleteMessageOperation,
-    getConversationOperation,
-    getConvoForMembersOperation,
-    getMessagesOperation,
-    leaveConversationOperation,
-    listConversationsOperation,
-    muteConversationOperation,
-    sendMessageOperation,
-    unmuteConversationOperation,
-    updateReadStatusOperation,
+	acceptConversationOperation,
+	chatProperties,
+	deleteMessageOperation,
+	getConversationOperation,
+	getConvoForMembersOperation,
+	getMessagesOperation,
+	leaveConversationOperation,
+	listConversationsOperation,
+	muteConversationOperation,
+	sendMessageOperation,
+	unmuteConversationOperation,
+	updateReadStatusOperation,
 } from '../../../nodes/Bluesky/V2/chatOperations';
 import {
-    describeFeedGeneratorOperation,
-    feedProperties,
-    getAuthorFeed,
-    getFeedGeneratorsOperation,
-    getFeedOperation,
-    getLikesOperation,
-    getPostThread,
-    getPostsOperation,
-    getRepostedByOperation,
-    getSuggestedFeedsOperation,
-    getTimeline,
+	describeFeedGeneratorOperation,
+	feedProperties,
+	getAuthorFeed,
+	getFeedGeneratorsOperation,
+	getFeedOperation,
+	getFeedSkeletonOperation,
+	getLikesOperation,
+	getPostThread,
+	getPostsOperation,
+	getRepostedByOperation,
+	getSuggestedFeedsOperation,
+	getTimeline,
 } from '../../../nodes/Bluesky/V2/feedOperations';
 import {
-    getBlocksOperation,
-    getMutesOperation,
-    graphProperties,
-    muteThreadOperation,
+	getBlocksOperation,
+	getMutesOperation,
+	graphProperties,
+	muteThreadOperation,
 } from '../../../nodes/Bluesky/V2/graphOperations';
 import {
-    identityProperties,
-    resolveDidOperation,
-    resolveHandleOperation,
-    resolveIdentityOperation,
+	identityProperties,
+	resolveDidOperation,
+	resolveHandleOperation,
+	resolveIdentityOperation,
 } from '../../../nodes/Bluesky/V2/identityOperations';
-import { labelProperties, queryLabelsOperation } from '../../../nodes/Bluesky/V2/labelOperations';
 import {
-    addUserToListOperation,
-    createListOperation,
-    deleteListOperation,
-    getListFeedOperation,
-    getListsOperation,
-    listProperties,
-    removeUserFromListOperation,
-    updateListOperation,
+	applyLabelsOperation,
+	labelProperties,
+	queryLabelsOperation,
+} from '../../../nodes/Bluesky/V2/labelOperations';
+import {
+	lexiconProperties,
+	resolveLexiconOperation,
+} from '../../../nodes/Bluesky/V2/lexiconOperations';
+import {
+	addUserToListOperation,
+	createListOperation,
+	deleteListOperation,
+	getListFeedOperation,
+	getListsOperation,
+	listProperties,
+	removeUserFromListOperation,
+	updateListOperation,
 } from '../../../nodes/Bluesky/V2/listOperations';
-import { createReportOperation, moderationProperties } from '../../../nodes/Bluesky/V2/moderationOperations';
 import {
-    // getNotificationsOperation,
-    listNotificationsOperation as enhancedListNotifications,
-    notificationProperties,
+	createReportOperation,
+	moderationProperties,
+} from '../../../nodes/Bluesky/V2/moderationOperations';
+import {
+	// getNotificationsOperation,
+	listNotificationsOperation as enhancedListNotifications,
+	notificationProperties,
 } from '../../../nodes/Bluesky/V2/notificationOperations';
 import {
-    deleteLikeOperation,
-    deletePostOperation,
-    deleteRepostOperation,
-    likeOperation,
-    postOperation,
-    postProperties,
-    quoteOperation,
-    replyOperation,
-    repostOperation,
+	deleteLikeOperation,
+	deletePostOperation,
+	deleteRepostOperation,
+	likeOperation,
+	postOperation,
+	postProperties,
+	quoteOperation,
+	replyOperation,
+	repostOperation,
 } from '../../../nodes/Bluesky/V2/postOperations';
 import {
-    getPreferencesOperation,
-    preferenceProperties,
-    putPreferencesOperation,
+	getPreferencesOperation,
+	preferenceProperties,
+	putPreferencesOperation,
 } from '../../../nodes/Bluesky/V2/preferenceOperations';
 import {
-    applyWritesOperation,
-    createRecordOperation,
-    deleteRecordOperation,
-    getRecordOperation,
-    listRecordsOperation,
-    putRecordOperation,
-    repoProperties,
-    uploadBlobOperation,
+	applyWritesOperation,
+	createRecordOperation,
+	deleteRecordOperation,
+	getRecordOperation,
+	listRecordsOperation,
+	putRecordOperation,
+	repoProperties,
+	uploadBlobOperation,
 } from '../../../nodes/Bluesky/V2/repoOperations';
 import {
-    searchPostsOperation,
-    searchProperties,
-    searchUsersOperation,
+	searchPostsOperation,
+	searchProperties,
+	searchUsersOperation,
 } from '../../../nodes/Bluesky/V2/searchOperations';
 import {
-    getBlobOperation,
-    getLatestCommitOperation,
-    getRecordSyncOperation,
-    getRepoOperation,
-    listBlobsOperation,
-    listReposOperation,
-    notifyOfUpdateOperation,
-    requestCrawlOperation,
-    syncProperties,
+	getBlobOperation,
+	getLatestCommitOperation,
+	getRecordSyncOperation,
+	getRepoOperation,
+	getRepoStatusOperation,
+	listBlobsOperation,
+	listReposOperation,
+	notifyOfUpdateOperation,
+	requestCrawlOperation,
+	syncProperties,
 } from '../../../nodes/Bluesky/V2/syncOperations';
 import {
-    blockOperation,
-    followOperation,
-    getProfileOperation,
-    getProfilesOperation,
-    listAllFollowersOperation,
-    listAllFollowsOperation,
-    listFollowersOperation,
-    listFollowsOperation,
-    muteOperation,
-    unblockOperation,
-    unfollowOperation,
-    unmuteOperation,
-    updateProfileOperation,
-    userProperties,
+	blockOperation,
+	followOperation,
+	getProfileOperation,
+	getProfilesOperation,
+	listAllFollowersOperation,
+	listAllFollowsOperation,
+	listFollowersOperation,
+	listFollowsOperation,
+	muteOperation,
+	unblockOperation,
+	unfollowOperation,
+	unmuteOperation,
+	updateProfileOperation,
+	userProperties,
 } from '../../../nodes/Bluesky/V2/userOperations';
 
 export class BlueskyV2 implements INodeType {
@@ -151,8 +175,8 @@ export class BlueskyV2 implements INodeType {
 			defaults: {
 				name: 'Bluesky',
 			},
-			inputs: [NodeConnectionType.Main],
-			outputs: [NodeConnectionType.Main],
+			inputs: [NodeConnectionTypes.Main],
+			outputs: [NodeConnectionTypes.Main],
 			credentials: [
 				{
 					name: 'blueskyApi',
@@ -161,6 +185,7 @@ export class BlueskyV2 implements INodeType {
 			],
 			properties: [
 				resourcesProperty,
+				...accountProperties,
 				...authProperties,
 				...userProperties,
 				...postProperties,
@@ -173,6 +198,7 @@ export class BlueskyV2 implements INodeType {
 				...repoProperties,
 				...moderationProperties,
 				...labelProperties,
+				...lexiconProperties,
 				...syncProperties,
 				...identityProperties,
 				...preferenceProperties,
@@ -262,6 +288,32 @@ export class BlueskyV2 implements INodeType {
 						const appPasswordName = this.getNodeParameter('appPasswordName', i) as string;
 						const created = await createAppPasswordOperation(agent, appPasswordName);
 						returnData.push(...created);
+						break;
+					}
+					case 'createInviteCode': {
+						const useCount = this.getNodeParameter('inviteUseCount', i) as number;
+						const forAccount = this.getNodeParameter('inviteForAccount', i, '') as string;
+
+						// Validate inviteUseCount is a positive integer before calling createInviteCodeOperation
+						if (!Number.isFinite(useCount) || !Number.isInteger(useCount) || useCount < 1) {
+							throw new NodeOperationError(
+								this.getNode(),
+								`Invalid "inviteUseCount": expected an integer >= 1, got: ${String(useCount)}`,
+							);
+						}
+
+						const created = await createInviteCodeOperation(
+							agent,
+							useCount,
+							forAccount || undefined,
+						);
+						returnData.push(...created);
+						break;
+					}
+					case 'rotateSigningKey': {
+						const bodyJson = this.getNodeParameter('rotateSigningKeyBody', i, '') as string;
+						const data = await rotateSigningKeyOperation(agent, bodyJson || undefined);
+						returnData.push(...data);
 						break;
 					}
 					default:
@@ -463,6 +515,47 @@ export class BlueskyV2 implements INodeType {
 						returnData.push(...data);
 						break;
 					}
+					case 'applyLabels': {
+						const labelsJson = this.getNodeParameter('labelsJson', i) as string;
+						const data = await applyLabelsOperation(agent, labelsJson);
+						returnData.push(...data);
+						break;
+					}
+					default:
+						throw new NodeOperationError(
+							this.getNode(),
+							`The operation "${operation}" is not supported for resource "${resource}"!`,
+						);
+				}
+				continue;
+			}
+
+			if (resource === 'account') {
+				switch (operation) {
+					case 'requestTransfer': {
+						const requestBodyJson = this.getNodeParameter('requestBodyJson', i) as string;
+						const data = await requestTransferOperation(agent, requestBodyJson);
+						returnData.push(...data);
+						break;
+					}
+					default:
+						throw new NodeOperationError(
+							this.getNode(),
+							`The operation "${operation}" is not supported for resource "${resource}"!`,
+						);
+				}
+				continue;
+			}
+
+			if (resource === 'lexicon') {
+				switch (operation) {
+					case 'resolveLexicon': {
+						const lexiconUrl = this.getNodeParameter('lexiconUrl', i, '') as string;
+						const paramsJson = this.getNodeParameter('lexiconParamsJson', i, '') as string;
+						const data = await resolveLexiconOperation(agent, lexiconUrl, paramsJson || undefined);
+						returnData.push(...data);
+						break;
+					}
 					default:
 						throw new NodeOperationError(
 							this.getNode(),
@@ -645,6 +738,12 @@ export class BlueskyV2 implements INodeType {
 						returnData.push(...data);
 						break;
 					}
+					case 'getRepoStatus': {
+						const did = this.getNodeParameter('did', i) as string;
+						const data = await getRepoStatusOperation(agent, did);
+						returnData.push(...data);
+						break;
+					}
 					case 'getLatestCommit': {
 						const did = this.getNodeParameter('did', i) as string;
 						const data = await getLatestCommitOperation(agent, did);
@@ -797,8 +896,14 @@ export class BlueskyV2 implements INodeType {
 							const postText = this.getNodeParameter('postText', i) as string;
 							const langs = this.getNodeParameter('langs', i) as string[];
 							const includeMedia = this.getNodeParameter('includeMedia', i, false) as boolean;
+							const failOnMediaProcessingError = this.getNodeParameter(
+								'failOnMediaProcessingError',
+								i,
+								false,
+							) as boolean;
 
 							let mediaItemsInput: any = undefined;
+							let mediaProcessingWarning: string | undefined = undefined;
 							if (includeMedia) {
 								try {
 									const rawMediaItems = this.getNodeParameter('mediaItems', i, {}) as any;
@@ -825,15 +930,31 @@ export class BlueskyV2 implements INodeType {
 										Array.isArray(mediaItemsInput.mediaItems) &&
 										mediaItemsInput.mediaItems.length > 0
 									) {
-										console.log(
-											`[INFO] Processing ${mediaItemsInput.mediaItems.length} media item(s) for Bluesky post`,
+										LoggerProxy.info(
+											`Processing ${mediaItemsInput.mediaItems.length} media item(s) for Bluesky post`,
 										);
 									} else {
 										mediaItemsInput = { mediaItems: [] };
 									}
 								} catch (error) {
-									console.error(`[ERROR] Error processing media items:`, error);
+									const errorMessage = error instanceof Error ? error.message : String(error);
+									LoggerProxy.error('Error processing media items for Bluesky post', {
+										error,
+										message: error instanceof Error ? error.message : String(error),
+										stack: error instanceof Error ? error.stack : undefined,
+									});
+
+									if (failOnMediaProcessingError) {
+										// Rethrow error if configured to fail on media processing errors
+										throw new NodeOperationError(
+											this.getNode(),
+											`Failed to process media items: ${errorMessage}`,
+										);
+									}
+
+									// Continue without media and record warning
 									mediaItemsInput = { mediaItems: [] };
+									mediaProcessingWarning = `Media processing failed: ${errorMessage}. Post created without media.`;
 								}
 							}
 
@@ -867,11 +988,28 @@ export class BlueskyV2 implements INodeType {
 								websiteCardData,
 								includeMedia,
 								mediaItemsInput,
+								failOnMediaProcessingError,
 							);
+
+							// Add media processing warning to result if present — preserve any existing warnings
+							if (mediaProcessingWarning && postData.length > 0) {
+								const existingWarnings = Array.isArray(postData[0].json?.warnings)
+									? postData[0].json.warnings
+									: [];
+								const mergedWarnings = existingWarnings.concat(mediaProcessingWarning);
+								postData[0].json = {
+									...postData[0].json,
+									warnings: mergedWarnings,
+								};
+							}
 
 							returnData.push(...postData);
 						} catch (error) {
-							console.error(`[ERROR] Bluesky post operation failed: ${error.message}`, error);
+							LoggerProxy.error('Bluesky post operation failed', {
+								error,
+								message: error instanceof Error ? error.message : String(error),
+								stack: error instanceof Error ? error.stack : undefined,
+							});
 							throw error;
 						}
 						break;
@@ -915,7 +1053,13 @@ export class BlueskyV2 implements INodeType {
 							const replyText = this.getNodeParameter('replyText', i) as string;
 							const replyLangs = this.getNodeParameter('replyLangs', i) as string[];
 							const includeMediaReply = this.getNodeParameter('includeMedia', i, false) as boolean;
+							const failOnMediaProcessingErrorReply = this.getNodeParameter(
+								'failOnMediaProcessingError',
+								i,
+								false,
+							) as boolean;
 							let mediaItemsInputReply: any = undefined;
+							let mediaProcessingWarningReply: string | undefined = undefined;
 							if (includeMediaReply) {
 								try {
 									const rawMediaItems = this.getNodeParameter('mediaItems', i, {}) as any;
@@ -925,8 +1069,24 @@ export class BlueskyV2 implements INodeType {
 									}
 									mediaItemsInputReply = { mediaItems: mediaArray };
 								} catch (error) {
-									console.error(`[ERROR] Error processing media items:`, error);
+									const errorMessage = error instanceof Error ? error.message : String(error);
+									LoggerProxy.error('Error processing media items for Bluesky reply', {
+										error,
+										message: error instanceof Error ? error.message : String(error),
+										stack: error instanceof Error ? error.stack : undefined,
+									});
+
+									if (failOnMediaProcessingErrorReply) {
+										// Rethrow error if configured to fail on media processing errors
+										throw new NodeOperationError(
+											this.getNode(),
+											`Failed to process media items for reply: ${errorMessage}`,
+										);
+									}
+
+									// Continue without media and record warning
 									mediaItemsInputReply = { mediaItems: [] };
+									mediaProcessingWarningReply = `Media processing failed: ${errorMessage}. Reply created without media.`;
 								}
 							}
 							let websiteCardDataReply: any = undefined;
@@ -960,10 +1120,28 @@ export class BlueskyV2 implements INodeType {
 								websiteCardDataReply,
 								includeMediaReply,
 								mediaItemsInputReply,
+								failOnMediaProcessingErrorReply,
 							);
+
+							// Add media processing warning to result if present — preserve any existing warnings
+							if (mediaProcessingWarningReply && replyData.length > 0) {
+								const existingWarnings = Array.isArray(replyData[0].json?.warnings)
+									? replyData[0].json.warnings
+									: [];
+								const mergedWarnings = existingWarnings.concat(mediaProcessingWarningReply);
+								replyData[0].json = {
+									...replyData[0].json,
+									warnings: mergedWarnings,
+								};
+							}
+
 							returnData.push(...replyData);
 						} catch (error) {
-							console.error(`[ERROR] Bluesky reply operation failed: ${error.message}`, error);
+							LoggerProxy.error('Bluesky reply operation failed', {
+								error,
+								message: error instanceof Error ? error.message : String(error),
+								stack: error instanceof Error ? error.stack : undefined,
+							});
 							throw error;
 						}
 						break;
@@ -1005,7 +1183,11 @@ export class BlueskyV2 implements INodeType {
 					case 'getTimeline':
 						const timelinePostLimit = this.getNodeParameter('limit', i) as number;
 						const timelineCursor = this.getNodeParameter('cursor', i, '') as string;
-						const timelineData = await getTimeline(agent, timelinePostLimit, timelineCursor || undefined);
+						const timelineData = await getTimeline(
+							agent,
+							timelinePostLimit,
+							timelineCursor || undefined,
+						);
 						returnData.push(...timelineData);
 						break;
 
@@ -1075,6 +1257,14 @@ export class BlueskyV2 implements INodeType {
 						const limit = this.getNodeParameter('limit', i, 50) as number;
 						const cursor = this.getNodeParameter('cursor', i, '') as string;
 						const data = await getFeedOperation(agent, feed, limit, cursor || undefined);
+						returnData.push(...data);
+						break;
+					}
+					case 'getFeedSkeleton': {
+						const feed = this.getNodeParameter('feed', i) as string;
+						const limit = this.getNodeParameter('limit', i, 50) as number;
+						const cursor = this.getNodeParameter('cursor', i, '') as string;
+						const data = await getFeedSkeletonOperation(agent, feed, limit, cursor || undefined);
 						returnData.push(...data);
 						break;
 					}

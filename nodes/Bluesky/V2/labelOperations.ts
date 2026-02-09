@@ -19,6 +19,12 @@ export const labelProperties: INodeProperties[] = [
 				description: 'Query labels by subject patterns',
 				action: 'Query labels',
 			},
+			{
+				name: 'Apply Labels',
+				value: 'applyLabels',
+				description: 'Apply labels to a subject (admin/labeler only)',
+				action: 'Apply labels',
+			},
 		],
 		default: 'queryLabels',
 	},
@@ -28,7 +34,8 @@ export const labelProperties: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		description: 'Comma-separated list of AT URI patterns (e.g. at://did:plc:.../app.bsky.feed.post/*)',
+		description:
+			'Comma-separated list of AT URI patterns (e.g. at://did:plc:.../app.bsky.feed.post/*)',
 		displayOptions: {
 			show: {
 				resource: ['label'],
@@ -46,6 +53,25 @@ export const labelProperties: INodeProperties[] = [
 			show: {
 				resource: ['label'],
 				operation: ['queryLabels'],
+			},
+		},
+	},
+	{
+		displayName: 'Labels JSON',
+		name: 'labelsJson',
+		type: 'string',
+		default:
+			'{"labels":[{"src":"did:plc:example","uri":"at://did:plc:example/app.bsky.feed.post/3k3c2u2wq2b2c","val":"label-name","cts":"2024-01-01T00:00:00Z"}]}',
+		required: true,
+		typeOptions: {
+			rows: 6,
+		},
+		description:
+			'Raw JSON payload for com.atproto.label.applyLabels. Refer to the AT Protocol spec for required fields.',
+		displayOptions: {
+			show: {
+				resource: ['label'],
+				operation: ['applyLabels'],
 			},
 		},
 	},
@@ -99,4 +125,30 @@ export async function queryLabelsOperation(
 		items.push({ json: { cursor: response.data.cursor, _pagination: true } as IDataObject });
 	}
 	return items;
+}
+
+export async function applyLabelsOperation(
+	agent: AtpAgent,
+	labelsJson: string,
+): Promise<INodeExecutionData[]> {
+	let payload: unknown;
+	try {
+		payload = JSON.parse(labelsJson);
+	} catch (error) {
+		throw new Error(
+			`Invalid JSON for labels payload: ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
+
+	const response = await (agent as any).call('com.atproto.label.applyLabels', undefined, payload);
+
+	if (!response) {
+		throw new Error('No response received from applyLabels API');
+	}
+
+	return [
+		{
+			json: (response.data ?? response) as IDataObject,
+		},
+	];
 }

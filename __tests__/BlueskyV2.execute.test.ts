@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import { IExecuteFunctions, INodeTypeDescription } from 'n8n-workflow';
 import { BlueskyV2 } from '../nodes/Bluesky/V2/BlueskyV2.class';
 
 jest.mock('@atproto/api', () => {
@@ -51,6 +51,7 @@ jest.mock('../nodes/Bluesky/V2/graphOperations', () => ({
 }));
 
 jest.mock('../nodes/Bluesky/V2/notificationOperations', () => ({
+	notificationProperties: [],
 	listNotificationsOperation: jest.fn(),
 }));
 
@@ -72,11 +73,11 @@ jest.mock('../nodes/Bluesky/V2/listOperations', () => ({
 	removeUserFromListOperation: jest.fn(),
 }));
 
-import { searchUsersOperation } from '../nodes/Bluesky/V2/searchOperations';
 import { muteThreadOperation } from '../nodes/Bluesky/V2/graphOperations';
 import { listNotificationsOperation } from '../nodes/Bluesky/V2/notificationOperations';
+import { searchUsersOperation } from '../nodes/Bluesky/V2/searchOperations';
 
-const baseDescription = {
+const baseDescription: INodeTypeDescription = {
 	displayName: 'Bluesky',
 	name: 'bluesky',
 	icon: 'file:bluesky.svg',
@@ -88,11 +89,14 @@ const baseDescription = {
 
 describe('Bluesky V2 - Execute', () => {
 	beforeEach(() => {
+		// Clear mock call history between tests to prevent state leakage
+		// Using clearAllMocks() instead of resetAllMocks() to preserve mock implementations
 		jest.clearAllMocks();
 	});
 
 	const makeCtx = (): Partial<IExecuteFunctions> => ({
 		getInputData: jest.fn().mockReturnValue([{ json: {} }]),
+		prepareOutputData: jest.fn((data) => [data]),
 		getCredentials: jest.fn().mockResolvedValue({
 			identifier: 'user.bsky.social',
 			appPassword: 'app-pass',
@@ -108,7 +112,7 @@ describe('Bluesky V2 - Execute', () => {
 				typeVersion: 2,
 				position: [0, 0],
 				parameters: {},
-			} as unknown as ReturnType<IExecuteFunctions['getNode']>),
+			}) as unknown as ReturnType<IExecuteFunctions['getNode']>,
 	});
 
 	it('should execute searchUsers operation', async () => {
@@ -168,22 +172,24 @@ describe('Bluesky V2 - Execute', () => {
 		(listNotificationsOperation as jest.Mock).mockResolvedValue([{ json: { n: 1 } }]);
 
 		const ctx = makeCtx();
-		(ctx.getNodeParameter as jest.Mock).mockImplementation((name: string, _i: number, def?: any) => {
-			switch (name) {
-				case 'resource':
-					return 'analytics';
-				case 'operation':
-					return 'listNotifications';
-				case 'limit':
-					return 3;
-				case 'unreadOnly':
-					return true;
-				case 'markRetrievedAsRead':
-					return false;
-				default:
-					return def;
-			}
-		});
+		(ctx.getNodeParameter as jest.Mock).mockImplementation(
+			(name: string, _i: number, def?: any) => {
+				switch (name) {
+					case 'resource':
+						return 'analytics';
+					case 'operation':
+						return 'listNotifications';
+					case 'limit':
+						return 3;
+					case 'unreadOnly':
+						return true;
+					case 'markRetrievedAsRead':
+						return false;
+					default:
+						return def;
+				}
+			},
+		);
 
 		const node = new BlueskyV2(baseDescription);
 		const result = await node.execute.call(ctx as IExecuteFunctions);

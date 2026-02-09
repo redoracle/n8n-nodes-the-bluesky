@@ -1,20 +1,15 @@
 import {
-    AppBskyActorGetProfile,
-    AppBskyActorGetProfiles,
-    AppBskyGraphGetFollowers,
-    AppBskyGraphGetFollows,
-    AppBskyGraphMuteActor,
-    AppBskyGraphUnmuteActor,
-    AtpAgent,
-    AtUri,
-    ComAtprotoRepoUploadBlob,
+	AppBskyActorGetProfile,
+	AppBskyActorGetProfiles,
+	AppBskyGraphGetFollowers,
+	AppBskyGraphGetFollows,
+	AppBskyGraphMuteActor,
+	AppBskyGraphUnmuteActor,
+	AtpAgent,
+	AtUri,
+	ComAtprotoRepoUploadBlob,
 } from '@atproto/api';
-import {
-    IDataObject,
-    IExecuteFunctions,
-    INodeExecutionData,
-    INodeProperties,
-} from 'n8n-workflow';
+import { IDataObject, IExecuteFunctions, INodeExecutionData, INodeProperties } from 'n8n-workflow';
 
 export const userProperties: INodeProperties[] = [
 	{

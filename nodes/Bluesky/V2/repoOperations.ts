@@ -68,7 +68,14 @@ export const repoProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['repo'],
-				operation: ['createRecord', 'putRecord', 'deleteRecord', 'getRecord', 'listRecords', 'applyWrites'],
+				operation: [
+					'createRecord',
+					'putRecord',
+					'deleteRecord',
+					'getRecord',
+					'listRecords',
+					'applyWrites',
+				],
 			},
 		},
 	},

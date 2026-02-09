@@ -1,3 +1,14 @@
+jest.mock('n8n-workflow/dist/esm/versioned-node-type', () => ({
+	VersionedNodeType: class {
+		description: unknown;
+		nodeVersions: unknown;
+		constructor(nodeVersions: unknown, baseDescription: unknown) {
+			this.nodeVersions = nodeVersions;
+			this.description = baseDescription;
+		}
+	},
+}));
+
 import { INodeProperties } from 'n8n-workflow';
 import { Bluesky } from '../nodes/Bluesky/Bluesky.node';
 import { BlueskyV2 } from '../nodes/Bluesky/V2/BlueskyV2.class';
@@ -5,15 +16,30 @@ import { BlueskyV2 } from '../nodes/Bluesky/V2/BlueskyV2.class';
 describe('Bluesky Node - Core', () => {
 	test('should have correct node metadata', () => {
 		const node = new Bluesky();
-		expect(node.description.name).toBe('bluesky');
-		expect(node.description.displayName).toBe('Bluesky');
-		expect(node.description.group).toEqual(['transform']);
-		expect(node.description.defaultVersion).toBe(2);
+		// Access description property inherited from VersionedNodeType
+		const desc = (node as any).description;
+		expect(desc.name).toBe('bluesky');
+		expect(desc.displayName).toBe('Bluesky');
+		expect(desc.group).toEqual(['transform']);
+		expect(desc.defaultVersion).toBe(2);
+	});
+
+	test('should register both version 1 and version 2 for backward compatibility', () => {
+		const node = new Bluesky();
+		const nodeVersions = (node as any).nodeVersions;
+
+		// Verify version 1 exists (for legacy workflows)
+		expect(nodeVersions).toHaveProperty('1');
+		expect(nodeVersions[1]).toBeInstanceOf(BlueskyV2);
+
+		// Verify version 2 exists (current version)
+		expect(nodeVersions).toHaveProperty('2');
+		expect(nodeVersions[2]).toBeInstanceOf(BlueskyV2);
 	});
 });
 
 describe('Bluesky V2 - Description', () => {
-	const baseDescription = {
+	const baseDescription: any = {
 		displayName: 'Bluesky',
 		name: 'bluesky',
 		icon: 'file:bluesky.svg',

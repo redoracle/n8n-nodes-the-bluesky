@@ -28,12 +28,16 @@ declare module 'n8n-workflow' {
 		continueOnFail(): boolean;
 		getCredentials(name: string): Promise<any>;
 		helpers: any;
+		prepareOutputData: (data: any[]) => any;
 	}
 
 	export interface INodeProperties extends Record<string, any> {}
+	export interface INodePropertyOptions extends Record<string, any> {}
 	export interface INode extends Record<string, any> {}
 	export interface INodeType extends Record<string, any> {}
 	export interface INodeTypeDescription extends Record<string, any> {}
+	export interface INodeTypeBaseDescription extends Record<string, any> {}
+	export interface IVersionedNodeType extends Record<string, any> {}
 	export type NodeExecutionWithMetadata = any;
 
 	export class NodeOperationError extends Error {
@@ -42,6 +46,10 @@ declare module 'n8n-workflow' {
 
 	export class NodeApiError extends Error {
 		constructor(node: any, response: any, options?: any);
+	}
+
+	export class VersionedNodeType {
+		constructor(nodeVersions: any, baseDescription: any);
 	}
 
 	export const LoggerProxy: any;

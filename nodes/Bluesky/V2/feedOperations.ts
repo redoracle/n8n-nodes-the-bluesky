@@ -1,10 +1,10 @@
 import {
-    AppBskyFeedGetAuthorFeed,
-    AppBskyFeedGetTimeline,
-    AtpAgent,
+	AppBskyFeedDefs,
+	AppBskyFeedGetAuthorFeed,
+	AppBskyFeedGetTimeline,
+	AtpAgent,
 } from '@atproto/api';
-import { FeedViewPost } from '@atproto/api/dist/client/types/app/bsky/feed/defs';
-import { INodeExecutionData, INodeProperties } from 'n8n-workflow';
+import { IDataObject, INodeExecutionData, INodeProperties } from 'n8n-workflow';
 
 export const feedProperties: INodeProperties[] = [
 	{
@@ -35,6 +35,12 @@ export const feedProperties: INodeProperties[] = [
 				value: 'getFeed',
 				description: 'Get posts from a custom feed generator',
 				action: 'Get feed',
+			},
+			{
+				name: 'Get Feed Skeleton',
+				value: 'getFeedSkeleton',
+				description: 'Get a feed skeleton from a generator',
+				action: 'Get feed skeleton',
 			},
 			{
 				name: 'Get Feed Generators',
@@ -107,7 +113,7 @@ export const feedProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['feed'],
-				operation: ['getFeed'],
+				operation: ['getFeed', 'getFeedSkeleton'],
 			},
 		},
 	},
@@ -198,7 +204,15 @@ export const feedProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['feed'],
-				operation: ['getAuthorFeed', 'getTimeline', 'getFeed', 'getLikes', 'getRepostedBy', 'getSuggestedFeeds'],
+				operation: [
+					'getAuthorFeed',
+					'getTimeline',
+					'getFeed',
+					'getFeedSkeleton',
+					'getLikes',
+					'getRepostedBy',
+					'getSuggestedFeeds',
+				],
 			},
 		},
 	},
@@ -211,7 +225,15 @@ export const feedProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['feed'],
-				operation: ['getAuthorFeed', 'getTimeline', 'getFeed', 'getLikes', 'getRepostedBy', 'getSuggestedFeeds'],
+				operation: [
+					'getAuthorFeed',
+					'getTimeline',
+					'getFeed',
+					'getFeedSkeleton',
+					'getLikes',
+					'getRepostedBy',
+					'getSuggestedFeeds',
+				],
 			},
 		},
 	},
@@ -272,7 +294,7 @@ export async function getAuthorFeed(
 		cursor: cursor || undefined,
 	});
 
-	authorFeedResponse.data.feed.forEach((feedPost: FeedViewPost) => {
+	authorFeedResponse.data.feed.forEach((feedPost: AppBskyFeedDefs.FeedViewPost) => {
 		returnData.push({
 			json: {
 				post: feedPost.post,
@@ -324,7 +346,7 @@ export async function getTimeline(
 		cursor: cursor || undefined,
 	});
 
-	timelineResponse.data.feed.forEach((feedPost: FeedViewPost) => {
+	timelineResponse.data.feed.forEach((feedPost: AppBskyFeedDefs.FeedViewPost) => {
 		returnData.push({
 			json: {
 				post: feedPost.post,
@@ -415,6 +437,26 @@ export async function getFeedOperation(
 		cursor: cursor || undefined,
 	});
 	const items: INodeExecutionData[] = response.data.feed.map((item) => ({ json: item }));
+	if (response.data.cursor) {
+		items.push({ json: { cursor: response.data.cursor, _pagination: true } });
+	}
+	return items;
+}
+
+export async function getFeedSkeletonOperation(
+	agent: AtpAgent,
+	feed: string,
+	limit: number,
+	cursor?: string,
+): Promise<INodeExecutionData[]> {
+	const response = await agent.app.bsky.feed.getFeedSkeleton({
+		feed,
+		limit,
+		cursor: cursor || undefined,
+	});
+	const items: INodeExecutionData[] = response.data.feed.map((item) => ({
+		json: item as unknown as IDataObject,
+	}));
 	if (response.data.cursor) {
 		items.push({ json: { cursor: response.data.cursor, _pagination: true } });
 	}

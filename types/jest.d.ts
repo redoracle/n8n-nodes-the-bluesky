@@ -48,6 +48,7 @@ declare namespace jest {
 		fn<T extends (...args: any[]) => any = (...args: any[]) => any>(impl?: T): Mock;
 		mock: (moduleName: string, factory?: any) => void;
 		clearAllTimers(): void;
+		clearAllMocks(): void;
 		useRealTimers(): void;
 		useFakeTimers(): void;
 		spyOn(obj: any, key: string): Mock;
