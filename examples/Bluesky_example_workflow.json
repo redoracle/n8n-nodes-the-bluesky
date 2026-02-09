@@ -1,0 +1,84 @@
+{
+	"name": "Bluesky Example Workflow",
+	"nodes": [
+		{
+			"parameters": {
+				"resource": "post",
+				"operation": "post",
+				"postText": "Hello from n8n!",
+				"langs": ["en"]
+			},
+			"id": "eae1f6d0-6f08-4c6c-8c2e-2b8e2dc5d2b4",
+			"name": "Bluesky",
+			"type": "n8n-nodes-the-bluesky",
+			"typeVersion": 2,
+			"position": [885, 335]
+		},
+		{
+			"parameters": {
+				"keepOnlySet": true,
+				"values": {
+					"string": [
+						{
+							"name": "postText",
+							"value": "Hello from n8n!"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "4b0b9a8a-2e86-4a48-9fb9-1e3ed4c24d68",
+			"name": "Set",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 2,
+			"position": [660, 335]
+		},
+		{
+			"parameters": {},
+			"id": "8b2c4a44-5968-4e2a-923a-1d2b0a3b99f1",
+			"name": "Start",
+			"type": "n8n-nodes-base.start",
+			"typeVersion": 1,
+			"position": [455, 335]
+		}
+	],
+	"connections": {
+		"Set": {
+			"main": [
+				[
+					{
+						"node": "Bluesky",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Set",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"tags": [
+		{
+			"name": "example",
+			"color": "#55ff55"
+		}
+	],
+	"pinData": {},
+	"versionId": "8b2c4a44-5968-4e2a-923a-1d2b0a3b99f1",
+	"meta": {
+		"instanceId": "8b2c4a44-5968-4e2a-923a-1d2b0a3b99f1"
+	}
+}
