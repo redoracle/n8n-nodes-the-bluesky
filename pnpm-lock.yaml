@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@atproto/api':
-        specifier: ^0.15.27
-        version: 0.15.27
+        specifier: ^0.18.20
+        version: 0.18.20
       '@atproto/lex-cbor':
         specifier: ^0.0.11
         version: 0.0.11
@@ -104,8 +104,8 @@ packages:
     resolution: {integrity: sha512-SoZWqQz4YMKdw4kEMfG5w6QAy+rntjsoAT1FtvZAnVEnCR4uy9YSuDBNoVAFHgzSz0dJbISLLCSrGR2Zd7bcvA==}
     engines: {node: '>= 16'}
 
-  '@atproto/api@0.15.27':
-    resolution: {integrity: sha512-ok/WGafh1nz4t8pEQGtAF/32x2E2VDWU4af6BajkO5Gky2jp2q6cv6aB2A5yuvNNcc3XkYMYipsqVHVwLPMF9g==}
+  '@atproto/api@0.18.20':
+    resolution: {integrity: sha512-BZYZkh2VJIFCXEnc/vzKwAwWjAQQTgbNJ8FBxpBK+z+KYh99O0uPCsRYKoCQsRrnkgrhzdU9+g2G+7zanTIGbw==}
 
   '@atproto/common-web@0.4.16':
     resolution: {integrity: sha512-Ufvaff5JgxUyUyTAG0/3o7ltpy3lnZ1DvLjyAnvAf+hHfiK7OMQg+8byr+orN+KP9MtIQaRTsCgYPX+PxMKUoA==}
@@ -118,9 +118,6 @@ packages:
 
   '@atproto/lex-json@0.0.11':
     resolution: {integrity: sha512-2IExAoQ4KsR5fyPa1JjIvtR316PvdgRH/l3BVGLBd3cSxM3m5MftIv1B6qZ9HjNiK60SgkWp0mi9574bTNDhBQ==}
-
-  '@atproto/lexicon@0.4.14':
-    resolution: {integrity: sha512-jiKpmH1QER3Gvc7JVY5brwrfo+etFoe57tKPQX/SmPwjvUsFnJAow5xLIryuBaJgFAhnTZViXKs41t//pahGHQ==}
 
   '@atproto/lexicon@0.6.1':
     resolution: {integrity: sha512-/vI1kVlY50Si+5MXpvOucelnYwb0UJ6Qto5mCp+7Q5C+Jtp+SoSykAPVvjVtTnQUH2vrKOFOwpb3C375vSKzXw==}
@@ -7791,10 +7788,10 @@ snapshots:
       '@types/json-schema': 7.0.15
       js-yaml: 4.1.1
 
-  '@atproto/api@0.15.27':
+  '@atproto/api@0.18.20':
     dependencies:
       '@atproto/common-web': 0.4.16
-      '@atproto/lexicon': 0.4.14
+      '@atproto/lexicon': 0.6.1
       '@atproto/syntax': 0.4.3
       '@atproto/xrpc': 0.7.7
       await-lock: 2.2.2
@@ -7825,14 +7822,6 @@ snapshots:
     dependencies:
       '@atproto/lex-data': 0.0.11
       tslib: 2.8.1
-
-  '@atproto/lexicon@0.4.14':
-    dependencies:
-      '@atproto/common-web': 0.4.16
-      '@atproto/syntax': 0.4.3
-      iso-datestring-validator: 2.2.2
-      multiformats: 9.9.0
-      zod: 3.25.76
 
   '@atproto/lexicon@0.6.1':
     dependencies:
@@ -9732,7 +9721,7 @@ snapshots:
       node-fetch: 2.7.0(encoding@0.1.13)
       qs: 6.11.2
       url-join: 4.0.1
-      zod: 3.25.67
+      zod: 3.25.76
     optionalDependencies:
       '@langchain/core': 1.1.8(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67))
       langchain: 1.1.1(@langchain/core@1.1.8(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67)))(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@3.25.67))(zod-to-json-schema@3.23.3(zod@3.25.67))
@@ -10387,8 +10376,8 @@ snapshots:
   '@mistralai/mistralai@1.14.0':
     dependencies:
       ws: 8.19.0
-      zod: 3.25.67
-      zod-to-json-schema: 3.25.1(zod@3.25.67)
+      zod: 4.3.6
+      zod-to-json-schema: 3.25.1(zod@4.3.6)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -10405,8 +10394,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.25.67
-      zod-to-json-schema: 3.25.1(zod@3.25.67)
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.1(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -18359,6 +18348,14 @@ snapshots:
   zod-to-json-schema@3.25.1(zod@3.25.67):
     dependencies:
       zod: 3.25.67
+
+  zod-to-json-schema@3.25.1(zod@3.25.76):
+    dependencies:
+      zod: 3.25.76
+
+  zod-to-json-schema@3.25.1(zod@4.3.6):
+    dependencies:
+      zod: 4.3.6
 
   zod@3.25.67: {}
 
