@@ -14,15 +14,9 @@ importers:
       '@atproto/lex-cbor':
         specifier: 0.0.11
         version: 0.0.11
-      '@atproto/lexicon':
-        specifier: 0.6.1
-        version: 0.6.1
       '@atproto/syntax':
         specifier: 0.4.3
         version: 0.4.3
-      '@atproto/xrpc':
-        specifier: 0.7.7
-        version: 0.7.7
       image-size:
         specifier: ^2.0.2
         version: 2.0.2
