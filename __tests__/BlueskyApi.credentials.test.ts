@@ -11,7 +11,7 @@ describe('BlueskyApi Credentials', () => {
 	// --- Class metadata ---
 
 	test('should have correct display name', () => {
-		expect(credentials.displayName).toBe('Bluesky');
+		expect(credentials.displayName).toBe('Bluesky API');
 	});
 
 	test('should have correct internal name', () => {
