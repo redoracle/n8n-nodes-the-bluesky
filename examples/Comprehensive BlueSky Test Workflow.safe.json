@@ -23,7 +23,7 @@
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// Safe-mode compatibility workflow for Bluesky\n// Populate the handle/DID fields to improve coverage across read-only operations.\n// allowWriteOps: set true to run create/update steps (default: false).\n// allowDestructiveOps: set true to run delete steps (default: false).\n\nreturn [{ json: {\n  safeMode: true,\n  allowWriteOps: false,\n  allowDestructiveOps: false,\n  handle: 'bsky.app',\n  did: '',\n  actors: 'bsky.app',\n  postText: `Safe compatibility post ${new Date().toISOString()}`,\n  searchQuery: 'n8n',\n  feedUri: 'at://did:plc:example/app.bsky.feed.generator/example',\n  postUri: '',\n  postCid: '',\n  postUris: '',\n  listUri: '',\n  uriPatterns: 'at://did:plc:example/app.bsky.feed.post/*',\n  lexiconUrl: 'com.atproto.sync.getRepo',\n  syncDid: ''\n}}];"
+        "jsCode": "// Safe-mode compatibility workflow for Bluesky\n// allowWriteOps: set true to run create/update steps (default: false)\n// allowDestructiveOps: set true to run delete steps (default: false)\n\nreturn [{ json: {\n  safeMode: true,\n  allowWriteOps: false,\n  allowDestructiveOps: false,\n  handle: 'bsky.app',\n  // Known stable public DID for bsky.app, useful for sync/label fallbacks.\n  did: 'did:plc:z72i7hdynmk6r22z27h6tvur',\n  sourceDid: 'did:plc:z72i7hdynmk6r22z27h6tvur',\n  actors: 'bsky.app',\n  postText: `Safe compatibility post ${new Date().toISOString()}`,\n  searchQuery: 'n8n',\n  feedUri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot',\n  postUri: '',\n  postCid: '',\n  postUris: '',\n  listUri: '',\n  uriPatterns: '',\n  lexiconUrl: 'com.atproto.sync.getRepo',\n  // Set to a known DID to avoid repo-not-found on personal/new accounts.\n  syncDid: 'did:plc:z72i7hdynmk6r22z27h6tvur'\n}}];"
       }
     },
     {
@@ -32,8 +32,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1120,
-        0
+        560,
+        840
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
@@ -46,8 +46,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -880,
-        180
+        -1360,
+        220
       ],
       "parameters": {
         "conditions": {
@@ -66,8 +66,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -640,
-        180
+        -1120,
+        220
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
@@ -80,7 +80,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        -400,
+        -1120,
         0
       ],
       "continueOnFail": true,
@@ -107,7 +107,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        -160,
+        -880,
         0
       ],
       "continueOnFail": true,
@@ -131,7 +131,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        80,
+        -640,
         0
       ],
       "continueOnFail": true,
@@ -156,7 +156,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        320,
+        -400,
         0
       ],
       "continueOnFail": true,
@@ -182,7 +182,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        560,
+        -160,
         0
       ],
       "continueOnFail": true,
@@ -207,7 +207,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        800,
+        80,
         0
       ],
       "continueOnFail": true,
@@ -232,7 +232,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        1040,
+        320,
         0
       ],
       "continueOnFail": true,
@@ -256,7 +256,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        1280,
+        560,
         0
       ],
       "continueOnFail": true,
@@ -281,7 +281,7 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        1520,
+        800,
         0
       ],
       "continueOnFail": true,
@@ -306,8 +306,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        1760,
-        0
+        800,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -330,8 +330,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        2000,
-        0
+        560,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -354,8 +354,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        2240,
-        0
+        320,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -379,8 +379,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        2480,
-        0
+        80,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -404,8 +404,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        2720,
-        0
+        -160,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -428,8 +428,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        2960,
-        0
+        -400,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -452,8 +452,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        3200,
-        0
+        -640,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -476,8 +476,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        3440,
-        0
+        -880,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -500,8 +500,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        3680,
-        0
+        -1120,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -526,8 +526,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        3920,
-        0
+        -1360,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -549,8 +549,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        4160,
-        0
+        -1600,
+        300
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -575,8 +575,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        4400,
-        0
+        -1600,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -605,8 +605,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        4640,
-        0
+        -1120,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -614,7 +614,8 @@
       "parameters": {
         "resource": "lexicon",
         "operation": "resolveLexicon",
-        "lexiconUrl": "={{ $('01 Test Data').first().json.lexiconUrl }}"
+        "lexiconUrl": "={{ $('01 Test Data').first().json.lexiconUrl }}",
+        "lexiconParamsJson": "{\"nsid\":\"com.atproto.sync.getRepo\"}"
       },
       "credentials": {
         "blueskyApi": {
@@ -629,8 +630,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        4880,
-        0
+        -880,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -647,13 +648,33 @@
       }
     },
     {
+      "id": "node-025b",
+      "name": "24 Capability Gate (Sync+Label)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        600
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !$('01 Test Data').first().json.safeMode }}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "node-026",
       "name": "25 Label Query Labels",
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        5120,
-        0
+        -400,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -662,7 +683,8 @@
         "resource": "label",
         "operation": "queryLabels",
         "uriPatterns": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || '' }}",
-        "limit": 5
+        "limit": 5,
+        "sources": "={{ $('11 User Get Profile').first()?.json?.did || $('01 Test Data').first().json.sourceDid }}"
       },
       "credentials": {
         "blueskyApi": {
@@ -677,8 +699,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        5360,
-        0
+        -160,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -686,7 +708,7 @@
       "parameters": {
         "resource": "sync",
         "operation": "getRepoStatus",
-        "did": "={{ $('11 User Get Profile').first()?.json?.did || $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did || $('01 Test Data').first().json.syncDid }}"
+        "did": "={{ $('01 Test Data').first().json.syncDid || $('11 User Get Profile').first()?.json?.did || $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did }}"
       },
       "credentials": {
         "blueskyApi": {
@@ -701,8 +723,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        5600,
-        0
+        80,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -710,7 +732,7 @@
       "parameters": {
         "resource": "sync",
         "operation": "getLatestCommit",
-        "did": "={{ $('11 User Get Profile').first()?.json?.did || $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did || $('01 Test Data').first().json.syncDid }}"
+        "did": "={{ $('01 Test Data').first().json.syncDid || $('11 User Get Profile').first()?.json?.did || $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did }}"
       },
       "credentials": {
         "blueskyApi": {
@@ -725,8 +747,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        5840,
-        0
+        320,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -749,8 +771,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        6080,
-        180
+        560,
+        600
       ],
       "parameters": {
         "conditions": {
@@ -769,8 +791,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        6320,
-        0
+        800,
+        840
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -793,8 +815,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        6560,
-        180
+        800,
+        600
       ],
       "parameters": {
         "conditions": {
@@ -813,8 +835,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6800,
-        180
+        1040,
+        840
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
@@ -827,8 +849,8 @@
       "type": "n8n-nodes-the-bluesky.bluesky",
       "typeVersion": 2,
       "position": [
-        7040,
-        0
+        1040,
+        600
       ],
       "continueOnFail": true,
       "alwaysOutputData": true,
@@ -851,12 +873,32 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7280,
-        180
+        1280,
+        700
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
         "jsCode": "const nodeNames = [\n  '02 Post Create',\n  '03 Feed Timeline',\n  '04 Feed Get Author Feed',\n  '05 Feed Get Post Thread',\n  '06 Feed Get Likes',\n  '07 Feed Get Reposted By',\n  '08 Feed Get Posts',\n  '09 Search Users',\n  '10 Search Posts',\n  '11 User Get Profile',\n  '12 User Get Profiles',\n  '13 User List Followers (Paged)',\n  '14 User List Follows (Paged)',\n  '15 Identity Resolve Handle',\n  '16 Identity Resolve DID',\n  '17 Identity Resolve Identity',\n  '18 Notification Get Unread Count',\n  '19 Notification List',\n  '20 Analytics Get Unread Count',\n  '21 Analytics List Notifications',\n  '22 Analytics Get Post Interactions',\n  '23 Lexicon Resolve Lexicon',\n  '24 Preferences Get Preferences',\n  '25 Label Query Labels',\n  '26 Sync Get Repo Status',\n  '27 Sync Get Latest Commit',\n  '28 Sync List Repos',\n  '28 Repo Upload Blob',\n  '29 Post Delete Post',\n  '29 Skip Delete Post'\n];\n\nconst allowEmptyPayloadNodes = new Set([\n  '06 Feed Get Likes',\n  '07 Feed Get Reposted By',\n  '19 Notification List',\n  '21 Analytics List Notifications',\n  '29 Skip Delete Post'\n]);\n\nconst softFailMessageRules = {\n  '23 Lexicon Resolve Lexicon': ['XRPCNotSupported'],\n  '26 Sync Get Repo Status': ['Could not find repo for DID'],\n  '27 Sync Get Latest Commit': ['Could not find repo for DID'],\n};\n\nfunction extractErrors(json, statusCode) {\n  const out = [];\n  if (json?.message) out.push(String(json.message));\n  if (json?.errorMessage) out.push(String(json.errorMessage));\n  if (json?.error) {\n    if (json.error.message) out.push(String(json.error.message));\n    else if (typeof json.error === 'string') out.push(json.error);\n    else out.push(JSON.stringify(json.error));\n  }\n  if (statusCode !== undefined && statusCode >= 400) out.push('HTTP ' + statusCode);\n  return out;\n}\n\nconst results = [];\nfor (const nodeName of nodeNames) {\n  let nodeItems;\n  try {\n    nodeItems = $items(nodeName, 0, 0);\n  } catch (e) {\n    const msg = String(e);\n    if (msg.includes(\"hasn't been executed\")) {\n      results.push({ test: nodeName, status: 'SKIPPED', itemCount: 0, errorCount: 0, errors: [], items: [] });\n    } else {\n      results.push({ test: nodeName, status: 'NOT_EXECUTED', itemCount: 0, errorCount: 1, errors: [msg], items: [] });\n    }\n    continue;\n  }\n\n  const itemResults = (nodeItems || []).map((item, index) => {\n    const json = item?.json ?? {};\n    const statusCode = typeof json.statusCode === 'number' ? json.statusCode : undefined;\n    const errorMessages = extractErrors(json, statusCode);\n    const isEmptyPayload = json && typeof json === 'object' && Object.keys(json).length === 0;\n\n    if (isEmptyPayload && !allowEmptyPayloadNodes.has(nodeName)) {\n      errorMessages.push('EMPTY_PAYLOAD');\n    }\n\n    if (errorMessages.length > 0) {\n      const softTerms = softFailMessageRules[nodeName] || [];\n      const isSoft = softTerms.length > 0 && errorMessages.every((m) => softTerms.some((term) => String(m).includes(term)));\n      return {\n        index,\n        status: isSoft ? 'PASS_SOFT_FAIL' : 'FAIL',\n        error: errorMessages.join(' | '),\n        keys: Object.keys(json).slice(0, 12),\n      };\n    }\n\n    if (isEmptyPayload && allowEmptyPayloadNodes.has(nodeName)) {\n      return { index, status: 'PASS_EMPTY_OK', error: null, keys: [] };\n    }\n\n    return {\n      index,\n      status: 'PASS',\n      error: null,\n      keys: Object.keys(json).slice(0, 12),\n    };\n  });\n\n  const errors = itemResults.filter((r) => r.status === 'FAIL').map((r) => r.error).filter(Boolean);\n  const passLike = new Set(['PASS', 'PASS_EMPTY_OK', 'PASS_SOFT_FAIL']);\n  const status = errors.length > 0 ? 'FAIL' : (itemResults.some((r) => passLike.has(r.status)) ? 'PASS' : 'SKIPPED');\n\n  results.push({\n    test: nodeName,\n    status,\n    itemCount: itemResults.length,\n    errorCount: errors.length,\n    errors,\n    items: itemResults,\n  });\n}\n\nconst passed = results.filter((r) => r.status === 'PASS').length;\nconst failed = results.filter((r) => r.status === 'FAIL').length;\nconst skipped = results.filter((r) => r.status === 'SKIPPED').length;\nconst notExecuted = results.filter((r) => r.status === 'NOT_EXECUTED').length;\nconst totalErrors = results.reduce((sum, r) => sum + (r.errorCount || 0), 0);\nconst totalItems = results.reduce((sum, r) => sum + (r.itemCount || 0), 0);\n\nreturn [{\n  json: {\n    summary: {\n      totalTests: results.length,\n      passed,\n      failed,\n      skipped,\n      notExecuted,\n      totalErrors,\n      totalItems,\n      successRate: results.length ? Number(((passed / results.length) * 100).toFixed(2)) : 0,\n      timestamp: new Date().toISOString(),\n    },\n    results,\n  },\n}];"
+      }
+    },
+    {
+      "id": "node-023g",
+      "name": "23 Capability Gate (Lexicon)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        600
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !$('01 Test Data').first().json.safeMode }}",
+              "value2": true
+            }
+          ]
+        }
       }
     }
   ],
@@ -1136,7 +1178,7 @@
       "main": [
         [
           {
-            "node": "23 Lexicon Resolve Lexicon",
+            "node": "23 Capability Gate (Lexicon)",
             "type": "main",
             "index": 0
           }
@@ -1158,7 +1200,25 @@
       "main": [
         [
           {
+            "node": "24 Capability Gate (Sync+Label)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "24 Capability Gate (Sync+Label)": {
+      "main": [
+        [
+          {
             "node": "25 Label Query Labels",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "28 Sync List Repos",
             "type": "main",
             "index": 0
           }
@@ -1283,6 +1343,24 @@
         [
           {
             "node": "30 Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "23 Capability Gate (Lexicon)": {
+      "main": [
+        [
+          {
+            "node": "23 Lexicon Resolve Lexicon",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "24 Preferences Get Preferences",
             "type": "main",
             "index": 0
           }
