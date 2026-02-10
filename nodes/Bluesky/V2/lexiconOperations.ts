@@ -28,7 +28,7 @@ export const lexiconProperties: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		description:
-			'URL or NSID to resolve (for example: https://bsky.social/xrpc/com.atproto.sync.getRepo)',
+			'Lexicon NSID to resolve (for example: com.atproto.sync.getRepo). If a full XRPC URL is provided, the NSID part will be extracted automatically.',
 		displayOptions: {
 			show: {
 				resource: ['lexicon'],
@@ -75,7 +75,14 @@ export async function resolveLexiconOperation(
 			);
 		}
 	} else if (lexiconUrl) {
-		params = { url: lexiconUrl };
+		const raw = lexiconUrl.trim();
+		let nsid = raw;
+		const xrpcMarker = '/xrpc/';
+		const markerIndex = raw.indexOf(xrpcMarker);
+		if (markerIndex >= 0) {
+			nsid = raw.slice(markerIndex + xrpcMarker.length);
+		}
+		params = { nsid };
 	}
 
 	if (!params) {

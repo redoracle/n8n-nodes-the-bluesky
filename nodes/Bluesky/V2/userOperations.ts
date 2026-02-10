@@ -158,7 +158,7 @@ export const userProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['user'],
-				operation: ['listAllFollowers', 'listAllFollows'],
+				operation: ['listAllFollowers', 'listAllFollows', 'listFollowers', 'listFollows'],
 			},
 		},
 	},

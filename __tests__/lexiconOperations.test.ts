@@ -2,7 +2,7 @@ import { resolveLexiconOperation } from '../nodes/Bluesky/V2/lexiconOperations';
 
 describe('Lexicon Operations', () => {
 	describe('resolveLexiconOperation', () => {
-		it('should resolve lexicon using url param', async () => {
+		it('should resolve lexicon using NSID extracted from xrpc URL', async () => {
 			const mockAgent: any = {
 				call: jest.fn().mockResolvedValue({ data: { lexicon: { id: 'test' } } }),
 			};
@@ -14,7 +14,7 @@ describe('Lexicon Operations', () => {
 
 			expect(mockAgent.call).toHaveBeenCalledWith(
 				'com.atproto.lexicon.resolveLexicon',
-				{ url: 'https://bsky.social/xrpc/com.atproto.sync.getRepo' },
+				{ nsid: 'com.atproto.sync.getRepo' },
 				undefined,
 			);
 			expect(result).toHaveLength(1);
