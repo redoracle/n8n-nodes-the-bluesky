@@ -35,7 +35,7 @@ export const labelProperties: INodeProperties[] = [
 		default: '',
 		required: true,
 		description:
-			'Comma-separated list of AT URI patterns (e.g. at://did:plc:.../app.bsky.feed.post/*)',
+			'Comma-separated list of AT URIs to query labels for (for example: at://did:plc:.../app.bsky.feed.post/3xyz)',
 		displayOptions: {
 			show: {
 				resource: ['label'],
@@ -113,8 +113,13 @@ export async function queryLabelsOperation(
 	sources?: string[],
 	cursor?: string,
 ): Promise<INodeExecutionData[]> {
+	// Current endpoint rejects wildcard suffixes, normalize common `*` patterns from older examples.
+	const normalizedUriPatterns = uriPatterns
+		.map((uri) => uri.trim().replace(/\*+$/, ''))
+		.filter((uri) => uri.length > 0);
+
 	const response = await agent.com.atproto.label.queryLabels({
-		uriPatterns,
+		uriPatterns: normalizedUriPatterns,
 		limit,
 		...(sources && sources.length > 0 ? { sources } : {}),
 		...(cursor ? { cursor } : {}),

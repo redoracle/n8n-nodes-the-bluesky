@@ -47,7 +47,7 @@ describe('Label Operations', () => {
 		it('should query labels with URI patterns', async () => {
 			const result = await queryLabelsOperation(agent, ['at://did:plc:user/*'], 50);
 			expect(agent.com.atproto.label.queryLabels).toHaveBeenCalledWith({
-				uriPatterns: ['at://did:plc:user/*'],
+				uriPatterns: ['at://did:plc:user/'],
 				limit: 50,
 			});
 			expect(result.length).toBe(3); // 2 labels + 1 cursor
