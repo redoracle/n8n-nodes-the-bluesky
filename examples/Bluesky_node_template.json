@@ -1,0 +1,84 @@
+{
+	"nodes": [
+		{
+			"parameters": {
+				"resource": "post",
+				"operation": "post",
+				"postText": "Test post from n8n Bluesky node! #n8n #automation",
+				"langs": ["en"]
+			},
+			"name": "Create Bluesky Post",
+			"type": "n8n-nodes-the-bluesky",
+			"typeVersion": 2,
+			"position": [500, 300],
+			"credentials": {
+				"blueskyApi": {
+					"id": null,
+					"name": "Bluesky account"
+				}
+			}
+		},
+		{
+			"parameters": {
+				"resource": "feed",
+				"operation": "getTimeline",
+				"limit": 10
+			},
+			"name": "Get Timeline",
+			"type": "n8n-nodes-the-bluesky",
+			"typeVersion": 2,
+			"position": [700, 300],
+			"credentials": {
+				"blueskyApi": {
+					"id": null,
+					"name": "Bluesky account"
+				}
+			}
+		},
+		{
+			"parameters": {
+				"resource": "search",
+				"operation": "searchPosts",
+				"q": "#n8n",
+				"limit": 5
+			},
+			"name": "Search Posts",
+			"type": "n8n-nodes-the-bluesky",
+			"typeVersion": 2,
+			"position": [900, 300],
+			"credentials": {
+				"blueskyApi": {
+					"id": null,
+					"name": "Bluesky account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Create Bluesky Post": {
+			"main": [
+				[
+					{
+						"node": "Get Timeline",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Get Timeline": {
+			"main": [
+				[
+					{
+						"node": "Search Posts",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"meta": {
+		"templateCredsSetupLink": "https://docs.n8n.io/integrations/builtin/credentials/bluesky/"
+	}
+}

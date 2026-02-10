@@ -1,0 +1,1375 @@
+{
+  "name": "Comprehensive BlueSky Test Workflow (Safe Mode - Compatibility)",
+  "nodes": [
+    {
+      "id": "node-001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1600,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "node-002",
+      "name": "01 Test Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Safe-mode compatibility workflow for Bluesky\n// allowWriteOps: set true to run create/update steps (default: false)\n// allowDestructiveOps: set true to run delete steps (default: false)\n\nreturn [{ json: {\n  safeMode: true,\n  allowWriteOps: false,\n  allowDestructiveOps: false,\n  handle: 'bsky.app',\n  // Known stable public DID for bsky.app, useful for sync/label fallbacks.\n  did: 'did:plc:z72i7hdynmk6r22z27h6tvur',\n  sourceDid: 'did:plc:z72i7hdynmk6r22z27h6tvur',\n  actors: 'bsky.app',\n  postText: `Safe compatibility post ${new Date().toISOString()}`,\n  searchQuery: 'n8n',\n  feedUri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot',\n  postUri: '',\n  postCid: '',\n  postUris: '',\n  listUri: '',\n  uriPatterns: '',\n  lexiconUrl: 'com.atproto.sync.getRepo',\n  // Set to a known DID to avoid repo-not-found on personal/new accounts.\n  syncDid: 'did:plc:z72i7hdynmk6r22z27h6tvur'\n}}];"
+      }
+    },
+    {
+      "id": "node-002d",
+      "name": "02 Generate Binary Data (Optional)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        840
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const content = 'n8n test binary data';\nconst buffer = Buffer.from(content, 'utf8');\nreturn [{\n  json: { generatedAt: new Date().toISOString() },\n  binary: {\n    data: {\n      data: buffer.toString('base64'),\n      mimeType: 'text/plain',\n      fileName: 'n8n-test.txt'\n    }\n  }\n}];"
+      }
+    },
+    {
+      "id": "node-002b",
+      "name": "02 Allow Write Ops?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        220
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.allowWriteOps }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-002c",
+      "name": "02 Skip Post Create",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        220
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return $input.all();"
+      }
+    },
+    {
+      "id": "node-003",
+      "name": "02 Post Create",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "post",
+        "operation": "post",
+        "postText": "={{ $('01 Test Data').first().json.postText }}",
+        "langs": [
+          "en"
+        ]
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-004",
+      "name": "03 Feed Timeline",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "feed",
+        "operation": "getTimeline",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-005",
+      "name": "04 Feed Get Author Feed",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "feed",
+        "operation": "getAuthorFeed",
+        "actor": "={{ $('03 Feed Timeline').first()?.json?.post?.author?.handle || $('01 Test Data').first().json.handle }}",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-006",
+      "name": "05 Feed Get Post Thread",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "feed",
+        "operation": "getPostThread",
+        "uri": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || $('01 Test Data').first().json.postUri }}",
+        "depth": 3,
+        "parentHeight": 3
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-007",
+      "name": "06 Feed Get Likes",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "feed",
+        "operation": "getLikes",
+        "uri": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || $('01 Test Data').first().json.postUri }}",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-008",
+      "name": "07 Feed Get Reposted By",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        80,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "feed",
+        "operation": "getRepostedBy",
+        "uri": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || $('01 Test Data').first().json.postUri }}",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-009",
+      "name": "08 Feed Get Posts",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "feed",
+        "operation": "getPosts",
+        "uris": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || $('01 Test Data').first().json.postUris }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-010",
+      "name": "09 Search Users",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "search",
+        "operation": "searchUsers",
+        "q": "={{ $('01 Test Data').first().json.searchQuery }}",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-011",
+      "name": "10 Search Posts",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "search",
+        "operation": "searchPosts",
+        "q": "={{ $('01 Test Data').first().json.searchQuery }}",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-012",
+      "name": "11 User Get Profile",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        800,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "user",
+        "operation": "getProfile",
+        "actor": "={{ $('10 Search Posts').first()?.json?.author?.handle || $('09 Search Users').first()?.json?.handle || $('01 Test Data').first().json.handle }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-013",
+      "name": "12 User Get Profiles",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        560,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "user",
+        "operation": "getProfiles",
+        "actors": "={{ $('09 Search Users').all().map(i => i.json?.handle).filter(Boolean).slice(0, 5).join(',') || $('01 Test Data').first().json.actors }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-014",
+      "name": "13 User List Followers (Paged)",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        320,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "user",
+        "operation": "listFollowers",
+        "handle": "bsky.app",
+        "limit": 10
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-015",
+      "name": "14 User List Follows (Paged)",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        80,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "user",
+        "operation": "listFollows",
+        "handle": "bsky.app",
+        "limit": 10
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-016",
+      "name": "15 Identity Resolve Handle",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "identity",
+        "operation": "resolveHandle",
+        "handle": "={{ $('11 User Get Profile').first()?.json?.handle || $('01 Test Data').first().json.handle }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-017",
+      "name": "16 Identity Resolve DID",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "identity",
+        "operation": "resolveDid",
+        "did": "={{ $('15 Identity Resolve Handle').first()?.json?.did || $('11 User Get Profile').first()?.json?.did || $('01 Test Data').first().json.did }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-018",
+      "name": "17 Identity Resolve Identity",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "identity",
+        "operation": "resolveIdentity",
+        "identifier": "={{ $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did || $('11 User Get Profile').first()?.json?.handle || $('01 Test Data').first().json.handle }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-019",
+      "name": "18 Notification Get Unread Count",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "notification",
+        "operation": "getUnreadCount",
+        "priority": false
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-020",
+      "name": "19 Notification List",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "notification",
+        "operation": "listNotifications",
+        "limit": 5,
+        "unreadOnly": true,
+        "markRetrievedAsRead": false
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-021",
+      "name": "20 Analytics Get Unread Count",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "analytics",
+        "operation": "getUnreadCount"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-022",
+      "name": "21 Analytics List Notifications",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -1600,
+        300
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "analytics",
+        "operation": "listNotifications",
+        "limit": 5,
+        "unreadOnly": true,
+        "markRetrievedAsRead": false
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-023",
+      "name": "22 Analytics Get Post Interactions",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -1600,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "analytics",
+        "operation": "getPostInteractions",
+        "uri": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || $('01 Test Data').first().json.postUri }}",
+        "interactionTypes": [
+          "likes",
+          "reposts",
+          "replies"
+        ],
+        "interactionLimit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-024",
+      "name": "23 Lexicon Resolve Lexicon",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "lexicon",
+        "operation": "resolveLexicon",
+        "lexiconUrl": "={{ $('01 Test Data').first().json.lexiconUrl }}",
+        "lexiconParamsJson": "{\"nsid\":\"com.atproto.sync.getRepo\"}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-025",
+      "name": "24 Preferences Get Preferences",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "preferences",
+        "operation": "getPreferences"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-025b",
+      "name": "24 Capability Gate (Sync+Label)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        600
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !$('01 Test Data').first().json.safeMode }}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-026",
+      "name": "25 Label Query Labels",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "label",
+        "operation": "queryLabels",
+        "uriPatterns": "={{ $('02 Post Create').first()?.json?.uri || $('10 Search Posts').first()?.json?.uri || '' }}",
+        "limit": 5,
+        "sources": "={{ $('11 User Get Profile').first()?.json?.did || $('01 Test Data').first().json.sourceDid }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-027",
+      "name": "26 Sync Get Repo Status",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "sync",
+        "operation": "getRepoStatus",
+        "did": "={{ $('01 Test Data').first().json.syncDid || $('11 User Get Profile').first()?.json?.did || $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-028",
+      "name": "27 Sync Get Latest Commit",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        80,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "sync",
+        "operation": "getLatestCommit",
+        "did": "={{ $('01 Test Data').first().json.syncDid || $('11 User Get Profile').first()?.json?.did || $('16 Identity Resolve DID').first()?.json?.did || $('15 Identity Resolve Handle').first()?.json?.did }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-029",
+      "name": "28 Sync List Repos",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        320,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "sync",
+        "operation": "listRepos",
+        "limit": 5
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-029d",
+      "name": "28 Allow Write Ops? (Blob)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        560,
+        600
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.allowWriteOps }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-029e",
+      "name": "28 Repo Upload Blob",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        800,
+        840
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "repo",
+        "operation": "uploadBlob",
+        "binaryProperty": "data"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-029b",
+      "name": "29 Allow Destructive Ops?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        600
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.allowDestructiveOps }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-029c",
+      "name": "29 Skip Delete Post",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        840
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return $input.all();"
+      }
+    },
+    {
+      "id": "node-030",
+      "name": "29 Post Delete Post",
+      "type": "n8n-nodes-the-bluesky.bluesky",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        600
+      ],
+      "continueOnFail": true,
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "parameters": {
+        "resource": "post",
+        "operation": "deletePost",
+        "uri": "={{ $('02 Post Create').first()?.json?.uri || $('01 Test Data').first().json.postUri }}"
+      },
+      "credentials": {
+        "blueskyApi": {
+          "id": null,
+          "name": "Bluesky"
+        }
+      }
+    },
+    {
+      "id": "node-031",
+      "name": "30 Collect Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        700
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const nodeNames = [\n  '02 Post Create',\n  '03 Feed Timeline',\n  '04 Feed Get Author Feed',\n  '05 Feed Get Post Thread',\n  '06 Feed Get Likes',\n  '07 Feed Get Reposted By',\n  '08 Feed Get Posts',\n  '09 Search Users',\n  '10 Search Posts',\n  '11 User Get Profile',\n  '12 User Get Profiles',\n  '13 User List Followers (Paged)',\n  '14 User List Follows (Paged)',\n  '15 Identity Resolve Handle',\n  '16 Identity Resolve DID',\n  '17 Identity Resolve Identity',\n  '18 Notification Get Unread Count',\n  '19 Notification List',\n  '20 Analytics Get Unread Count',\n  '21 Analytics List Notifications',\n  '22 Analytics Get Post Interactions',\n  '23 Lexicon Resolve Lexicon',\n  '24 Preferences Get Preferences',\n  '25 Label Query Labels',\n  '26 Sync Get Repo Status',\n  '27 Sync Get Latest Commit',\n  '28 Sync List Repos',\n  '28 Repo Upload Blob',\n  '29 Post Delete Post',\n  '29 Skip Delete Post'\n];\n\nconst allowEmptyPayloadNodes = new Set([\n  '06 Feed Get Likes',\n  '07 Feed Get Reposted By',\n  '19 Notification List',\n  '21 Analytics List Notifications',\n  '29 Skip Delete Post'\n]);\n\nconst softFailMessageRules = {\n  '23 Lexicon Resolve Lexicon': ['XRPCNotSupported'],\n  '26 Sync Get Repo Status': ['Could not find repo for DID'],\n  '27 Sync Get Latest Commit': ['Could not find repo for DID'],\n};\n\nfunction extractErrors(json, statusCode) {\n  const out = [];\n  if (json?.message) out.push(String(json.message));\n  if (json?.errorMessage) out.push(String(json.errorMessage));\n  if (json?.error) {\n    if (json.error.message) out.push(String(json.error.message));\n    else if (typeof json.error === 'string') out.push(json.error);\n    else out.push(JSON.stringify(json.error));\n  }\n  if (statusCode !== undefined && statusCode >= 400) out.push('HTTP ' + statusCode);\n  return out;\n}\n\nconst results = [];\nfor (const nodeName of nodeNames) {\n  let nodeItems;\n  try {\n    nodeItems = $items(nodeName, 0, 0);\n  } catch (e) {\n    const msg = String(e);\n    if (msg.includes(\"hasn't been executed\")) {\n      results.push({ test: nodeName, status: 'SKIPPED', itemCount: 0, errorCount: 0, errors: [], items: [] });\n    } else {\n      results.push({ test: nodeName, status: 'NOT_EXECUTED', itemCount: 0, errorCount: 1, errors: [msg], items: [] });\n    }\n    continue;\n  }\n\n  const itemResults = (nodeItems || []).map((item, index) => {\n    const json = item?.json ?? {};\n    const statusCode = typeof json.statusCode === 'number' ? json.statusCode : undefined;\n    const errorMessages = extractErrors(json, statusCode);\n    const isEmptyPayload = json && typeof json === 'object' && Object.keys(json).length === 0;\n\n    if (isEmptyPayload && !allowEmptyPayloadNodes.has(nodeName)) {\n      errorMessages.push('EMPTY_PAYLOAD');\n    }\n\n    if (errorMessages.length > 0) {\n      const softTerms = softFailMessageRules[nodeName] || [];\n      const isSoft = softTerms.length > 0 && errorMessages.every((m) => softTerms.some((term) => String(m).includes(term)));\n      return {\n        index,\n        status: isSoft ? 'PASS_SOFT_FAIL' : 'FAIL',\n        error: errorMessages.join(' | '),\n        keys: Object.keys(json).slice(0, 12),\n      };\n    }\n\n    if (isEmptyPayload && allowEmptyPayloadNodes.has(nodeName)) {\n      return { index, status: 'PASS_EMPTY_OK', error: null, keys: [] };\n    }\n\n    return {\n      index,\n      status: 'PASS',\n      error: null,\n      keys: Object.keys(json).slice(0, 12),\n    };\n  });\n\n  const errors = itemResults.filter((r) => r.status === 'FAIL').map((r) => r.error).filter(Boolean);\n  const passLike = new Set(['PASS', 'PASS_EMPTY_OK', 'PASS_SOFT_FAIL']);\n  const status = errors.length > 0 ? 'FAIL' : (itemResults.some((r) => passLike.has(r.status)) ? 'PASS' : 'SKIPPED');\n\n  results.push({\n    test: nodeName,\n    status,\n    itemCount: itemResults.length,\n    errorCount: errors.length,\n    errors,\n    items: itemResults,\n  });\n}\n\nconst passed = results.filter((r) => r.status === 'PASS').length;\nconst failed = results.filter((r) => r.status === 'FAIL').length;\nconst skipped = results.filter((r) => r.status === 'SKIPPED').length;\nconst notExecuted = results.filter((r) => r.status === 'NOT_EXECUTED').length;\nconst totalErrors = results.reduce((sum, r) => sum + (r.errorCount || 0), 0);\nconst totalItems = results.reduce((sum, r) => sum + (r.itemCount || 0), 0);\n\nreturn [{\n  json: {\n    summary: {\n      totalTests: results.length,\n      passed,\n      failed,\n      skipped,\n      notExecuted,\n      totalErrors,\n      totalItems,\n      successRate: results.length ? Number(((passed / results.length) * 100).toFixed(2)) : 0,\n      timestamp: new Date().toISOString(),\n    },\n    results,\n  },\n}];"
+      }
+    },
+    {
+      "id": "node-023g",
+      "name": "23 Capability Gate (Lexicon)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        600
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !$('01 Test Data').first().json.safeMode }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "01 Test Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "01 Test Data": {
+      "main": [
+        [
+          {
+            "node": "02 Allow Write Ops?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 Allow Write Ops?": {
+      "main": [
+        [
+          {
+            "node": "02 Post Create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "02 Skip Post Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 Skip Post Create": {
+      "main": [
+        [
+          {
+            "node": "03 Feed Timeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 Post Create": {
+      "main": [
+        [
+          {
+            "node": "03 Feed Timeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03 Feed Timeline": {
+      "main": [
+        [
+          {
+            "node": "04 Feed Get Author Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04 Feed Get Author Feed": {
+      "main": [
+        [
+          {
+            "node": "05 Feed Get Post Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "05 Feed Get Post Thread": {
+      "main": [
+        [
+          {
+            "node": "06 Feed Get Likes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06 Feed Get Likes": {
+      "main": [
+        [
+          {
+            "node": "07 Feed Get Reposted By",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Feed Get Reposted By": {
+      "main": [
+        [
+          {
+            "node": "08 Feed Get Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "08 Feed Get Posts": {
+      "main": [
+        [
+          {
+            "node": "09 Search Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "09 Search Users": {
+      "main": [
+        [
+          {
+            "node": "10 Search Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10 Search Posts": {
+      "main": [
+        [
+          {
+            "node": "11 User Get Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11 User Get Profile": {
+      "main": [
+        [
+          {
+            "node": "12 User Get Profiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 User Get Profiles": {
+      "main": [
+        [
+          {
+            "node": "13 User List Followers (Paged)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "13 User List Followers (Paged)": {
+      "main": [
+        [
+          {
+            "node": "14 User List Follows (Paged)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "14 User List Follows (Paged)": {
+      "main": [
+        [
+          {
+            "node": "15 Identity Resolve Handle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "15 Identity Resolve Handle": {
+      "main": [
+        [
+          {
+            "node": "16 Identity Resolve DID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "16 Identity Resolve DID": {
+      "main": [
+        [
+          {
+            "node": "17 Identity Resolve Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "17 Identity Resolve Identity": {
+      "main": [
+        [
+          {
+            "node": "18 Notification Get Unread Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "18 Notification Get Unread Count": {
+      "main": [
+        [
+          {
+            "node": "19 Notification List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "19 Notification List": {
+      "main": [
+        [
+          {
+            "node": "20 Analytics Get Unread Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "20 Analytics Get Unread Count": {
+      "main": [
+        [
+          {
+            "node": "21 Analytics List Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "21 Analytics List Notifications": {
+      "main": [
+        [
+          {
+            "node": "22 Analytics Get Post Interactions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "22 Analytics Get Post Interactions": {
+      "main": [
+        [
+          {
+            "node": "23 Capability Gate (Lexicon)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "23 Lexicon Resolve Lexicon": {
+      "main": [
+        [
+          {
+            "node": "24 Preferences Get Preferences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "24 Preferences Get Preferences": {
+      "main": [
+        [
+          {
+            "node": "24 Capability Gate (Sync+Label)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "24 Capability Gate (Sync+Label)": {
+      "main": [
+        [
+          {
+            "node": "25 Label Query Labels",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "28 Sync List Repos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "25 Label Query Labels": {
+      "main": [
+        [
+          {
+            "node": "26 Sync Get Repo Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "26 Sync Get Repo Status": {
+      "main": [
+        [
+          {
+            "node": "27 Sync Get Latest Commit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "27 Sync Get Latest Commit": {
+      "main": [
+        [
+          {
+            "node": "28 Sync List Repos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "28 Sync List Repos": {
+      "main": [
+        [
+          {
+            "node": "28 Allow Write Ops? (Blob)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "28 Allow Write Ops? (Blob)": {
+      "main": [
+        [
+          {
+            "node": "02 Generate Binary Data (Optional)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "29 Allow Destructive Ops?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 Generate Binary Data (Optional)": {
+      "main": [
+        [
+          {
+            "node": "28 Repo Upload Blob",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "28 Repo Upload Blob": {
+      "main": [
+        [
+          {
+            "node": "29 Allow Destructive Ops?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "29 Allow Destructive Ops?": {
+      "main": [
+        [
+          {
+            "node": "29 Post Delete Post",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "29 Skip Delete Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "29 Post Delete Post": {
+      "main": [
+        [
+          {
+            "node": "30 Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "29 Skip Delete Post": {
+      "main": [
+        [
+          {
+            "node": "30 Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "23 Capability Gate (Lexicon)": {
+      "main": [
+        [
+          {
+            "node": "23 Lexicon Resolve Lexicon",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "24 Preferences Get Preferences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
