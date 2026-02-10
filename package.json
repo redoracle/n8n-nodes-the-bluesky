@@ -1,98 +1,98 @@
 {
-	"name": "n8n-nodes-the-bluesky",
-	"version": "0.0.1",
-	"description": "Bluesky is a decentralized social network built on the AT Protocol. This package provides an n8n community node for interacting with the Bluesky API.",
-	"keywords": [
-		"n8n",
-		"n8n-community-node",
-		"n8n-community-node-package",
-		"bluesky",
-		"atproto"
-	],
-	"license": "MIT",
-	"homepage": "https://github.com/redoracle/n8n-nodes-the-bluesky#readme",
-	"author": {
-		"name": "Community Effort!",
-		"email": "n8n-support@redoracle.com"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/redoracle/n8n-nodes-the-bluesky.git"
-	},
-	"main": "index.js",
-	"type": "commonjs",
-	"scripts": {
-		"deps:ensure": "node -e \"const fs=require('fs'); const req=['node_modules/.bin/tsc','node_modules/.bin/jest','node_modules/.bin/eslint','node_modules/@typescript-eslint/parser']; const ok=req.every(p=>{try{fs.accessSync(p);return true}catch(e){return false}}); if(!ok) process.exit(1);\" || pnpm install --no-frozen-lockfile",
-		"build": "pnpm run deps:ensure && tsc && gulp build:icons",
-		"dev": "tsc --watch",
-		"pack": "pnpm run build && pnpm pack",
-		"dev:bind": "docker compose -f docker-compose.bind.yml up --build",
-		"dev:plugin": "bash -lc 'export PLUGIN_TARBALL=$(ls n8n-nodes-the-bluesky-*.tgz | tail -n1) && docker compose -f docker-compose.plugin.yml up --build'",
-		"docker:build": "docker build -t n8n-with-bluesky:dev . -f Dockerfile",
-		"docker:up": "docker compose -f docker-compose.dev.yml up --build",
-		"format": "prettier --write .",
-		"format:ts": "prettier --write '**/*.ts'",
-		"lint": "pnpm run deps:ensure && eslint --config eslint.config.js .",
-		"lintfix": "pnpm run deps:ensure && eslint --config eslint.config.js nodes credentials package.json --fix",
-		"prepublishOnly": "pnpm run build && pnpm run lint",
-		"test": "pnpm run deps:ensure && jest",
-		"clean": "rm -rf dist node_modules",
-		"fresh-install": "pnpm run clean && pnpm install",
-		"update-deps": "pnpm update"
-	},
-	"files": [
-		"dist"
-	],
-	"dependencies": {
-		"@atproto/api": "0.18.20",
-		"@atproto/lex-cbor": "0.0.11",
-		"@atproto/syntax": "0.4.3",
-		"image-size": "^2.0.2",
-		"open-graph-scraper": "^6.11.0",
-		"ws": "^8.18.0"
-	},
-	"peerDependencies": {
-		"n8n-core": ">=1.14.0",
-		"n8n-workflow": ">=1.82.0"
-	},
-	"n8n": {
-		"n8nNodesApiVersion": 1,
-		"credentials": [
-			"dist/credentials/BlueskyApi.credentials.js"
-		],
-		"nodes": [
-			"dist/nodes/Bluesky/Bluesky.node.js",
-			"dist/nodes/BlueskyTrigger/BlueskyTrigger.node.js"
-		]
-	},
-	"devDependencies": {
-		"@types/express": "^5.0.6",
-		"@types/jest": "^29.5.14",
-		"@types/node": "^22.19.10",
-		"@types/request-promise-native": "~1.0.21",
-		"@types/ws": "^8.5.13",
-		"@typescript-eslint/eslint-plugin": "^8.54.0",
-		"@typescript-eslint/parser": "^8.54.0",
-		"eslint": "^9.39.2",
-		"eslint-plugin-n8n-nodes-base": "^1.16.6",
-		"globals": "^16.5.0",
-		"gulp": "^5.0.1",
-		"jest": "^29.7.0",
-		"n8n-core": "^1.122.14",
-		"n8n-workflow": "^1.120.8",
-		"prettier": "^3.8.1",
-		"ts-jest": "^29.4.6",
-		"typescript": "^5.9.3"
-	},
-	"overrides": {
-		"gm": false,
-		"@azure/core-http": false,
-		"@aws-sdk/node-http-handler": "@smithy/node-http-handler",
-		"dommatrix": "@thednp/dommatrix",
-		"semver": "^7.7.4",
-		"glob": "^10.0.0",
-		"rimraf": "^5.0.0",
-		"eslint": "^9.39.2"
-	},
-	"packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
+  "name": "n8n-nodes-the-bluesky",
+  "version": "0.0.14",
+  "description": "Bluesky is a decentralized social network built on the AT Protocol. This package provides an n8n community node for interacting with the Bluesky API.",
+  "keywords": [
+    "n8n",
+    "n8n-community-node",
+    "n8n-community-node-package",
+    "bluesky",
+    "atproto"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/redoracle/n8n-nodes-the-bluesky#readme",
+  "author": {
+    "name": "Community Effort!",
+    "email": "n8n-support@redoracle.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redoracle/n8n-nodes-the-bluesky.git"
+  },
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "deps:ensure": "node -e \"const fs=require('fs'); const req=['node_modules/.bin/tsc','node_modules/.bin/jest','node_modules/.bin/eslint','node_modules/@typescript-eslint/parser']; const ok=req.every(p=>{try{fs.accessSync(p);return true}catch(e){return false}}); if(!ok) process.exit(1);\" || pnpm install --no-frozen-lockfile",
+    "build": "pnpm run deps:ensure && tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "pack": "pnpm run build && pnpm pack",
+    "dev:bind": "docker compose -f docker-compose.bind.yml up --build",
+    "dev:plugin": "bash -lc 'export PLUGIN_TARBALL=$(ls n8n-nodes-the-bluesky-*.tgz | tail -n1) && docker compose -f docker-compose.plugin.yml up --build'",
+    "docker:build": "docker build -t n8n-with-bluesky:dev . -f Dockerfile",
+    "docker:up": "docker compose -f docker-compose.dev.yml up --build",
+    "format": "prettier --write .",
+    "format:ts": "prettier --write '**/*.ts'",
+    "lint": "pnpm run deps:ensure && eslint --config eslint.config.js .",
+    "lintfix": "pnpm run deps:ensure && eslint --config eslint.config.js nodes credentials package.json --fix",
+    "prepublishOnly": "pnpm run build && pnpm run lint",
+    "test": "pnpm run deps:ensure && jest",
+    "clean": "rm -rf dist node_modules",
+    "fresh-install": "pnpm run clean && pnpm install",
+    "update-deps": "pnpm update"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@atproto/api": "0.18.20",
+    "@atproto/lex-cbor": "0.0.11",
+    "@atproto/syntax": "0.4.3",
+    "image-size": "^2.0.2",
+    "open-graph-scraper": "^6.11.0",
+    "ws": "^8.18.0"
+  },
+  "peerDependencies": {
+    "n8n-core": ">=1.14.0",
+    "n8n-workflow": ">=1.82.0"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/BlueskyApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Bluesky/Bluesky.node.js",
+      "dist/nodes/BlueskyTrigger/BlueskyTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.19.10",
+    "@types/request-promise-native": "~1.0.21",
+    "@types/ws": "^8.5.13",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-n8n-nodes-base": "^1.16.6",
+    "globals": "^16.5.0",
+    "gulp": "^5.0.1",
+    "jest": "^29.7.0",
+    "n8n-core": "^1.122.14",
+    "n8n-workflow": "^1.120.8",
+    "prettier": "^3.8.1",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "gm": false,
+    "@azure/core-http": false,
+    "@aws-sdk/node-http-handler": "@smithy/node-http-handler",
+    "dommatrix": "@thednp/dommatrix",
+    "semver": "^7.7.4",
+    "glob": "^10.0.0",
+    "rimraf": "^5.0.0",
+    "eslint": "^9.39.2"
+  },
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
 }
