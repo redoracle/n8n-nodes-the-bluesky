@@ -4,7 +4,6 @@ SHELL := /bin/sh
 
 NODE ?= node
 PNPM ?= pnpm
-NPM ?= npm
 
 help: ## Show available targets
 	@printf "Usage: make <target>\n\nTargets:\n"
@@ -14,34 +13,34 @@ install: ## Install dependencies (pnpm)
 	$(PNPM) install
 
 deps: ## Ensure build/test tooling dependencies
-	$(NPM) run deps:ensure
+	$(PNPM) run deps:ensure
 
 clean: ## Remove build artifacts and dependencies
-	$(NPM) run clean
+	$(PNPM) run clean
 
 build: ## Build TypeScript and icons
-	$(NPM) run build
+	$(PNPM) run build
 
 dev: ## Start TypeScript watch mode
-	$(NPM) run dev
+	$(PNPM) run dev
 
-pack: ## Build and npm pack
-	$(NPM) run pack
+pack: ## Build and pnpm pack
+	$(PNPM) run pack
 
 lint: ## Run ESLint
-	$(NPM) run lint
+	$(PNPM) run lint
 
 lintfix: ## Run ESLint with fixes
-	$(NPM) run lintfix
+	$(PNPM) run lintfix
 
 format: ## Format all files with Prettier
-	$(NPM) run format
+	$(PNPM) run format
 
 format-ts: ## Format TypeScript files with Prettier
-	$(NPM) run format:ts
+	$(PNPM) run format:ts
 
 test: ## Run Jest tests
-	$(NPM) run test
+	$(PNPM) run test
 
 update-deps: ## Update dependencies within semver ranges
 	$(PNPM) update
@@ -49,15 +48,15 @@ update-deps: ## Update dependencies within semver ranges
 # Docker helpers
 
 docker-build: ## Build dev Docker image
-	$(NPM) run docker:build
+	$(PNPM) run docker:build
 
 docker-up: ## Start dev Docker stack
-	$(NPM) run docker:up
+	$(PNPM) run docker:up
 
 # Dev environment helpers
 
 dev-bind: ## Run bind-mounted dev compose
-	$(NPM) run dev:bind
+	$(PNPM) run dev:bind
 
 dev-plugin: ## Run plugin compose (requires built tarball)
-	$(NPM) run dev:plugin
+	$(PNPM) run dev:plugin

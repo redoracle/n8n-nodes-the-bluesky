@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       args:
-        # Set this to the exact filename created by `npm pack`, e.g. n8n-nodes-the-bluesky-0.0.1.tgz
+        # Set this to the exact filename created by `pnpm pack`, e.g. n8n-nodes-the-bluesky-0.0.1.tgz
         PLUGIN_TARBALL: ${PLUGIN_TARBALL:-}
     image: n8n-with-bluesky:dev
     ports:

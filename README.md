@@ -15,6 +15,7 @@ A community maintained n8n node pack for interacting with the Bluesky (AT Protoc
 - [Installation](#installation)
 - [Configuration & Credentials](#configuration--credentials)
 - [Usage Examples](#usage-examples)
+  - [Example Workflow Files](#example-workflow-files)
   - [Create a Post](#create-a-post)
   - [Fetch an Author Feed](#fetch-an-author-feed)
   - [Manage Lists](#manage-lists)
@@ -58,7 +59,7 @@ A community maintained n8n node pack for interacting with the Bluesky (AT Protoc
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v14 or higher
-- [npm](https://www.npmjs.com/) v6 or higher
+- [pnpm](https://pnpm.io/) v10 or higher
 - An [n8n](https://n8n.io/) instance (self-hosted)
 
 ---
@@ -119,6 +120,34 @@ Before using the Bluesky node, create a Bluesky App Password and configure crede
 ---
 
 ## Usage Examples
+
+### Example Workflow Files
+
+The repository includes ready-to-import n8n workflows under `examples/`:
+
+- `examples/Comprehensive BlueSky Test Workflow.json`
+  - Safe-mode comprehensive compatibility run.
+  - Focuses on read operations and reversible write operations with cleanup.
+  - Best default for validating credentials, connectivity, and core functionality with lower risk.
+
+- `examples/Comprehensive BlueSky Test Workflow.safe.json`
+  - Same safe-mode workflow as above, kept as an explicit safe variant.
+  - Useful if you want to keep the safe profile while also maintaining a separate full-mode file.
+
+- `examples/Comprehensive BlueSky Test Workflow.full.json`
+  - Full coverage workflow for advanced testing.
+  - Includes admin-only, experimental, or higher-impact operations (for example account transfer, label apply, and chat operations).
+  - Use only in controlled test environments and test accounts.
+
+- `examples/Bluesky_example_workflow.json`
+  - Minimal practical example: create a post and read from feeds/search.
+  - Good starting point for basic create-and-read patterns.
+
+- `examples/Bluesky_node_template.json`
+  - Reusable template pattern for common post, feed, and search flows.
+  - Useful for quickly assembling a workflow and swapping operations.
+
+Import any file in n8n via **Workflows -> Import from File**.
 
 ### Create a Post
 
@@ -342,13 +371,13 @@ This repository includes a `Makefile` with convenient developer shortcuts. Run `
 Common targets:
 
 - `make install` — install dependencies (uses `pnpm install` by default)
-- `make deps` — ensure build/test tooling is present (`npm run deps:ensure`)
+- `make deps` — ensure build/test tooling is present (`pnpm run deps:ensure`)
 - `make build` — build TypeScript and assets
 - `make dev` — start TypeScript watch mode for iterative development
 - `make test` — run the Jest test suite
 - `make lint` / `make lintfix` — run ESLint (and apply fixes)
 - `make format` / `make format-ts` — run Prettier formatting
-- `make pack` — build and create an npm tarball (`npm pack`)
+- `make pack` — build and create a package tarball (`pnpm pack`)
 - `make clean` — remove build artifacts
 
 Docker & dev helpers:
@@ -374,7 +403,7 @@ make dev
 
 Notes:
 
-- The Makefile forwards to `pnpm` / `npm` scripts defined in `package.json` so you can also run those scripts directly.
+- The Makefile forwards to `pnpm` scripts defined in `package.json` so you can also run those scripts directly.
 - You can override the command variables at invocation time, for example:
 
 ```bash

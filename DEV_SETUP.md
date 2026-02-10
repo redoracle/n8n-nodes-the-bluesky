@@ -4,7 +4,7 @@ This repository contains an n8n community node. Below are several recommended wa
 
 Summary of flows
 
-- Option A — npm link (fastest inner loop, no Docker)
+- Option A — pnpm link (fastest inner loop, no Docker)
 - Option B — Docker + bind-mount custom extensions (recommended day-to-day)
 - Option C — Build an image from a tarball (artifact parity, immutable)
 - Option D — Manual copy into a local n8n `~/.n8n/custom` (quick, non-Docker)
@@ -13,11 +13,11 @@ Summary of flows
 
 Before you start
 
-- Always run `npm run build` (produces `dist/`) before testing. n8n loads compiled output from `dist/`.
+- Always run `pnpm run build` (produces `dist/`) before testing. n8n loads compiled output from `dist/`.
 - Confirm `package.json` in the package folder contains an `n8n` section that lists `nodes` and/or `credentials` (this repo's `package.json` already contains it).
 - If you need debug logs, set `N8N_LOG_LEVEL=debug`.
 
-Option A — npm link (fastest)
+Option A — pnpm link (fastest)
 
 When to use
 
@@ -28,15 +28,15 @@ Commands (your preferred flow)
 ```bash
 # 1) Build your node
 cd n8n-nodes-the-bluesky
-npm i
-npm run build
-npm link   # publishes the package to your global npm link
+pnpm install
+pnpm run build
+pnpm link   # publishes the package to your global pnpm link
 
 # 2) Link it into n8n’s custom dir
 mkdir -p ~/.n8n/custom
 cd ~/.n8n/custom
-npm init -y  # only if it's not already a package
-npm link n8n-nodes-the-bluesky
+pnpm init  # only if it's not already a package
+pnpm link n8n-nodes-the-bluesky
 
 # 3) Run n8n locally
 npx n8n start
@@ -64,7 +64,7 @@ Commands
 
 ```bash
 cd n8n-nodes-the-bluesky
-npm install && npm run build
+pnpm install && pnpm run build
 mkdir -p ../_dev/custom
 rsync -a --delete ./ ../_dev/custom/n8n-nodes-the-bluesky/
 docker compose -f docker-compose.bind.yml up -d
@@ -73,7 +73,7 @@ docker compose -f docker-compose.bind.yml up -d
 Notes
 
 - The important env var is `N8N_CUSTOM_EXTENSIONS=/home/node/.n8n/custom` which the compose file sets.
-- After editing TypeScript, run `npm run build` then rsync to propagate compiled files into the mounted folder.
+- After editing TypeScript, run `pnpm run build` then rsync to propagate compiled files into the mounted folder.
 
 Option C — Build an image from a tarball (artifact parity)
 
@@ -89,7 +89,7 @@ Commands
 
 ```bash
 cd n8n-nodes-the-bluesky
-npm install && npm run build && npm pack
+pnpm install && pnpm run build && pnpm pack
 export PLUGIN_TARBALL=$(ls n8n-nodes-the-bluesky-*.tgz | tail -n1)
 docker compose -f docker-compose.plugin.yml up --build -d
 ```
@@ -108,7 +108,7 @@ Commands
 
 ```bash
 cd n8n-nodes-the-bluesky
-npm install && npm run build
+pnpm install && pnpm run build
 mkdir -p ~/.n8n/custom
 rsync -a --delete ./ ~/.n8n/custom/n8n-nodes-the-bluesky/
 
@@ -127,7 +127,7 @@ Commands (example)
 
 ```bash
 # from repo root
-npm run build && npm pack
+pnpm run build && pnpm pack
 docker cp n…
 ```
 
@@ -135,7 +135,7 @@ Troubleshooting: `TypeError: Class extends value undefined` or similar
 
 Why this happens
 
-- If `~/.n8n/custom` contains a `node_modules` tree (for example, after `npm link` or `npm i` inside that folder), the n8n directory loader can traverse `node_modules` and attempt to load transitive dependencies as if they were nodes, causing odd eval errors.
+- If `~/.n8n/custom` contains a `node_modules` tree (for example, after `pnpm link` or `pnpm install` inside that folder), the n8n directory loader can traverse `node_modules` and attempt to load transitive dependencies as if they were nodes, causing odd eval errors.
 - The recommended layout is `~/.n8n/custom/<your-package>/` with a `package.json` and compiled `dist/`, and no `node_modules` at the custom root.
 
 Quick fix (clean and redeploy compiled artifacts only)
@@ -146,13 +146,13 @@ npx n8n stop || true
 
 # 2) Clean custom dir: unlink and remove nested node_modules
 cd ~/.n8n/custom
-npm unlink n8n-nodes-the-bluesky || true
-rm -rf node_modules package-lock.json
+pnpm unlink n8n-nodes-the-bluesky || true
+rm -rf node_modules pnpm-lock.yaml
 
 # 3) Rebuild the plugin locally
 cd -  # back to repo root (n8n-nodes-the-bluesky)
-npm install --include=dev --no-audit --no-fund
-npm run build
+pnpm install
+pnpm run build
 
 # 4) Deploy ONLY compiled artifacts into their own folder under ~/.n8n/custom
 mkdir -p ~/.n8n/custom/n8n-nodes-the-bluesky
@@ -167,7 +167,7 @@ Notes
 
 - The `dist/` folder includes the compiled JS and a `package.json` the loader can read. Keeping it in a dedicated subfolder avoids `node_modules` in the custom root.
 - Alternative: use the Docker flows (Option B/C), which naturally avoid this problem.
-- If you prefer `npm pack` + install, install into a temp directory and copy the unpacked package folder (not `node_modules`) into `~/.n8n/custom/`.
+- If you prefer `pnpm pack` + install, install into a temp directory and copy the unpacked package folder (not `node_modules`) into `~/.n8n/custom/`.
 
 ---
 
@@ -178,9 +178,9 @@ The setup below was executed and validated on the host. The plugin was packed, t
 Build & pack the plugin artifact
 
 ```bash
-npm install --include=dev --no-audit --no-fund
-npm run build
-npm pack
+pnpm install
+pnpm run build
+pnpm pack
 export PLUGIN_TARBALL=$(ls n8n-nodes-the-bluesky-*.tgz | tail -n1)
 ```
 
@@ -214,6 +214,6 @@ Notes / next improvements
 Further automation (optional)
 
 - The `package.json` in this repo includes small scripts:
-  - `npm run pack` builds and packs the tarball
-  - `npm run dev:bind` to run the bind-mount compose
-  - `npm run dev:plugin` to create and run the plugin image (looks for the latest tarball)
+  - `pnpm run pack` builds and packs the tarball
+  - `pnpm run dev:bind` to run the bind-mount compose
+  - `pnpm run dev:plugin` to create and run the plugin image (looks for the latest tarball)

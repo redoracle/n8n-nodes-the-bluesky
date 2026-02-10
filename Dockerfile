@@ -64,7 +64,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 COPY ${PLUGIN_TARBALL} /tmp/plugin.tgz
 
 # Install the tarball into /opt/plugins (isolated builder stage)
-RUN mkdir -p /opt/plugins && npm install --prefix /opt/plugins /tmp/plugin.tgz --no-audit --no-fund && npm install -g /tmp/plugin.tgz --no-audit --no-fund || true && chown -R root:root /opt/plugins && rm -f /tmp/plugin.tgz
+RUN mkdir -p /opt/plugins && printf "{}" > /opt/plugins/package.json && corepack enable && pnpm --dir /opt/plugins add /tmp/plugin.tgz --prod --ignore-scripts --config.node-linker=hoisted && chown -R root:root /opt/plugins && rm -f /tmp/plugin.tgz
 
 ### Final stages
 FROM base AS final-plugin
@@ -75,4 +75,3 @@ COPY --from=plugin-builder /opt/plugins /opt/plugins
 FROM base AS final
 
 # No plugin: just use base stage as final image
-
