@@ -41,8 +41,7 @@
 		"update-deps": "pnpm update"
 	},
 	"files": [
-		"dist",
-		"index.js"
+		"dist"
 	],
 	"dependencies": {
 		"@atproto/api": "0.18.20",
@@ -54,13 +53,6 @@
 		"open-graph-scraper": "^6.11.0",
 		"ws": "^8.18.0"
 	},
-	"bundleDependencies": [
-		"@atproto/api",
-		"@atproto/lex-cbor",
-		"@atproto/lexicon",
-		"@atproto/syntax",
-		"@atproto/xrpc"
-	],
 	"peerDependencies": {
 		"n8n-core": ">=1.14.0",
 		"n8n-workflow": ">=1.82.0"
