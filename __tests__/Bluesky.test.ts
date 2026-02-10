@@ -19,7 +19,7 @@ describe('Bluesky Node - Core', () => {
 		// Access description property inherited from VersionedNodeType
 		const desc = (node as any).description;
 		expect(desc.name).toBe('bluesky');
-		expect(desc.displayName).toBe('Bluesky API');
+		expect(desc.displayName).toBe('Bluesky');
 		expect(desc.group).toEqual(['transform']);
 		expect(desc.defaultVersion).toBe(2);
 	});
