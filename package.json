@@ -41,7 +41,8 @@
 		"update-deps": "pnpm update"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"index.js"
 	],
 	"dependencies": {
 		"@atproto/api": "0.18.20",
@@ -85,8 +86,6 @@
 		"typescript": "^5.9.3"
 	},
 	"overrides": {
-		"@atproto/lexicon": "0.6.1",
-		"@atproto/xrpc": "0.7.7",
 		"gm": false,
 		"@azure/core-http": false,
 		"@aws-sdk/node-http-handler": "@smithy/node-http-handler",
