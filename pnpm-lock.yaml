@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@atproto/api':
-        specifier: 0.18.20
-        version: 0.18.20
+        specifier: 0.18.21
+        version: 0.18.21
       '@atproto/lex-cbor':
         specifier: 0.0.11
         version: 0.0.11
@@ -81,8 +81,8 @@ importers:
 
 packages:
 
-  '@atproto/api@0.18.20':
-    resolution: {integrity: sha512-BZYZkh2VJIFCXEnc/vzKwAwWjAQQTgbNJ8FBxpBK+z+KYh99O0uPCsRYKoCQsRrnkgrhzdU9+g2G+7zanTIGbw==}
+  '@atproto/api@0.18.21':
+    resolution: {integrity: sha512-s35MIJerGT/pKe2xJtKKswqlIr/ola2r2iURBKBL0Mk1OKe6jP4YvTMh1N2d2PEANFzNNTbKoDaLfJPo2Uvc/w==}
 
   '@atproto/common-web@0.4.16':
     resolution: {integrity: sha512-Ufvaff5JgxUyUyTAG0/3o7ltpy3lnZ1DvLjyAnvAf+hHfiK7OMQg+8byr+orN+KP9MtIQaRTsCgYPX+PxMKUoA==}
@@ -1170,6 +1170,9 @@ packages:
 
   '@types/node@22.19.10':
     resolution: {integrity: sha512-tF5VOugLS/EuDlTBijk0MqABfP8UxgYazTLo3uIn3b4yJgg26QRbVYJYsDtHrjdDUIRfP70+VfhTTc+CE1yskw==}
+
+  '@types/node@22.19.11':
+    resolution: {integrity: sha512-BH7YwL6rA93ReqeQS1c4bsPpcfOmJasG+Fkr6Y59q83f9M1WcBRHR2vM+P9eOisYRcN3ujQoiZY8uk5W+1WL8w==}
 
   '@types/pg-pool@2.0.6':
     resolution: {integrity: sha512-TaAUE5rq2VQYxab5Ts7WZhKNmuN78Q6PiFonTDdpbx8a1H0M1vhy3rhiMjl+e2iHmogyMw7jZF4FrE6eJUy5HQ==}
@@ -3587,7 +3590,7 @@ packages:
 
 snapshots:
 
-  '@atproto/api@0.18.20':
+  '@atproto/api@0.18.21':
     dependencies:
       '@atproto/common-web': 0.4.16
       '@atproto/lexicon': 0.6.1
@@ -4451,7 +4454,7 @@ snapshots:
 
   '@jest/pattern@30.0.1':
     dependencies:
-      '@types/node': 22.19.10
+      '@types/node': 22.19.11
       jest-regex-util: 30.0.1
     optional: true
 
@@ -4569,7 +4572,7 @@ snapshots:
       '@jest/schemas': 30.0.5
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 22.19.10
+      '@types/node': 22.19.11
       '@types/yargs': 17.0.35
       chalk: 4.1.2
     optional: true
@@ -5444,6 +5447,11 @@ snapshots:
   '@types/node@22.19.10':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/node@22.19.11':
+    dependencies:
+      undici-types: 6.21.0
+    optional: true
 
   '@types/pg-pool@2.0.6':
     dependencies:
@@ -6904,7 +6912,7 @@ snapshots:
   jest-haste-map@30.2.0:
     dependencies:
       '@jest/types': 30.2.0
-      '@types/node': 22.19.10
+      '@types/node': 22.19.11
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -7065,7 +7073,7 @@ snapshots:
   jest-util@30.2.0:
     dependencies:
       '@jest/types': 30.2.0
-      '@types/node': 22.19.10
+      '@types/node': 22.19.11
       chalk: 4.1.2
       ci-info: 4.4.0
       graceful-fs: 4.2.11
@@ -7101,7 +7109,7 @@ snapshots:
 
   jest-worker@30.2.0:
     dependencies:
-      '@types/node': 22.19.10
+      '@types/node': 22.19.11
       '@ungap/structured-clone': 1.3.0
       jest-util: 30.2.0
       merge-stream: 2.0.0
