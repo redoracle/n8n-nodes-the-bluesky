@@ -5,6 +5,21 @@ All notable changes to the n8n-nodes-the-bluesky package will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.21] - 2026-03-04
+
+### Security
+
+- **CRITICAL** Fix CVE-2026-25896 (`fast-xml-parser` 4.4.1 → 4.5.4): entity encoding bypass via regex injection in DOCTYPE entity names (CVSS 9.3, XSS vector)
+- **HIGH** Fix CVE-2026-25639 (`axios` 1.12.0 → 1.13.6): denial of service via `__proto__` key in `mergeConfig` (CVSS 7.5)
+- **CRITICAL** Fix GHSA-fjxv-7rqg-78g4 (`form-data` → 4.0.5): unsafe random boundary generation
+- **HIGH** Fix GHSA-3ppc-4f35-3m26 (`minimatch` → ≥3.1.3): ReDoS via repeated wildcards
+- **MODERATE** Fix GHSA-2g4f-4pwh-qvx6 (`ajv` → 6.14.0): ReDoS when using `$data` option
+- **MODERATE/LOW** Fix GHSA-6rw7-vpxm-498p / GHSA-w7fw-mjwx-w883 (`qs` → ≥6.14.2): arrayLimit DoS bypass
+
+All fixes applied via `pnpm.overrides` (dev-only transitive dependencies via `n8n-core`). Published package is not affected at runtime. `pnpm audit` reports **no known vulnerabilities**.
+
+Note: `jmespath@0.16.0` (AI-detected potential malware flag) and `entities@4.5.0` (obfuscated code flag) are false positives — standard non-malicious implementations. No action required.
+
 ## [0.0.20] - 2026-03-04
 
 ### Changed
