@@ -75,8 +75,8 @@ importers:
         specifier: ^1.122.14
         version: 1.122.14(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.18.0(ws@8.19.0)(zod@4.3.6))
       n8n-workflow:
-        specifier: ^1.120.8
-        version: 1.120.8
+        specifier: ^2.11.0
+        version: 2.11.0
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -631,6 +631,9 @@ packages:
 
   '@n8n/errors@0.5.0':
     resolution: {integrity: sha512-0Vk1Eb3Uor+zeF/WVnuhFgJc51wEBTZNBlVQy3mvyr3sGmW86bP1jA7wmRsd0DZbswPwN0vNOl/TmkDTEopOtQ==}
+
+  '@n8n/errors@0.6.0':
+    resolution: {integrity: sha512-oVJ0lgRYJY6/aPOW2h37ea5T+nX7/wULRn5FymwYeaiYlsLdqwIQEtGwZrajpzxJB0Os74u4lSH3WWQgZCkgxQ==}
 
   '@n8n/permissions@0.43.0':
     resolution: {integrity: sha512-lZrdIn8fWBy/YUbgz1zjNfaIHsWgnT/1M5q0jotp9gEtZ1cchSIp6/dRnTWC3i8LCxqqMvbiBN3tSjaZnlr8sA==}
@@ -2583,6 +2586,10 @@ packages:
     resolution: {integrity: sha512-WJeiE0jGfxYmtLwBTEk8+y/mYcaleyLXWaqp5bJu0/ZTSeG0KQq/wWQ8pmnkKenEdN6pdnn6QtcoSUkbqDHWNw==}
     hasBin: true
 
+  jsonrepair@3.13.2:
+    resolution: {integrity: sha512-Leuly0nbM4R+S5SVJk3VHfw1oxnlEK9KygdZvfUtEtTawNDyzB4qa1xWTmFt1aeoA7sXZkVTRuIixJ8bAvqVUg==}
+    hasBin: true
+
   jsonwebtoken@9.0.2:
     resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==}
     engines: {node: '>=12', npm: '>=6'}
@@ -2698,6 +2705,10 @@ packages:
     resolution: {integrity: sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==}
     engines: {node: '>=12'}
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   make-dir@4.0.0:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
@@ -2779,6 +2790,9 @@ packages:
 
   n8n-workflow@1.120.8:
     resolution: {integrity: sha512-dKKLocJYCcgBPmNsbgf2YfWqqPp2nuy5Vr6mIBKgS4ArJETyugajRf13eW/YJCn1Yfggb50xpMPfl6jkxOtA+w==}
+
+  n8n-workflow@2.11.0:
+    resolution: {integrity: sha512-NFgUygwfZzgBAN+NGG0/ZE3NuQJCOU4bfMS6X06V6baGFWA7Uq6IZPOctXloCtngq8YKCz7SFhPDlJGy7RKQ2A==}
 
   nan@2.25.0:
     resolution: {integrity: sha512-0M90Ag7Xn5KMLLZ7zliPWP3rT90P6PN+IzVFS0VqmnPktBk3700xUVv8Ikm9EUaUE5SDWdp/BIxdENzVznpm1g==}
@@ -3168,8 +3182,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sax@1.4.4:
-    resolution: {integrity: sha512-1n3r/tGXO6b6VXMdFT54SHzT9ytu9yr7TaELowdYpMqY/Ao7EnlQGmAQ1+RatX7Tkkdm6hONI2owqNx2aZj5Sw==}
+  sax@1.5.0:
+    resolution: {integrity: sha512-21IYA3Q5cQf089Z6tgaUTr7lDAyzoTPx5HRtbhsME8Udispad8dC/+sziTNugOEx54ilvatQ9YCzl4KQLPcRHA==}
     engines: {node: '>=11.0.0'}
 
   semver-greatest-satisfied-range@2.0.0:
@@ -4688,6 +4702,10 @@ snapshots:
       reflect-metadata: 0.2.2
 
   '@n8n/errors@0.5.0':
+    dependencies:
+      callsites: 3.1.0
+
+  '@n8n/errors@0.6.0':
     dependencies:
       callsites: 3.1.0
 
@@ -7229,6 +7247,8 @@ snapshots:
 
   jsonrepair@3.13.1: {}
 
+  jsonrepair@3.13.2: {}
+
   jsonwebtoken@9.0.2:
     dependencies:
       jws: 3.2.3
@@ -7345,6 +7365,8 @@ snapshots:
       yallist: 3.1.1
 
   luxon@3.4.4: {}
+
+  luxon@3.7.2: {}
 
   make-dir@4.0.0:
     dependencies:
@@ -7468,6 +7490,27 @@ snapshots:
       jssha: 3.3.1
       lodash: 4.17.23
       luxon: 3.4.4
+      md5: 2.3.0
+      recast: 0.22.0
+      title-case: 3.0.3
+      transliteration: 2.3.5
+      xml2js: 0.6.2
+      zod: 3.25.67
+
+  n8n-workflow@2.11.0:
+    dependencies:
+      '@n8n/errors': 0.6.0
+      '@n8n/tournament': 1.0.6
+      ast-types: 0.16.1
+      callsites: 3.1.0
+      esprima-next: 5.8.4
+      form-data: 4.0.5
+      jmespath: 0.16.0
+      js-base64: 3.7.2
+      jsonrepair: 3.13.2
+      jssha: 3.3.1
+      lodash: 4.17.23
+      luxon: 3.7.2
       md5: 2.3.0
       recast: 0.22.0
       title-case: 3.0.3
@@ -7828,7 +7871,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sax@1.4.4: {}
+  sax@1.5.0: {}
 
   semver-greatest-satisfied-range@2.0.0:
     dependencies:
@@ -8270,7 +8313,7 @@ snapshots:
 
   xml2js@0.6.2:
     dependencies:
-      sax: 1.4.4
+      sax: 1.5.0
       xmlbuilder: 11.0.1
 
   xmlbuilder@11.0.1: {}
