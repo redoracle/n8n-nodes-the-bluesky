@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-the-bluesky",
-	"version": "0.0.1",
+	"version": "0.0.20",
 	"description": "Bluesky is a decentralized social network built on the AT Protocol. This package provides an n8n community node for interacting with the Bluesky API.",
 	"keywords": [
 		"n8n",
@@ -44,9 +44,9 @@
 		"dist"
 	],
 	"dependencies": {
-		"@atproto/api": "0.18.20",
-		"@atproto/lex-cbor": "0.0.11",
-		"@atproto/syntax": "0.4.3",
+		"@atproto/api": "0.19.1",
+		"@atproto/lex-cbor": "0.0.14",
+		"@atproto/syntax": "0.5.0",
 		"image-size": "^2.0.2",
 		"open-graph-scraper": "^6.11.0",
 		"ws": "^8.18.0"
@@ -71,8 +71,8 @@
 		"@types/node": "^22.19.10",
 		"@types/request-promise-native": "~1.0.21",
 		"@types/ws": "^8.5.13",
-		"@typescript-eslint/eslint-plugin": "^8.54.0",
-		"@typescript-eslint/parser": "^8.54.0",
+		"@typescript-eslint/eslint-plugin": "^8.56.1",
+		"@typescript-eslint/parser": "^8.56.1",
 		"eslint": "^9.39.2",
 		"eslint-plugin-n8n-nodes-base": "^1.16.6",
 		"globals": "^16.5.0",
