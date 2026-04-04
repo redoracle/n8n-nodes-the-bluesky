@@ -49,7 +49,7 @@ describe('BlueskyTrigger', () => {
 			expect(streamProperty!.options).toBeDefined();
 			expect(Array.isArray(streamProperty!.options)).toBe(true);
 
-			const optionValues = streamProperty!.options.map((o: any) => o.value);
+			const optionValues = streamProperty!.options!.map((o: any) => o.value);
 			expect(optionValues).toContain('subscribeRepos');
 			expect(optionValues).toContain('subscribeLabels');
 		});

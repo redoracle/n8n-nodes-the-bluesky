@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-the-bluesky.svg)](https://www.npmjs.com/package/n8n-nodes-the-bluesky)
 [![Downloads](https://img.shields.io/npm/dm/n8n-nodes-the-bluesky.svg)](https://www.npmjs.com/package/n8n-nodes-the-bluesky)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+[![CI](https://github.com/redoracle/n8n-nodes-the-bluesky/actions/workflows/ci.yml/badge.svg)](https://github.com/redoracle/n8n-nodes-the-bluesky/actions/workflows/ci.yml)
 
 A community maintained n8n node package for interacting with the Bluesky (AT Protocol) API. It covers posting, feed reading, list management, search, analytics, and real time streaming in your n8n workflows.
 
@@ -58,7 +59,7 @@ A community maintained n8n node package for interacting with the Bluesky (AT Pro
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v14 or higher
+- [Node.js](https://nodejs.org/) v20 or higher
 - [pnpm](https://pnpm.io/) v10 or higher
 - A self hosted [n8n](https://n8n.io/) instance
 
@@ -78,7 +79,7 @@ The Dockerfiles in this repository use a multistage build with an optional plugi
 **Build with plugin**: provide the tarball via `--build-arg` and target `final-plugin`. The tarball must exist in the build context, or specify a path relative to it.
 
 ```bash
-docker build --target final-plugin --build-arg PLUGIN_TARBALL=n8n-nodes-the-bluesky-0.0.1.tgz -t n8n-with-plugin .
+docker build --target final-plugin --build-arg PLUGIN_TARBALL=n8n-nodes-the-bluesky-0.0.21.tgz -t n8n-with-plugin .
 ```
 
 **Local development without plugin**:
@@ -90,7 +91,7 @@ docker build -f Dockerfile.dev -t n8n-dev:plain .
 **Local development with plugin**:
 
 ```bash
-docker build -f Dockerfile.dev --target final-plugin --build-arg PLUGIN_TARBALL=n8n-nodes-the-bluesky-0.0.1.tgz -t n8n-dev:plugin .
+docker build -f Dockerfile.dev --target final-plugin --build-arg PLUGIN_TARBALL=n8n-nodes-the-bluesky-0.0.21.tgz -t n8n-dev:plugin .
 ```
 
 > The plugin tarball is only used when building the `final-plugin` target. Default builds without a specified target will not attempt to install the plugin. This approach works across common Docker installations and does not rely on BuildKit-specific optional mounts.
@@ -381,12 +382,13 @@ PNPM=yarn make install
 
 ### TypeScript Configuration
 
-`tsconfig.json` uses a dual `typeRoots` setup:
+`tsconfig.json` uses `typeRoots: ["./node_modules/@types"]` for standard third-party type definitions. Custom shims in `./types/` are loaded via the `include` array, not via `typeRoots`:
 
-- **`./types`**: Custom shims for editor-only type checking (`n8n-workflow-shim.d.ts`, `jest.d.ts`, `node-globals.d.ts`)
-- **`./node_modules/@types`**: Standard third-party type definitions from pnpm
+- **`types/n8n-workflow-shim.d.ts`**: Ambient module shim for editor-only use when devDependencies are not installed.
+- **`types/trigger-types.d.ts`**: Minimal local declarations for `ITriggerFunctions` and `ITriggerResponse`, which are not exported from the public `n8n-workflow` index.
+- **`types/jest.d.ts`**, **`types/node-globals.d.ts`**: Lightweight editor shims for Jest and Node globals.
 
-This lets the project use custom shims for packages without types or with peer dependency conflicts, while still benefiting from full `@types/*` definitions where available. When adding dependencies, make sure the package either includes its own types, has a corresponding `@types/*` package in devDependencies, or has a minimal shim in `./types/`.
+When adding dependencies, make sure the package either includes its own types, has a corresponding `@types/*` package in devDependencies, or has a minimal shim in `./types/`.
 
 ---
 

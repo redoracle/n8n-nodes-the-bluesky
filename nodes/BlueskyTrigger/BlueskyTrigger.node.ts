@@ -1,9 +1,10 @@
-import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
-// Trigger types aren't exported from main index, import from interfaces directly
 import { AtpAgent, CredentialSession } from '@atproto/api';
 import { cborDecode } from '@atproto/lex-cbor';
-import type { ITriggerFunctions, ITriggerResponse } from 'n8n-workflow/dist/cjs/interfaces';
+import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
+// ITriggerFunctions and ITriggerResponse are not exported from the n8n-workflow
+// public index. Local minimal shim avoids the fragile deep private-path import.
 import WebSocket from 'ws';
+import type { ITriggerFunctions, ITriggerResponse } from '../../types/trigger-types';
 import {
 	matchesFilters,
 	parseFirehoseMessage,
@@ -150,7 +151,7 @@ export class BlueskyTrigger implements INodeType {
 		],
 	};
 
-	async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
+	async trigger(this: ITriggerFunctions): Promise<ITriggerResponse | undefined> {
 		const stream = this.getNodeParameter('stream', '') as string;
 		let serviceEndpoint = this.getNodeParameter('serviceEndpoint', '') as string;
 

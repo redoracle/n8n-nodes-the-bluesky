@@ -1,4 +1,4 @@
-import { IExecuteFunctions, INodeTypeDescription } from 'n8n-workflow';
+import { IExecuteFunctions } from 'n8n-workflow';
 import { BlueskyV2 } from '../nodes/Bluesky/V2/BlueskyV2.class';
 
 jest.mock('@atproto/api', () => {
@@ -77,7 +77,8 @@ import { muteThreadOperation } from '../nodes/Bluesky/V2/graphOperations';
 import { listNotificationsOperation } from '../nodes/Bluesky/V2/notificationOperations';
 import { searchUsersOperation } from '../nodes/Bluesky/V2/searchOperations';
 
-const baseDescription: INodeTypeDescription = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const baseDescription: any = {
 	displayName: 'Bluesky',
 	name: 'bluesky',
 	icon: 'file:bluesky.svg',

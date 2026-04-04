@@ -1,0 +1,10 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true
+	},
+	// Re-includes n8n-workflow-shim.d.ts (excluded from main tsconfig) so VS Code
+	// has ambient module types when devDependencies are not installed.
+	"exclude": ["node_modules", "dist"]
+}
