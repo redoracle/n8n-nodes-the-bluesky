@@ -403,3 +403,9 @@ MIT. See [LICENSE.md](LICENSE.md) for details.
 - Bluesky API Docs: <https://docs.bsky.app/>
 - AT Protocol Docs: <https://atproto.com/>
 - n8n Community Nodes Docs: <https://docs.n8n.io/integrations/community-nodes/>
+
+## Support
+
+If you find this plugin useful and want to support its development, you can support me on Ko-fi.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X71XF2G2)
