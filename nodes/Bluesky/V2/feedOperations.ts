@@ -1,8 +1,8 @@
 import {
-    AppBskyFeedDefs,
-    AppBskyFeedGetAuthorFeed,
-    AppBskyFeedGetTimeline,
-    AtpAgent,
+	AppBskyFeedDefs,
+	AppBskyFeedGetAuthorFeed,
+	AppBskyFeedGetTimeline,
+	AtpAgent,
 } from '@atproto/api';
 import { IDataObject, INodeExecutionData, INodeProperties } from 'n8n-workflow';
 
@@ -380,7 +380,9 @@ export async function getLikesOperation(
 	cursor?: string,
 ): Promise<INodeExecutionData[]> {
 	const response = await agent.getLikes({ uri, limit, cursor: cursor || undefined });
-	const items: INodeExecutionData[] = response.data.likes.map((like) => ({ json: like as unknown as IDataObject }));
+	const items: INodeExecutionData[] = response.data.likes.map((like) => ({
+		json: like as unknown as IDataObject,
+	}));
 	if (response.data.cursor) {
 		items.push({ json: { cursor: response.data.cursor, _pagination: true } });
 	}
@@ -394,7 +396,9 @@ export async function getRepostedByOperation(
 	cursor?: string,
 ): Promise<INodeExecutionData[]> {
 	const response = await agent.getRepostedBy({ uri, limit, cursor: cursor || undefined });
-	const items: INodeExecutionData[] = response.data.repostedBy.map((actor) => ({ json: actor as unknown as IDataObject }));
+	const items: INodeExecutionData[] = response.data.repostedBy.map((actor) => ({
+		json: actor as unknown as IDataObject,
+	}));
 	if (response.data.cursor) {
 		items.push({ json: { cursor: response.data.cursor, _pagination: true } });
 	}
@@ -410,7 +414,9 @@ export async function getSuggestedFeedsOperation(
 		limit,
 		cursor: cursor || undefined,
 	});
-	const items: INodeExecutionData[] = response.data.feeds.map((feed) => ({ json: feed as unknown as IDataObject }));
+	const items: INodeExecutionData[] = response.data.feeds.map((feed) => ({
+		json: feed as unknown as IDataObject,
+	}));
 	if (response.data.cursor) {
 		items.push({ json: { cursor: response.data.cursor, _pagination: true } });
 	}
@@ -436,7 +442,9 @@ export async function getFeedOperation(
 		limit,
 		cursor: cursor || undefined,
 	});
-	const items: INodeExecutionData[] = response.data.feed.map((item) => ({ json: item as unknown as IDataObject }));
+	const items: INodeExecutionData[] = response.data.feed.map((item) => ({
+		json: item as unknown as IDataObject,
+	}));
 	if (response.data.cursor) {
 		items.push({ json: { cursor: response.data.cursor, _pagination: true } });
 	}
