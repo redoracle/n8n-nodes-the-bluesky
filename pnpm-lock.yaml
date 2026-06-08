@@ -17,8 +17,8 @@ importers:
   .:
     dependencies:
       '@atproto/api':
-        specifier: 0.19.1
-        version: 0.19.1
+        specifier: 0.19.6
+        version: 0.19.6
       '@atproto/lex-cbor':
         specifier: 0.0.14
         version: 0.0.14
@@ -89,8 +89,8 @@ importers:
 
 packages:
 
-  '@atproto/api@0.19.1':
-    resolution: {integrity: sha512-GE94kx6PBsBAUcFne+cX3c77ZVr3/pvfeeG+GtZ1QFE8U9brrXoCoN6qwtOg6PfZk8UvpyCxLyWNfiC2GfCSJg==}
+  '@atproto/api@0.19.6':
+    resolution: {integrity: sha512-8L5dZvGaclB52b8msjtgDNx3uLWUY4PELA7KbFyAWBFVasCceE1txdrscCqDCLN+Fff9+Sm07OIjnjHYJXdETA==}
 
   '@atproto/common-web@0.4.19':
     resolution: {integrity: sha512-3BTi58p5WpT+9/zb6UZrdsXcfPo5P45UJm0E4iwHLILr+jc37CuBj9JReDSZ4U0i9RTrI3ZkfySyZ9bd+LnMsw==}
@@ -3595,11 +3595,11 @@ packages:
 
 snapshots:
 
-  '@atproto/api@0.19.1':
+  '@atproto/api@0.19.6':
     dependencies:
       '@atproto/common-web': 0.4.19
       '@atproto/lexicon': 0.6.2
-      '@atproto/syntax': 0.5.0
+      '@atproto/syntax': 0.5.3
       '@atproto/xrpc': 0.7.7
       await-lock: 2.2.2
       multiformats: 9.9.0
