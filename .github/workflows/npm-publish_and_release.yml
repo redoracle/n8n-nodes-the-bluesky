@@ -30,7 +30,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           run_install: false
 
@@ -83,12 +83,17 @@ jobs:
           git push origin "v${{ env.TAG_NAME }}"
 
       - name: Publish to npm
-        run: pnpm publish --no-git-checks
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ] || [ "$NODE_AUTH_TOKEN" = "" ]; then
+            echo "NPM_TOKEN not set — skipping publish"
+            exit 0
+          fi
+          pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.TAG_NAME }}
           name: Release v${{ env.TAG_NAME }}
