@@ -39,6 +39,11 @@ FROM base-dev AS final-plugin
 USER root
 # Copy prepared /opt/plugins from plugin-builder-dev
 COPY --from=plugin-builder-dev /opt/plugins /opt/plugins
-RUN mkdir -p /home/node/.n8n/custom && chown -R node:node /home/node/.n8n || true
+RUN mkdir -p /home/node/.n8n/custom && \
+	if [ -d "/opt/plugins/node_modules/n8n-nodes-the-bluesky" ]; then \
+		cp -a /opt/plugins/node_modules/n8n-nodes-the-bluesky /home/node/.n8n/custom/; \
+	fi && \
+	chown -R node:node /home/node/.n8n || true
 ENV N8N_CUSTOM_EXTENSIONS=/home/node/.n8n/custom
+ENV NODE_PATH="/opt/plugins/node_modules"
 USER node
