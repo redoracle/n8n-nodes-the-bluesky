@@ -73,10 +73,10 @@ importers:
         version: 29.7.0(@types/node@25.5.2)
       n8n-core:
         specifier: ^1.122.18
-        version: 1.122.18(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.3.6))(ws@8.20.0)
+        version: 1.122.18(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.4.3))(ws@8.20.0)
       n8n-workflow:
         specifier: ^2.13.1
-        version: 2.13.1
+        version: 2.16.0
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -708,8 +708,8 @@ packages:
   '@n8n/errors@0.6.0':
     resolution: {integrity: sha512-oVJ0lgRYJY6/aPOW2h37ea5T+nX7/wULRn5FymwYeaiYlsLdqwIQEtGwZrajpzxJB0Os74u4lSH3WWQgZCkgxQ==}
 
-  '@n8n/expression-runtime@0.5.0':
-    resolution: {integrity: sha512-DqkF79FyuljdjlSz1i6PfbrQ47w5U/fIqjoyAbRVxr+YatiM3RAe0zhfQ1ur1lV5QTq0BHnY8zsfFQ+DIItPhA==}
+  '@n8n/expression-runtime@0.8.0':
+    resolution: {integrity: sha512-SnBLoLsrGUCS9cVrF20UuSyKcMv+y6Clc4+EA9zLjX85S0GPwOAdApUVSsi81ejPAqMlm42TW1L6r7NpcK/ztQ==}
 
   '@n8n/permissions@0.43.1':
     resolution: {integrity: sha512-Vu1l/qjZErVr+nhkw+MpswlWwaWy/EpDNCVK1lthalBlTuOdx/yAAGeDYsblj4OAMsH8Nc9LyGfPNQsQX8m/eA==}
@@ -1593,8 +1593,8 @@ packages:
     resolution: {integrity: sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==}
     engines: {node: '>= 0.4'}
 
-  call-bind@1.0.8:
-    resolution: {integrity: sha512-oKlSFMcMwpUg2ednkhQ454wfWiU/ul3CkJe/PEHcTKuiX6RpbehUiFMXu13HalGZxfUwCQzZG747YXBn1im9ww==}
+  call-bind@1.0.9:
+    resolution: {integrity: sha512-a/hy+pNsFUTR+Iz8TCJvXudKVLAnz/DyeSUo10I5yvFDQJBFU2s9uqQpoSrJlroHUKoKqzg+epxyP9lqFdzfBQ==}
     engines: {node: '>= 0.4'}
 
   call-bound@1.0.4:
@@ -1868,8 +1868,8 @@ packages:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
 
-  es-object-atoms@1.1.1:
-    resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
+  es-object-atoms@1.1.2:
+    resolution: {integrity: sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==}
     engines: {node: '>= 0.4'}
 
   es-set-tostringtag@2.1.0:
@@ -2215,8 +2215,8 @@ packages:
     resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
     engines: {node: '>= 0.4'}
 
-  hasown@2.0.2:
-    resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
+  hasown@2.0.4:
+    resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
   homedir-polyfill@1.0.3:
@@ -2812,8 +2812,8 @@ packages:
   n8n-workflow@1.120.10:
     resolution: {integrity: sha512-/fGyDBlf5gCY2+BNhdxC7RbKxkcmMBAQQacdIi9CHhJpPdgKBBAnqHbJAs4Be/015jFrVp7NhjszLs4eW2m4Tw==}
 
-  n8n-workflow@2.13.1:
-    resolution: {integrity: sha512-79qJU7aIwtzZY1bhYhFwjLs83yu4Cb+ZFC7+hjN9N+9+mRV0CObHTR9tg5/EwD1HURfztwdCK+N/dlfjO8xDlw==}
+  n8n-workflow@2.16.0:
+    resolution: {integrity: sha512-JoDvHLvV4QZQBCDVQl5xkrGOmPmsacLO4TkJkErCzMmiEqIej+h14J6eCUY7gbxBj8V+GIBlpqyO63akJbXRQg==}
 
   nan@2.26.2:
     resolution: {integrity: sha512-0tTvBTYkt3tdGw22nrAy50x7gpbGCCFH3AFcyS5WiUu7Eu4vWlri1woE6qHBSfy11vksDqkiwjOnlR7WV8G1Hw==}
@@ -3558,8 +3558,8 @@ packages:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
     engines: {node: '>=18'}
 
-  which-typed-array@1.1.20:
-    resolution: {integrity: sha512-LYfpUkmqwl0h9A2HL09Mms427Q1RZWuOHsukfVcKRq9q95iQxdw0ix1JQrqbcDR9PH1QDwf5Qo8OZb5lksZ8Xg==}
+  which-typed-array@1.1.22:
+    resolution: {integrity: sha512-fvO4ExWMFsqyhG3AiPAObMuY1lxaqgYcxbc49CNdWDDECOJNgQyvsOWVwbZc+qf3rzRtxojBK+CMEv0Ld5CYpw==}
     engines: {node: '>= 0.4'}
 
   which@1.3.1:
@@ -3658,8 +3658,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.3.6:
-    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
 
@@ -4876,18 +4876,18 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@langchain/core@1.1.8(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.3.6))(ws@8.20.0)':
+  '@langchain/core@1.1.8(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.4.3))(ws@8.20.0)':
     dependencies:
       '@cfworker/json-schema': 4.1.1
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.21
-      langsmith: 0.5.16(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.3.6))(ws@8.20.0)
+      langsmith: 0.5.16(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.4.3))(ws@8.20.0)
       mustache: 4.2.0
       p-queue: 6.6.2
       uuid: 10.0.0
-      zod: 4.3.6
+      zod: 4.4.3
     transitivePeerDependencies:
       - '@opentelemetry/api'
       - '@opentelemetry/exporter-trace-otlp-proto'
@@ -4942,7 +4942,7 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  '@n8n/expression-runtime@0.5.0':
+  '@n8n/expression-runtime@0.8.0':
     dependencies:
       '@n8n/tournament': 1.0.6
       isolated-vm: 6.1.2
@@ -5950,7 +5950,7 @@ snapshots:
 
   assert@2.1.0:
     dependencies:
-      call-bind: 1.0.8
+      call-bind: 1.0.9
       is-nan: 1.3.2
       object-is: 1.1.6
       object.assign: 4.1.7
@@ -6178,7 +6178,7 @@ snapshots:
       es-errors: 1.3.0
       function-bind: 1.1.2
 
-  call-bind@1.0.8:
+  call-bind@1.0.9:
     dependencies:
       call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
@@ -6458,7 +6458,7 @@ snapshots:
 
   es-errors@1.3.0: {}
 
-  es-object-atoms@1.1.1:
+  es-object-atoms@1.1.2:
     dependencies:
       es-errors: 1.3.0
 
@@ -6467,7 +6467,7 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
       has-tostringtag: 1.0.2
-      hasown: 2.0.2
+      hasown: 2.0.4
 
   escalade@3.2.0: {}
 
@@ -6706,7 +6706,7 @@ snapshots:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
-      hasown: 2.0.2
+      hasown: 2.0.4
       mime-types: 2.1.35
 
   forwarded-parse@2.1.2: {}
@@ -6737,12 +6737,12 @@ snapshots:
       call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
       es-errors: 1.3.0
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
       function-bind: 1.1.2
       get-proto: 1.0.1
       gopd: 1.2.0
       has-symbols: 1.1.0
-      hasown: 2.0.2
+      hasown: 2.0.4
       math-intrinsics: 1.1.0
 
   get-package-type@0.1.0: {}
@@ -6750,7 +6750,7 @@ snapshots:
   get-proto@1.0.1:
     dependencies:
       dunder-proto: 1.0.1
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
 
   get-stream@6.0.1: {}
 
@@ -6864,7 +6864,7 @@ snapshots:
     dependencies:
       has-symbols: 1.1.0
 
-  hasown@2.0.2:
+  hasown@2.0.4:
     dependencies:
       function-bind: 1.1.2
 
@@ -6962,7 +6962,7 @@ snapshots:
 
   is-core-module@2.16.1:
     dependencies:
-      hasown: 2.0.2
+      hasown: 2.0.4
 
   is-extglob@2.1.1: {}
 
@@ -6984,7 +6984,7 @@ snapshots:
 
   is-nan@1.3.2:
     dependencies:
-      call-bind: 1.0.8
+      call-bind: 1.0.9
       define-properties: 1.2.1
 
   is-negated-glob@1.0.0: {}
@@ -6998,7 +6998,7 @@ snapshots:
       call-bound: 1.0.4
       gopd: 1.2.0
       has-tostringtag: 1.0.2
-      hasown: 2.0.2
+      hasown: 2.0.4
 
   is-relative@1.0.0:
     dependencies:
@@ -7008,7 +7008,7 @@ snapshots:
 
   is-typed-array@1.1.15:
     dependencies:
-      which-typed-array: 1.1.20
+      which-typed-array: 1.1.22
 
   is-unc-path@1.0.0:
     dependencies:
@@ -7478,7 +7478,7 @@ snapshots:
 
   kuler@2.0.0: {}
 
-  langsmith@0.5.16(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.3.6))(ws@8.20.0):
+  langsmith@0.5.16(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.4.3))(ws@8.20.0):
     dependencies:
       chalk: 5.6.2
       console-table-printer: 2.15.0
@@ -7488,7 +7488,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/sdk-trace-base': 1.30.1(@opentelemetry/api@1.9.1)
-      openai: 6.18.0(ws@8.20.0)(zod@4.3.6)
+      openai: 6.18.0(ws@8.20.0)(zod@4.4.3)
       ws: 8.20.0
 
   last-run@2.0.0: {}
@@ -7620,10 +7620,10 @@ snapshots:
 
   mute-stdout@2.0.0: {}
 
-  n8n-core@1.122.18(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.3.6))(ws@8.20.0):
+  n8n-core@1.122.18(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.4.3))(ws@8.20.0):
     dependencies:
       '@aws-sdk/client-s3': 3.808.0
-      '@langchain/core': 1.1.8(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.3.6))(ws@8.20.0)
+      '@langchain/core': 1.1.8(@opentelemetry/api@1.9.1)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.1))(openai@6.18.0(ws@8.20.0)(zod@4.4.3))(ws@8.20.0)
       '@n8n/backend-common': 0.33.12
       '@n8n/client-oauth2': 0.33.0
       '@n8n/config': 1.65.3
@@ -7691,10 +7691,10 @@ snapshots:
       xml2js: 0.6.2
       zod: 3.25.67
 
-  n8n-workflow@2.13.1:
+  n8n-workflow@2.16.0:
     dependencies:
       '@n8n/errors': 0.6.0
-      '@n8n/expression-runtime': 0.5.0
+      '@n8n/expression-runtime': 0.8.0
       '@n8n/tournament': 1.0.6
       ast-types: 0.16.1
       callsites: 3.1.0
@@ -7758,17 +7758,17 @@ snapshots:
 
   object-is@1.1.6:
     dependencies:
-      call-bind: 1.0.8
+      call-bind: 1.0.9
       define-properties: 1.2.1
 
   object-keys@1.1.1: {}
 
   object.assign@4.1.7:
     dependencies:
-      call-bind: 1.0.8
+      call-bind: 1.0.9
       call-bound: 1.0.4
       define-properties: 1.2.1
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
@@ -7802,10 +7802,10 @@ snapshots:
       iconv-lite: 0.7.2
       undici: 7.24.7
 
-  openai@6.18.0(ws@8.20.0)(zod@4.3.6):
+  openai@6.18.0(ws@8.20.0)(zod@4.4.3):
     optionalDependencies:
       ws: 8.20.0
-      zod: 4.3.6
+      zod: 4.4.3
     optional: true
 
   optionator@0.9.4:
@@ -8371,7 +8371,7 @@ snapshots:
       is-arguments: 1.2.0
       is-generator-function: 1.1.2
       is-typed-array: 1.1.15
-      which-typed-array: 1.1.20
+      which-typed-array: 1.1.22
 
   uuid@10.0.0: {}
 
@@ -8445,10 +8445,10 @@ snapshots:
 
   whatwg-mimetype@4.0.0: {}
 
-  which-typed-array@1.1.20:
+  which-typed-array@1.1.22:
     dependencies:
       available-typed-arrays: 1.0.7
-      call-bind: 1.0.8
+      call-bind: 1.0.9
       call-bound: 1.0.4
       for-each: 0.3.5
       get-proto: 1.0.1
@@ -8551,4 +8551,4 @@ snapshots:
 
   zod@3.25.76: {}
 
-  zod@4.3.6: {}
+  zod@4.4.3: {}
