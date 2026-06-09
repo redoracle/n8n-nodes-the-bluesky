@@ -6,12 +6,7 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 
-import { LoggerProxy, NodeOperationError } from 'n8n-workflow';
-// `NodeConnectionTypes` is not always visible to the TypeScript language server
-// when imported from the package root due to how `n8n-workflow` exposes its
-// types. Import from the CJS interface declaration to ensure the symbol is
-// available in both the editor and CommonJS build output.
-import { NodeConnectionTypes } from 'n8n-workflow/dist/cjs/interfaces';
+import { LoggerProxy, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { AtpAgent, CredentialSession } from '@atproto/api';
 

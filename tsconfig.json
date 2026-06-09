@@ -2,9 +2,9 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
 		"lib": ["es2019"],
-		"baseUrl": ".",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"rootDir": ".",
+		"module": "node16",
+		"moduleResolution": "node16",
 		"noImplicitAny": true,
 		"removeComments": true,
 		"strictNullChecks": true,
@@ -19,6 +19,7 @@
 		"allowSyntheticDefaultImports": true,
 		"useUnknownInCatchVariables": false,
 		"skipLibCheck": true,
+		"isolatedModules": true,
 		"forceConsistentCasingInFileNames": true,
 		"types": [],
 		// Standard @types packages from pnpm. Custom shims in ./types/ are loaded via
