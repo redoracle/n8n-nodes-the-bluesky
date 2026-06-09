@@ -8,6 +8,16 @@ updates:
     labels:
       - 'dependencies'
       - 'bot'
+    ignore:
+      # @atproto/* packages moved to ESM-only across these version boundaries.
+      # The project is CommonJS and cannot consume ESM-only packages without
+      # a full migration. Keep these on the CJS-compatible lines for now.
+      - dependency-name: '@atproto/api'
+        versions: ['>=0.20.0']
+      - dependency-name: '@atproto/lex-cbor'
+        versions: ['>=0.1.0']
+      - dependency-name: '@atproto/syntax'
+        versions: ['>=0.6.0']
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
