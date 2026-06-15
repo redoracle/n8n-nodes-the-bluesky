@@ -46,7 +46,7 @@
 	"dependencies": {
 		"@atproto/api": "0.19.6",
 		"@atproto/lex-cbor": "0.0.14",
-		"@atproto/syntax": "0.5.0",
+		"@atproto/syntax": "0.5.4",
 		"image-size": "^2.0.2",
 		"open-graph-scraper": "^6.11.0",
 		"ws": "^8.20.0"
