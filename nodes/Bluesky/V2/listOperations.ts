@@ -1,6 +1,5 @@
-import { AtpAgent } from '@atproto/api';
+import { AtpAgent, AtUri } from '@atproto/api';
 import { INodeExecutionData, INodeProperties, IDataObject } from 'n8n-workflow';
-import { AtUri } from '@atproto/syntax';
 
 export const listProperties: INodeProperties[] = [
 	{
