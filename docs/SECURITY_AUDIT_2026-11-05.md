@@ -28,3 +28,12 @@ CI validates the frozen dependency installation, test suite, TypeScript build,
 and npm tarball. A green CI result is not a guarantee that all vulnerabilities,
 security misconfigurations or live API integration errors have been eliminated.
 The latest PR check status is the authoritative verification result.
+
+## Advisory remediation (in validation)
+
+`pnpm audit --prod --audit-level high` detected
+[GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5),
+Zod memory exhaustion on constrained collections, in the `@atproto/api`
+production dependency path. A targeted `@atproto/api>zod` override to
+`^4.6.6` is being applied with a regenerated lockfile and full CI/security
+validation. The original vulnerable lockfile must not be released.

@@ -1,7 +1,9 @@
 import { lookup } from 'node:dns/promises';
 import { BlockList, isIP } from 'node:net';
 
-const BLOCKED = new BlockList();
+// Keep address families separate: Node can match IPv4 addresses against IPv4-mapped IPv6 rules.
+const BLOCKED_IPV4 = new BlockList();
+const BLOCKED_IPV6 = new BlockList();
 const IPv4_RANGES: Array<[string, number]> = [
 	['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8],
 	['169.254.0.0', 16], ['172.16.0.0', 12], ['192.0.0.0', 24],
@@ -14,12 +16,14 @@ const IPv6_RANGES: Array<[string, number]> = [
 	['fc00::', 7], ['fe80::', 10], ['ff00::', 8],
 	['2001:db8::', 32], ['2002::', 16],
 ];
-for (const [subnet, prefix] of IPv4_RANGES) BLOCKED.addSubnet(subnet, prefix, 'ipv4');
-for (const [subnet, prefix] of IPv6_RANGES) BLOCKED.addSubnet(subnet, prefix, 'ipv6');
+for (const [subnet, prefix] of IPv4_RANGES) BLOCKED_IPV4.addSubnet(subnet, prefix, 'ipv4');
+for (const [subnet, prefix] of IPv6_RANGES) BLOCKED_IPV6.addSubnet(subnet, prefix, 'ipv6');
 
 function isPublicAddress(address: string): boolean {
 	const family = isIP(address);
-	return family !== 0 && !BLOCKED.check(address, family === 4 ? 'ipv4' : 'ipv6');
+	if (family === 4) return !BLOCKED_IPV4.check(address, 'ipv4');
+	if (family === 6) return !BLOCKED_IPV6.check(address, 'ipv6');
+	return false;
 }
 
 /**

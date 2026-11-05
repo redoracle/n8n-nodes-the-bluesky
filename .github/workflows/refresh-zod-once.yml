@@ -1,0 +1,44 @@
+# One-time trusted branch lockfile regeneration. Removed after the verified update.
+name: Regenerate security override lockfile (one-time)
+
+on:
+  push:
+    branches:
+      - quality/ci-build-parser-docs-20261105
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: "github.event.head_commit.message == 'chore: refresh zod override lockfile'"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: Regenerate lockfile using the pinned pnpm version
+        run: pnpm install --no-frozen-lockfile
+      - name: Verify high/critical production advisories
+        run: pnpm audit --prod --audit-level high
+      - name: Validate the resolved tree
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm lint
+          pnpm exec jest --runInBand
+          pnpm build
+      - name: Commit only verified lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(deps): patch vulnerable Zod in ATProto dependency tree"
+            git push origin HEAD:quality/ci-build-parser-docs-20261105
+          fi

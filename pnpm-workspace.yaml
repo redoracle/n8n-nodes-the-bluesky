@@ -28,3 +28,5 @@ overrides:
   # --- dedup / modernisation of transitive versions present in the tree ---
   semver: "^7.7.4"
   glob: "^10.0.0"
+  # Security: GHSA-mrhx-c7xc-m3w5, constrain only the ATProto SDK's Zod dependency.
+  '@atproto/api>zod': "^4.6.6"
