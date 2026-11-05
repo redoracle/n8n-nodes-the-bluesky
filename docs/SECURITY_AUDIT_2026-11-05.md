@@ -11,7 +11,7 @@ This is source review and CI verification, **not** a penetration test.
 | Medium | Missing coordinated security disclosure and issue/PR templates | Fixed: add `SECURITY.md`, `SUPPORT.md`, templates, CODEOWNERS and maintainer guide |
 | Low | Code of Conduct incident reports pointed to an unrelated team mailbox | Replaced with repository metadata contact; maintainer should verify mailbox |
 | Low | Makefile used a removed dependency script; Docker README pinned obsolete tarball example | Fixed |
-| Open | Open Graph fetching of arbitrary URLs may reach internal services through DNS or redirects (SSRF) | Avoid on untrusted input; enforce outbound network egress policy; requires dedicated transport-safe refactor |
+| Medium | Open Graph SSRF/redirect and image download exhaustion | Mitigated: public-address DNS guard, redirect rejection, timeout, bounded image downloads; DNS rebinding remains a residual risk requiring network egress rules |
 | Open | Firehose does not implement binary CBOR frame/CAR parsing, cursor replay or durable queue | Disclosed; separate AT Protocol migration required |
 | Open | Docker images track `latest` and setup uses root; not verified as hardened | Pin digest and migrate to nonroot in a Docker integration-tested PR |
 | Open | npm security advisories and live n8n integration have not been fully evaluated | Review audit output, run live integration checks, and triage advisories before release |

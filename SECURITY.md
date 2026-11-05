@@ -27,9 +27,10 @@ sanitized logs. We cannot guarantee a response or fix deadline.
   only. Unauthenticated repository streams can use `ws://` for local testing.
   TLS does not establish that a custom relay is trustworthy.
 - Open Graph website-card fetching is opt-in and makes outbound requests.
-  Avoid using it on arbitrary untrusted URLs without a network egress policy.
-  Protect cloud instance metadata, localhost and private network ranges.
-  Redirects and DNS rebinding may bypass simple URL validation.
+  Obvious private IPs and DNS resolutions are rejected, redirects are blocked,
+  and thumbnail downloads have a strict size and time limit. These checks
+  **do not eliminate DNS rebinding**: retain network egress controls, avoid
+  untrusted URLs, and protect cloud metadata and private networks.
 - The raw firehose trigger is **not** a production-ready, lossless decoder.
   Native subscription CBOR framing, CAR records and replay are not complete.
 - Keep the n8n host and dependencies patched. Rotate exposed credentials;

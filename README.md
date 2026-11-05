@@ -435,5 +435,9 @@ upgrade policy, and [Developer setup](DEV_SETUP.md) for n8n integration options.
 - **Maintainers:** [quality and release checklist](docs/MAINTAINER_GUIDE.md)
 - **Second-pass review:** [security and quality audit](docs/SECURITY_AUDIT_2026-11-05.md)
 
+> Open Graph previews fetch remote content only when explicitly enabled. A
+> public-address guard, redirect restriction and download limits reduce risk,
+> but do not replace outbound firewall restrictions or DNS rebinding protection.
+>
 > Never share Bluesky app passwords, bearer tokens, session cookies, or n8n
 > credential exports in public issues or example workflows.
