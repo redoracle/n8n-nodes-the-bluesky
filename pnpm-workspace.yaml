@@ -30,3 +30,4 @@ overrides:
   glob: "^10.0.0"
   # Security: GHSA-mrhx-c7xc-m3w5, constrain only the ATProto SDK's Zod dependency.
   '@atproto/api>zod': "^4.6.6"
+  '@atproto/common-web>zod': "^4.6.6"
