@@ -8,7 +8,7 @@ with existing n8n workflows and minimize unnecessary production dependencies.
 1. Install Node.js 22 and activate pnpm via Corepack using the version in
    `package.json`: `corepack enable`.
 2. Run `pnpm install --frozen-lockfile`.
-3. Run `pnpm lint`, `pnpm test -- --runInBand`, and `pnpm build`.
+3. Run `pnpm lint`, `pnpm exec jest --runInBand`, and `pnpm build`.
 4. Run `pnpm pack` and inspect the archive to confirm only the expected
    `dist/` paths are published.
 5. For behavior changes, exercise the node with a self-hosted n8n

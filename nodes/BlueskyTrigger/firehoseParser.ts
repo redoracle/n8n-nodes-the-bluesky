@@ -69,7 +69,7 @@ function isFirehoseCommit(value: unknown): value is FirehoseCommit {
 	const msg = value as Partial<FirehoseCommit>;
 	return (
 		typeof msg.$type === 'string' &&
-		Number.isSafeInteger(msg.seq) && msg.seq >= 0 &&
+		typeof msg.seq === 'number' && Number.isSafeInteger(msg.seq) && msg.seq >= 0 &&
 		typeof msg.repo === 'string' &&
 		typeof msg.time === 'string' &&
 		typeof msg.rebase === 'boolean' &&

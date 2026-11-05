@@ -413,7 +413,6 @@ If you find this plugin useful and want to support its development, you can supp
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X71XF2G2)
 
-
 ## Architecture and Development
 
 See [Architecture and protocol limitations](docs/ARCHITECTURE.md) for the node's
