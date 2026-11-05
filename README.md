@@ -441,3 +441,10 @@ upgrade policy, and [Developer setup](DEV_SETUP.md) for n8n integration options.
 >
 > Never share Bluesky app passwords, bearer tokens, session cookies, or n8n
 > credential exports in public issues or example workflows.
+
+> **Outstanding dependency advisory:** [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)
+> affects Zod 3 in the legacy AT Protocol SDK. The separate security
+> workflow currently flags this high-severity risk. See
+> [tracking issue #56](https://github.com/redoracle/n8n-nodes-the-bluesky/issues/56)
+> and [security policy](SECURITY.md). Do not treat a green build as a clean
+> dependency security audit.

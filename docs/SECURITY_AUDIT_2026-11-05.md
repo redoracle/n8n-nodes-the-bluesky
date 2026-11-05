@@ -14,7 +14,8 @@ This is source review and CI verification, **not** a penetration test.
 | Medium | Open Graph SSRF/redirect and image download exhaustion | Mitigated: public-address DNS guard, redirect rejection, timeout, bounded image downloads; DNS rebinding remains a residual risk requiring network egress rules |
 | Open | Firehose does not implement binary CBOR frame/CAR parsing, cursor replay or durable queue | Disclosed; separate AT Protocol migration required |
 | Open | Docker images track `latest` and setup uses root; not verified as hardened | Pin digest and migrate to nonroot in a Docker integration-tested PR |
-| Open | npm security advisories and live n8n integration have not been fully evaluated | Review audit output, run live integration checks, and triage advisories before release |
+| High / open | Zod 3 memory-exhaustion advisory reachable through the legacy `@atproto/api` dependency tree | No compatible patched 3.x line; tracked in [#56](https://github.com/redoracle/n8n-nodes-the-bluesky/issues/56); requires SDK/ESM migration and live integration tests |
+| Open | Live n8n integration has not been completed | Test against n8n before release |
 
 ## Dependency strategy
 
@@ -29,11 +30,15 @@ and npm tarball. A green CI result is not a guarantee that all vulnerabilities,
 security misconfigurations or live API integration errors have been eliminated.
 The latest PR check status is the authoritative verification result.
 
-## Advisory remediation (in validation)
+## Unresolved high-severity dependency advisory
 
-`pnpm audit --prod --audit-level high` detected
-[GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5),
-Zod memory exhaustion on constrained collections, in the `@atproto/api`
-production dependency path. A targeted `@atproto/api>zod` override to
-`^4.6.6` is being applied with a regenerated lockfile and full CI/security
-validation. The original vulnerable lockfile must not be released.
+`pnpm audit --prod --audit-level high` reports
+[GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)
+for Zod 3 in the pinned CommonJS-compatible `@atproto/api` runtime tree.
+The Zod fix is available only in 4.6.6+, a major migration for consumers
+of Zod 3. Attempted parent-scoped overrides exposed additional nested
+Zod 3 paths and were **reverted**, rather than silently forcing a
+potentially incompatible validator replacement. The security audit remains
+failing intentionally, pending a separately tested SDK/ESM migration.
+Track the remediation and constraints in
+[issue #56](https://github.com/redoracle/n8n-nodes-the-bluesky/issues/56).

@@ -45,3 +45,13 @@ privately when possible.
 
 See [the security audit](docs/SECURITY_AUDIT_2026-11-05.md) and
 [architecture](docs/ARCHITECTURE.md) for limitations and mitigations.
+
+## Known outstanding advisory
+
+The production dependency scanner currently reports a **high-severity**
+Zod 3 resource exhaustion advisory, [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5),
+through the pinned CJS AT Protocol SDK. No safe Zod 3 patch is available.
+A breaking SDK/ESM migration and live compatibility testing are needed;
+see [issue #56](https://github.com/redoracle/n8n-nodes-the-bluesky/issues/56).
+The security audit is intentionally not suppressed. Treat this as a
+release risk, limit untrusted input sizes and avoid publicly exposing the node.

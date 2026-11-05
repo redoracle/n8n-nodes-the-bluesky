@@ -48,3 +48,12 @@ pnpm pack
 
 Cross-check the latest [audit](SECURITY_AUDIT_2026-11-05.md) before declaring
 a change production-ready.
+
+## Outstanding release blocker
+
+[Issue #56](https://github.com/redoracle/n8n-nodes-the-bluesky/issues/56)
+tracks the high-severity Zod 3 advisory in the pinned AT Protocol SDK.
+The dedicated security audit is expected to fail until the incompatible
+SDK migration is tested and addressed. Do not override this red check
+just to obtain a green status; require an explicit security review before
+any release or merge.
