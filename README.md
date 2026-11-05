@@ -22,6 +22,7 @@ A community maintained n8n node package for interacting with the Bluesky (AT Pro
   - [Manage Lists](#manage-lists)
 - [Available Resources & Operations](#available-resources--operations)
 - [Testing](#testing)
+- [Architecture and Development](#architecture-and-development)
 - [Development & Contributing](#development--contributing)
 - [License](#license)
 - [References](#references)
@@ -56,6 +57,8 @@ A community maintained n8n node package for interacting with the Bluesky (AT Pro
   - **Event Limits**: Cap the number of events or run continuously
 
 ---
+
+> **Firehose protocol limitation:** The trigger's current decoder accepts commit-shaped CBOR objects and JSON fixtures, but does **not** yet decode the AT Protocol's two-part CBOR subscription frames or embedded CAR blocks. Consequently, raw `subscribeRepos` and `subscribeLabels` relay streams are not fully supported in production. Do not rely on this trigger for lossless or security-critical event ingestion until the wire-protocol implementation is completed and integration-tested. See [architecture and limitations](docs/ARCHITECTURE.md).
 
 ## Prerequisites
 
@@ -409,3 +412,11 @@ MIT. See [LICENSE.md](LICENSE.md) for details.
 If you find this plugin useful and want to support its development, you can support me on Ko-fi.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X71XF2G2)
+
+
+## Architecture and Development
+
+See [Architecture and protocol limitations](docs/ARCHITECTURE.md) for the node's
+runtime design, publication boundaries, and current firehose decoder caveat.
+See [Contributing](CONTRIBUTING.md) for reproducible local checks and dependency
+upgrade policy, and [Developer setup](DEV_SETUP.md) for n8n integration options.

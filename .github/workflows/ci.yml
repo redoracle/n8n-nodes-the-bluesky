@@ -2,32 +2,52 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  quality:
+    name: Lint, test, build and pack (Node 22)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
         with:
           run_install: false
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run lint
+      - name: Lint
         run: pnpm run lint
 
-      - name: Run tests
-        run: pnpm test
+      - name: Test
+        run: pnpm test -- --runInBand
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Validate publishable package
+        run: |
+          test -f dist/nodes/Bluesky/Bluesky.node.js
+          test -f dist/nodes/BlueskyTrigger/BlueskyTrigger.node.js
+          test -f dist/credentials/BlueskyApi.credentials.js
+          test ! -d dist/__tests__
+          test ! -d dist/src
+          pnpm pack --pack-destination "$RUNNER_TEMP"
+          tar -tzf "$RUNNER_TEMP"/n8n-nodes-the-bluesky-*.tgz | grep -q 'package/dist/nodes/Bluesky/Bluesky.node.js'

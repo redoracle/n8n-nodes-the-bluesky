@@ -194,6 +194,44 @@ describe('BlueskyTrigger', () => {
 			expect(parsed).not.toBeNull();
 			expect(parsed?.operations).toHaveLength(0);
 		});
+		it('should reject payloads with non-array operations or non-integer sequences', () => {
+			const valid = {
+				$type: 'com.atproto.sync.subscribeRepos#commit',
+				seq: 12,
+				rebase: false,
+				tooBig: false,
+				repo: 'did:plc:test',
+				commit: { cid: 'bafytest', rev: 'rev' },
+				time: '2024-01-02T00:00:00.000Z',
+			};
+			expect(parseFirehoseMessage(Buffer.from(JSON.stringify({ ...valid, ops: {} })))).toBeNull();
+			expect(parseFirehoseMessage(Buffer.from(JSON.stringify({ ...valid, seq: 1.5 })))).toBeNull();
+			expect(parseFirehoseMessage(Buffer.from(JSON.stringify({ ...valid, seq: -1 })))).toBeNull();
+		});
+
+		it('should ignore malformed operation paths and unsupported actions', () => {
+			const message = {
+				$type: 'com.atproto.sync.subscribeRepos#commit',
+				seq: 13,
+				rebase: false,
+				tooBig: false,
+				repo: 'did:plc:test',
+				commit: { cid: 'bafytest', rev: 'rev' },
+				time: '2024-01-02T00:00:00.000Z',
+				ops: [
+					{ op: 'create', path: '/app.bsky.feed.post/rkey' },
+					{ op: 'create', path: 'app.bsky.feed.post/rkey/' },
+					{ op: 'create', path: 42 },
+					{ op: 'other', path: 'app.bsky.feed.post/rkey' },
+					{ op: 'delete', path: 'app.bsky.feed.post/valid' },
+				],
+			};
+			const parsed = parseFirehoseMessage(Buffer.from(JSON.stringify(message)));
+			expect(parsed?.operations).toEqual([
+				{ action: 'delete', collection: 'app.bsky.feed.post', rkey: 'valid' },
+			]);
+		});
+
 	});
 
 	describe('Message Filtering', () => {
