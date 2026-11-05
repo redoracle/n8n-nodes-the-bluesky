@@ -46,7 +46,7 @@ Protocol references:
 Only `nodes/`, `credentials/`, and required type declarations are
 compiled to `dist/`; Jest sources and obsolete `src/` copies are excluded.
 The icon copy task runs after compilation. `package.json` publishes
-only `dist/`; `index.js` is the repository's development entry point.
+`dist/` and the CommonJS `index.js` entry point.
 
 Use `pnpm install --frozen-lockfile`, then `pnpm lint`, `pnpm test`,
 and `pnpm build`. CI additionally packs the tarball and checks its
@@ -66,3 +66,16 @@ testing the installed community package inside n8n.
 The `pnpm-lock.yaml` file must be changed together with dependency
 specifiers. Never use an implicit install during `build` or `test`:
 reproducibility is enforced at the install step.
+
+## Transport trust boundaries
+
+The trigger accepts a configured relay origin. The `subscriptionEndpoint` helper
+rejects credentials, query strings, paths and URL fragments in relay origins.
+Authenticated label subscriptions require `wss://`; unencrypted `ws://`
+remains available only for unauthenticated repository events and local testing.
+An encrypted connection does **not** make a remote relay trustworthy.
+Only configure trusted endpoints. The same precaution applies to custom PDS URLs.
+
+Website-card Open Graph fetching is an opt-in outbound network operation.
+Do not enable it for arbitrary untrusted URLs without a network egress policy;
+redirects, private DNS and DNS rebinding can expose internal services.

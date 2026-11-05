@@ -40,7 +40,8 @@
 		"update-deps": "pnpm update"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"index.js"
 	],
 	"dependencies": {
 		"@atproto/api": "0.19.6",
