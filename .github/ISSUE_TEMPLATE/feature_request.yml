@@ -1,0 +1,21 @@
+name: Feature request
+description: Propose an AT Protocol operation, feature, or workflow improvement
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Problem and workflow use case
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior and relevant AT Protocol methods
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and compatibility considerations

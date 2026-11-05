@@ -1,0 +1,5 @@
+# Review ownership for production code, metadata and workflows
+* @redoracle
+.github/ @redoracle
+package.json @redoracle
+pnpm-lock.yaml @redoracle

@@ -44,3 +44,11 @@ The repository trigger does not currently decode the complete binary AT
 Protocol subscription frame or CAR block format. See
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing the parser
 or relying on firehose event delivery.
+
+## Reporting problems and reviewing changes
+
+Use the GitHub issue templates for reproducible bugs and feature requests.
+For security vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of
+opening a public issue. Include regression tests, runtime compatibility
+notes, and migration guidance in pull requests. Maintainers should inspect
+the publishable tarball, not only a successful TypeScript build.

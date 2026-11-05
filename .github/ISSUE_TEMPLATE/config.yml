@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability privately
+    url: https://github.com/redoracle/n8n-nodes-the-bluesky/security/advisories/new
+    about: See SECURITY.md if private GitHub reporting is not enabled.
