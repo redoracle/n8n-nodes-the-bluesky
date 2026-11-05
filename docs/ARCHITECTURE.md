@@ -79,3 +79,6 @@ Only configure trusted endpoints. The same precaution applies to custom PDS URLs
 Website-card Open Graph fetching is an opt-in outbound network operation.
 Do not enable it for arbitrary untrusted URLs without a network egress policy;
 redirects, private DNS and DNS rebinding can expose internal services.
+
+The production compiler does not emit an extra `dist/package.json`.
+ESLint parses the root package manifest separately from the TypeScript project.

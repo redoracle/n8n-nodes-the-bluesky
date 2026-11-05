@@ -48,9 +48,10 @@ jobs:
           test -f dist/nodes/BlueskyTrigger/BlueskyTrigger.node.js
           test -f dist/credentials/BlueskyApi.credentials.js
           node -e "const pkg=require('./package.json'); if (!pkg.files.includes('index.js')) process.exit(1); require('./index.js')"
+          test ! -f dist/package.json
           test ! -d dist/__tests__
           test ! -d dist/src
           pnpm pack --pack-destination "$RUNNER_TEMP"
           tar -tzf "$RUNNER_TEMP"/n8n-nodes-the-bluesky-*.tgz | grep -q 'package/dist/nodes/Bluesky/Bluesky.node.js'
-          tar -tzf "$RUNNER_TEMP"/n8n-nodes-the-bluesky-*.tgz | grep -q '^package/index.js
+          tar -tzf "$RUNNER_TEMP"/n8n-nodes-the-bluesky-*.tgz | grep -q 'package/index.js'
 
