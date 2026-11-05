@@ -52,3 +52,12 @@ For security vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of
 opening a public issue. Include regression tests, runtime compatibility
 notes, and migration guidance in pull requests. Maintainers should inspect
 the publishable tarball, not only a successful TypeScript build.
+
+## Security dependency checks
+
+Run `pnpm run audit:prod` before release. The dedicated
+[dependency audit workflow](.github/workflows/security.yml) checks for
+high/critical published advisories on pull requests, on demand and weekly.
+If an advisory cannot be resolved without a breaking SDK migration,
+record its exact advisory, exploitability, compensating controls and
+remediation plan in the security audit document; never silently suppress it.

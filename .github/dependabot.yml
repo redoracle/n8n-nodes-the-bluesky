@@ -16,8 +16,6 @@ updates:
         versions: ['>=0.20.0']
       - dependency-name: '@atproto/lex-cbor'
         versions: ['>=0.1.0']
-      - dependency-name: '@atproto/syntax'
-        versions: ['>=0.6.0']
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:

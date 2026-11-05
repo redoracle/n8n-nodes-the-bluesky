@@ -37,7 +37,8 @@
 		"test": "jest",
 		"clean": "rm -rf dist node_modules",
 		"fresh-install": "pnpm run clean && pnpm install",
-		"update-deps": "pnpm update"
+		"update-deps": "pnpm update",
+		"audit:prod": "pnpm audit --prod --audit-level high"
 	},
 	"files": [
 		"dist",
