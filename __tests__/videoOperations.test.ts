@@ -162,6 +162,29 @@ describe('Safe video upload', () => {
 		expect(agent.api.com.atproto.repo.uploadBlob).not.toHaveBeenCalled();
 	});
 
+	it('polls until processing completes and only then returns a service-produced blob', async () => {
+		const getJobStatus = jest.fn().mockResolvedValue({
+			success: true,
+			data: { jobStatus: { jobId: 'job2', state: 'JOB_STATE_COMPLETED', blob: processedBlob } },
+		});
+		const agent = makeAgent({
+			uploadVideo: jest.fn().mockResolvedValue({
+				success: true,
+				data: { jobStatus: { jobId: 'job2', state: 'JOB_STATE_ENCODING' } },
+			}),
+			getJobStatus,
+		});
+		jest.useFakeTimers();
+		try {
+			const pending = uploadVideo.call(makeContext(makeItems()), agent, 'video');
+			await jest.advanceTimersByTimeAsync(2_000);
+			await expect(pending).resolves.toEqual({ blob: processedBlob, altText: '' });
+			expect(getJobStatus).toHaveBeenCalledWith({ jobId: 'job2' });
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
 	it('rejects an incomplete job when the SDK cannot poll it', async () => {
 		const agent = makeAgent({
 			uploadVideo: jest.fn().mockResolvedValue({
