@@ -128,6 +128,7 @@ describe('Safe video upload', () => {
 		{ json: {}, binary: { video: { mimeType: 'video/mp4' } } },
 		{ json: {}, binary: { video: { mimeType: 'video/mp4' } } },
 	];
+	const makeAgent = (video: unknown): any => ({ api: { app: { bsky: { video } } } });
 
 	it('only returns the genuine completed video blob and uses the correct input item', async () => {
 		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
@@ -153,26 +154,36 @@ describe('Safe video upload', () => {
 
 	it('fails closed on a processing failure instead of uploading a generic blob', async () => {
 		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
-		const agent: any = { api: { app: { bsky: { video: { uploadVideo: jest.fn().mockResolvedValue({
-			success: true, data: { jobStatus: { jobId: 'fail', state: 'JOB_STATE_FAILED', error: 'encoding failure' } },
-		}) } } }, com: { atproto: { repo: { uploadBlob: jest.fn() } } } } };
+		const agent = makeAgent({
+			uploadVideo: jest.fn().mockResolvedValue({
+				success: true,
+				data: { jobStatus: { jobId: 'fail', state: 'JOB_STATE_FAILED', error: 'encoding failure' } },
+			}),
+		});
+		agent.api.com = { atproto: { repo: { uploadBlob: jest.fn() } } };
 		await expect(uploadVideo.call(makeContext(makeItems()), agent, 'video')).rejects.toThrow(/encoding failure/);
 		expect(agent.api.com.atproto.repo.uploadBlob).not.toHaveBeenCalled();
 	});
 
 	it('rejects an incomplete job when the SDK cannot poll it', async () => {
 		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
-		const agent: any = { api: { app: { bsky: { video: { uploadVideo: jest.fn().mockResolvedValue({
-			success: true, data: { jobStatus: { jobId: 'pending', state: 'JOB_STATE_ENCODING' } },
-		}) } } } } } };
+		const agent = makeAgent({
+			uploadVideo: jest.fn().mockResolvedValue({
+				success: true,
+				data: { jobStatus: { jobId: 'pending', state: 'JOB_STATE_ENCODING' } },
+			}),
+		});
 		await expect(uploadVideo.call(makeContext(makeItems()), agent, 'video')).rejects.toThrow(/cannot be polled/);
 	});
 
 	it('rejects completed status without a real blob', async () => {
 		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
-		const agent: any = { api: { app: { bsky: { video: { uploadVideo: jest.fn().mockResolvedValue({
-			success: true, data: { jobStatus: { jobId: 'done', state: 'JOB_STATE_COMPLETED' } },
-		}) } } } } } };
+		const agent = makeAgent({
+			uploadVideo: jest.fn().mockResolvedValue({
+				success: true,
+				data: { jobStatus: { jobId: 'done', state: 'JOB_STATE_COMPLETED' } },
+			}),
+		});
 		await expect(uploadVideo.call(makeContext(makeItems()), agent, 'video')).rejects.toThrow(/valid processed blob/);
 	});
 
