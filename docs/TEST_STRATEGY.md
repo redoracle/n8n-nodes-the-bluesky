@@ -56,10 +56,12 @@ that the packaged node works inside a deployed n8n instance.
   as an artifact, including unexercised production source files.
 - Record coverage baselines first, then require module-specific thresholds for
   security-sensitive, posting, and event-streaming branches.
-- Enforce conservative initial global regression floors: 70% statements/lines,
-  70% branches and 80% functions, derived from the measured V8 baseline of
-  73.8% statements/lines, 76.57% branches and 86.66% functions
-  (2026-11-06, 28 suites, 264 tests). Raise only with verified coverage.
+- Enforce conservative initial global regression floors with
+  `node scripts/check-coverage.mjs`: 70% statements/lines, 70% branches and
+  80% functions, derived from measured V8 baseline values of 73.8%, 76.57%
+  and 86.66% (2026-11-06). This standalone verifier is intentional: Jest 29's
+  built-in threshold reporter fails in the current dependency graph even after
+  all tests and V8 instrumentation succeed. Raise floors only with evidence.
 - Add contract fixtures pinned to upstream lexicon revisions, with an explicit
   compatibility review when changing `@atproto/api`.
 - Make a lightweight installed-node smoke test part of PR checks; keep live

@@ -14,12 +14,9 @@ module.exports = {
 	collectCoverageFrom: ['nodes/**/*.ts', 'credentials/**/*.ts', '!**/*.d.ts'],
 	coverageDirectory: '<rootDir>/coverage',
 	coverageReporters: ['text-summary', 'json-summary'],
-	// Conservative CI regression floors from 2026-11-06 V8 baseline:
-	// statements/lines 73.8%, branches 76.57%, functions 86.66%.
-	// Raise floors as integration coverage improves; avoid artificial 100%.
-	coverageThreshold: {
-		global: { statements: 70, branches: 70, functions: 80, lines: 70 },
-	},
+	// Coverage floors are enforced by scripts/check-coverage.mjs.
+	// Jest 29's built-in threshold reporter crashes with the current glob tree.
+	// Keeping the gate separate preserves coverage regression protection.
 	transform: {
 		'^.+\\.ts$': [
 			'ts-jest',

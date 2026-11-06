@@ -39,6 +39,9 @@ jobs:
       - name: Test with production-source coverage
         run: pnpm exec jest --runInBand --coverage
 
+      - name: Enforce measured coverage regression floors
+        run: node scripts/check-coverage.mjs
+
       - name: Upload coverage baseline
         if: always()
         uses: actions/upload-artifact@v4
