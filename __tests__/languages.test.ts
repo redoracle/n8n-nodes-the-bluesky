@@ -12,14 +12,17 @@ describe('Languages', () => {
 			expect(options.length).toBeGreaterThan(0);
 		});
 
-		const options = getLanguageOptions();
-		options.forEach((opt, idx) => {
-			test(`option ${idx} (${opt.name || opt.value}) should have proper name/value structure`, () => {
-				expect(opt).toHaveProperty('name');
-				expect(opt).toHaveProperty('value');
-				expect(typeof opt.name).toBe('string');
-				expect(typeof opt.value).toBe('string');
-			});
+		it('returns unique nonempty language codes with nonempty labels', () => {
+			// Validate the entire catalog in one invariant rather than one test per entry.
+			const options = getLanguageOptions();
+			const values = options.map((option) => option.value);
+			expect(new Set(values).size).toBe(values.length);
+			for (const option of options) {
+				expect(typeof option.name).toBe('string');
+				expect(typeof option.value).toBe('string');
+				expect(String(option.name).trim()).not.toBe('');
+				expect(String(option.value).trim()).not.toBe('');
+			}
 		});
 
 		it('should include English (en)', () => {

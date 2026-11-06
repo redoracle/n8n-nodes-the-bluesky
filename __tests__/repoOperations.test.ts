@@ -172,6 +172,45 @@ describe('Repo Operations', () => {
 		});
 	});
 
+
+	describe('failure and optimistic concurrency contracts', () => {
+		it('does not retry or report success when the PDS rejects a concurrent record update', async () => {
+			const conflict = Object.assign(new Error('InvalidSwap: repository changed'), { status: 409 });
+			agent.com.atproto.repo.putRecord.mockRejectedValueOnce(conflict);
+
+			await expect(putRecordOperation(agent, 'did:plc:me', 'app.bsky.feed.post', 'rk1',
+				JSON.stringify({ text: 'stale edit' }), 'old-head')).rejects.toBe(conflict);
+			expect(agent.com.atproto.repo.putRecord).toHaveBeenCalledTimes(1);
+			expect(agent.com.atproto.repo.putRecord).toHaveBeenCalledWith({
+				repo: 'did:plc:me',
+				collection: 'app.bsky.feed.post',
+				rkey: 'rk1',
+				record: { text: 'stale edit' },
+				swapCommit: 'old-head',
+			});
+		});
+
+		it('does not claim deletion succeeded when the remote delete is rejected', async () => {
+			const forbidden = Object.assign(new Error('Forbidden'), { status: 403 });
+			agent.com.atproto.repo.deleteRecord.mockRejectedValueOnce(forbidden);
+			await expect(deleteRecordOperation(agent, 'did:plc:me', 'app.bsky.feed.post', 'rk1'))
+				.rejects.toBe(forbidden);
+			expect(agent.com.atproto.repo.deleteRecord).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not send malformed record JSON to the PDS', async () => {
+			await expect(createRecordOperation(agent, 'did:plc:me', 'app.bsky.feed.post', '{invalid'))
+				.rejects.toBeInstanceOf(SyntaxError);
+			expect(agent.com.atproto.repo.createRecord).not.toHaveBeenCalled();
+		});
+
+		it('does not submit malformed batch JSON', async () => {
+			await expect(applyWritesOperation(agent, 'did:plc:me', '[invalid'))
+				.rejects.toBeInstanceOf(SyntaxError);
+			expect(agent.com.atproto.repo.applyWrites).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('applyWritesOperation', () => {
 		it('should apply batch writes', async () => {
 			const writes = JSON.stringify([
