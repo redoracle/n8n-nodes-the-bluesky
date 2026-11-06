@@ -2,14 +2,13 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   schedule:
-    - cron: '0 0 1 * *' # 1st of every month at midnight UTC
+    - cron: '0 0 1 * *'
   workflow_dispatch:
 
 permissions:
-  contents: write # Required for Git tag creation and GitHub Release
+  contents: write
 
 concurrency:
   group: release
@@ -19,17 +18,18 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org/'
@@ -38,8 +38,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        run: pnpm run lint
+
       - name: Run tests
-        run: pnpm test
+        run: pnpm exec jest --runInBand
 
       - name: Build
         run: pnpm run build
@@ -49,4 +52,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+        run: pnpm exec semantic-release

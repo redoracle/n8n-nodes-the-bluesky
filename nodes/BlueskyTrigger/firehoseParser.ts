@@ -60,21 +60,23 @@ export interface LabelMessage {
 
 /**
  * Parse a firehose message
- * Note: Full CAR/CBOR parsing requires additional dependencies
- * This is a simplified version that handles the common message format
+ * This parser handles decoded commit-shaped payloads, including JSON fixtures.
+ * XRPC subscription wire frames contain a separate CBOR header and body; they
+ * require framing and CAR block decoding before records can be extracted.
  */
 function isFirehoseCommit(value: unknown): value is FirehoseCommit {
 	if (!value || typeof value !== 'object') return false;
 	const msg = value as Partial<FirehoseCommit>;
 	return (
 		typeof msg.$type === 'string' &&
-		typeof msg.seq === 'number' &&
+		typeof msg.seq === 'number' && Number.isSafeInteger(msg.seq) && msg.seq >= 0 &&
 		typeof msg.repo === 'string' &&
 		typeof msg.time === 'string' &&
 		typeof msg.rebase === 'boolean' &&
 		typeof msg.tooBig === 'boolean' &&
 		typeof msg.commit?.cid === 'string' &&
-		typeof msg.commit?.rev === 'string'
+		typeof msg.commit?.rev === 'string' &&
+		(msg.ops === undefined || Array.isArray(msg.ops))
 	);
 }
 
@@ -106,16 +108,20 @@ export function parseFirehoseMessage(data: Buffer): ParsedMessage | null {
 	// Parse operations
 	const operations = (message.ops || [])
 		.map((op) => {
-			if (!op?.path) {
+			if (
+				!op ||
+				typeof op.path !== 'string' ||
+				(op.op !== 'create' && op.op !== 'update' && op.op !== 'delete')
+			) {
 				return null;
 			}
 
 			// Expected format: "collection/rkey" where collection is the record type
 			// (e.g., "app.bsky.feed.post") and rkey is the record key identifier
-			const segments = String(op.path).split('/').filter(Boolean);
+			const segments = op.path.split('/');
 
 			// Validate path format - must have exactly 2 segments (collection and rkey)
-			if (segments.length !== 2) {
+			if (segments.length !== 2 || segments.some((segment) => segment.length === 0)) {
 				LoggerProxy.warn(
 					`Skipping operation with invalid path format: "${op.path}" (expected "collection/rkey")`,
 				);

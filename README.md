@@ -4,8 +4,9 @@
 [![Downloads](https://img.shields.io/npm/dm/n8n-nodes-the-bluesky.svg)](https://www.npmjs.com/package/n8n-nodes-the-bluesky)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![CI](https://github.com/redoracle/n8n-nodes-the-bluesky/actions/workflows/ci.yml/badge.svg)](https://github.com/redoracle/n8n-nodes-the-bluesky/actions/workflows/ci.yml)
+[![Security policy](https://img.shields.io/badge/security-report%20privately-blue)](SECURITY.md)
 
-A community maintained n8n node package for interacting with the Bluesky (AT Protocol) API. It covers posting, feed reading, list management, search, analytics, and real time streaming in your n8n workflows.
+A community-maintained [n8n](https://n8n.io/) node for Bluesky and the AT Protocol. It supports posts, feeds, lists, search and automation, with an **experimental** WebSocket trigger. The trigger does not yet decode native AT Protocol frames and must not be relied on for lossless event collection.
 
 ---
 
@@ -22,9 +23,11 @@ A community maintained n8n node package for interacting with the Bluesky (AT Pro
   - [Manage Lists](#manage-lists)
 - [Available Resources & Operations](#available-resources--operations)
 - [Testing](#testing)
+- [Architecture and Development](#architecture-and-development)
 - [Development & Contributing](#development--contributing)
 - [License](#license)
 - [References](#references)
+- [Security and support](#security-and-support)
 
 ---
 
@@ -57,6 +60,8 @@ A community maintained n8n node package for interacting with the Bluesky (AT Pro
 
 ---
 
+> **Firehose protocol limitation:** The trigger's current decoder accepts commit-shaped CBOR objects and JSON fixtures, but does **not** yet decode the AT Protocol's two-part CBOR subscription frames or embedded CAR blocks. Consequently, raw `subscribeRepos` and `subscribeLabels` relay streams are not fully supported in production. Do not rely on this trigger for lossless or security-critical event ingestion until the wire-protocol implementation is completed and integration-tested. See [architecture and limitations](docs/ARCHITECTURE.md).
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v20 or higher
@@ -79,7 +84,9 @@ The Dockerfiles in this repository use a multistage build with an optional plugi
 **Build with plugin**: provide the tarball via `--build-arg` and target `final-plugin`. The tarball must exist in the build context, or specify a path relative to it.
 
 ```bash
-docker build --target final-plugin --build-arg PLUGIN_TARBALL=n8n-nodes-the-bluesky-0.0.21.tgz -t n8n-with-plugin .
+pnpm install --frozen-lockfile && pnpm run build && pnpm pack
+export PLUGIN_TARBALL="$(ls -t n8n-nodes-the-bluesky-*.tgz | head -n1)"
+docker build --target final-plugin --build-arg PLUGIN_TARBALL="$PLUGIN_TARBALL" -t n8n-with-plugin .
 ```
 
 **Local development without plugin**:
@@ -91,7 +98,7 @@ docker build -f Dockerfile.dev -t n8n-dev:plain .
 **Local development with plugin**:
 
 ```bash
-docker build -f Dockerfile.dev --target final-plugin --build-arg PLUGIN_TARBALL=n8n-nodes-the-bluesky-0.0.21.tgz -t n8n-dev:plugin .
+docker build -f Dockerfile.dev --target final-plugin --build-arg PLUGIN_TARBALL="$PLUGIN_TARBALL" -t n8n-dev:plugin .
 ```
 
 > The plugin tarball is only used when building the `final-plugin` target. Default builds without a specified target will not attempt to install the plugin. This approach works across common Docker installations and does not rely on BuildKit-specific optional mounts.
@@ -295,7 +302,7 @@ Running the firehose continuously (`maxEvents: 0`) can generate very high event 
 | **Identity**     | resolveHandle, resolveDid, resolveIdentity                                                                                                         |
 | **Preferences**  | getPreferences, putPreferences                                                                                                                     |
 | **Sync**         | getRepo, getRecord, getRepoStatus, getLatestCommit, getBlob, listBlobs, listRepos, notifyOfUpdate, requestCrawl                                    |
-| **Trigger**      | subscribeRepos, subscribeLabels (real time WebSocket streaming)                                                                                    |
+| **Trigger**      | subscribeRepos, subscribeLabels (experimental streaming; see caveat above)                                                                                    |
 
 ### API Coverage
 
@@ -316,8 +323,10 @@ For field descriptions and parameter options, see the source under `nodes/Bluesk
 Tests use [Jest](https://jestjs.io/).
 
 ```bash
-pnpm install
-pnpm test
+pnpm install --frozen-lockfile
+pnpm run lint
+pnpm exec jest --runInBand
+pnpm run build
 ```
 
 Test files are in the `__tests__` directory.
@@ -349,7 +358,7 @@ The repository includes a `Makefile` with developer shortcuts. Run `make help` t
 Common targets:
 
 - `make install` — install dependencies
-- `make deps` — ensure build and test tooling is present
+- `make deps` — install the exact locked toolchain
 - `make build` — compile TypeScript and assets
 - `make dev` — start TypeScript watch mode
 - `make test` — run the Jest test suite
@@ -404,8 +413,38 @@ MIT. See [LICENSE.md](LICENSE.md) for details.
 - AT Protocol Docs: <https://atproto.com/>
 - n8n Community Nodes Docs: <https://docs.n8n.io/integrations/community-nodes/>
 
-## Support
+## Support the project
 
 If you find this plugin useful and want to support its development, you can support me on Ko-fi.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X71XF2G2)
+
+## Architecture and Development
+
+See [Architecture and protocol limitations](docs/ARCHITECTURE.md) for the node's
+runtime design, publication boundaries, and current firehose decoder caveat.
+See [Contributing](CONTRIBUTING.md) for reproducible local checks and dependency
+upgrade policy, and [Developer setup](DEV_SETUP.md) for n8n integration options.
+
+
+## Security and support
+
+- **Vulnerabilities:** [security policy and private disclosure](SECURITY.md)
+- **Troubleshooting:** [support guide](SUPPORT.md)
+- **Contributing:** [contributor guide](CONTRIBUTING.md)
+- **Maintainers:** [quality and release checklist](docs/MAINTAINER_GUIDE.md)
+- **Second-pass review:** [security and quality audit](docs/SECURITY_AUDIT_2026-11-05.md)
+
+> Open Graph previews fetch remote content only when explicitly enabled. A
+> public-address guard, redirect restriction and download limits reduce risk,
+> but do not replace outbound firewall restrictions or DNS rebinding protection.
+>
+> Never share Bluesky app passwords, bearer tokens, session cookies, or n8n
+> credential exports in public issues or example workflows.
+
+> **Outstanding dependency advisory:** [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)
+> affects Zod 3 in the legacy AT Protocol SDK. The separate security
+> workflow currently flags this high-severity risk. See
+> [tracking issue #56](https://github.com/redoracle/n8n-nodes-the-bluesky/issues/56)
+> and [security policy](SECURITY.md). Do not treat a green build as a clean
+> dependency security audit.

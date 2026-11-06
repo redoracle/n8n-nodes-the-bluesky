@@ -4,6 +4,7 @@ import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
 // ITriggerFunctions and ITriggerResponse are not exported from the n8n-workflow
 // public index. Local minimal shim avoids the fragile deep private-path import.
 import WebSocket from 'ws';
+import { buildSubscriptionEndpoint } from './subscriptionEndpoint';
 import type { ITriggerFunctions, ITriggerResponse } from '../../types/trigger-types';
 import {
 	matchesFilters,
@@ -63,7 +64,7 @@ export class BlueskyTrigger implements INodeType {
 				default: '',
 				placeholder: 'wss://bsky.network',
 				description:
-					'The WebSocket endpoint to connect to (defaults to wss://bsky.network for both streams)',
+					'Relay origin (defaults to wss://bsky.network). Authenticated label streams require encrypted wss://. Only connect to trusted relays.',
 			},
 			{
 				displayName: 'Max Events',
@@ -160,6 +161,9 @@ export class BlueskyTrigger implements INodeType {
 			// Both subscribeRepos and subscribeLabels use the same public relay endpoint
 			serviceEndpoint = 'wss://bsky.network';
 		}
+
+		// Validate transport before requesting credentials or starting the worker.
+		const endpoint = buildSubscriptionEndpoint(serviceEndpoint, stream);
 
 		const maxEvents = this.getNodeParameter('maxEvents', 0) as number;
 		const filterCollection = this.getNodeParameter('filterCollection', '', {
@@ -391,43 +395,6 @@ export class BlueskyTrigger implements INodeType {
 
 		const connect = () => {
 			if (!shouldReconnect) return;
-
-			// Validate serviceEndpoint before constructing URL
-			if (!serviceEndpoint || typeof serviceEndpoint !== 'string') {
-				const error = 'Service endpoint is empty or invalid';
-				this.logger.error(error);
-				this.emit([this.helpers.returnJsonArray([{ error }])]);
-				shouldReconnect = false;
-				return;
-			}
-
-			// Validate serviceEndpoint protocol
-			if (!serviceEndpoint.startsWith('wss://') && !serviceEndpoint.startsWith('ws://')) {
-				const error = `Service endpoint must use ws:// or wss:// protocol, got: ${serviceEndpoint}`;
-				this.logger.error(error);
-				this.emit([this.helpers.returnJsonArray([{ error }])]);
-				shouldReconnect = false;
-				return;
-			}
-
-			const endpoint =
-				stream === 'subscribeRepos'
-					? `${serviceEndpoint}/xrpc/com.atproto.sync.subscribeRepos`
-					: `${serviceEndpoint}/xrpc/com.atproto.label.subscribeLabels`;
-
-			// Validate the final endpoint URL
-			try {
-				const parsedUrl = new URL(endpoint);
-				if (parsedUrl.protocol !== 'wss:' && parsedUrl.protocol !== 'ws:') {
-					throw new Error(`Invalid protocol: ${parsedUrl.protocol}`);
-				}
-			} catch (urlError) {
-				const error = `Invalid WebSocket endpoint URL: ${endpoint} - ${urlError instanceof Error ? urlError.message : String(urlError)}`;
-				this.logger.error(error);
-				this.emit([this.helpers.returnJsonArray([{ error }])]);
-				shouldReconnect = false;
-				return;
-			}
 
 			// Construct WebSocket with error handling
 			try {

@@ -56,7 +56,6 @@ export async function improvedUploadImageHelper(
 		// Log binary metadata if available
 		const binaryMetadata = item.binary[binaryPropertyName];
 		logDebug(`Binary metadata for ${binaryPropertyName}`, {
-			fileName: binaryMetadata.fileName,
 			mimeType: binaryMetadata.mimeType,
 			fileSize: binaryMetadata.fileSize,
 		});

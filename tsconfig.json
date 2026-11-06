@@ -30,10 +30,7 @@
 		"types/**/*.d.ts",
 		"credentials/**/*",
 		"nodes/**/*",
-		"nodes/**/*.json",
-		"package.json",
-		"__tests__/**/*",
-		"src/**/*"
+		"nodes/**/*.json"
 	],
-	"exclude": ["node_modules", "dist", "types/n8n-workflow-shim.d.ts"]
+	"exclude": ["node_modules", "dist", "src", "__tests__", "types/n8n-workflow-shim.d.ts"]
 }

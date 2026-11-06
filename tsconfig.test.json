@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "types/**/*.d.ts",
+    "credentials/**/*",
+    "nodes/**/*",
+    "nodes/**/*.json",
+    "__tests__/**/*"
+  ],
+  "exclude": ["node_modules", "dist", "src", "types/n8n-workflow-shim.d.ts"]
+}

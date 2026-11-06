@@ -26,6 +26,9 @@ module.exports = [
 	},
 	{
 		files: ['package.json'],
+		languageOptions: {
+			parserOptions: { project: null },
+		},
 		plugins: {
 			'n8n-nodes-base': n8nNodesBase,
 		},

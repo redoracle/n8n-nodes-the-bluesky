@@ -10,6 +10,7 @@ import ogs from 'open-graph-scraper';
 import { improvedUploadImageHelper } from './binaryUploadHelper';
 import { getLanguageOptions } from './languages';
 import { uploadVideo } from './videoOperations';
+import { assertPublicMetadataUrl, readLimitedImageResponse } from './websiteSecurity';
 
 export const postProperties: INodeProperties[] = [
 	{
@@ -368,19 +369,25 @@ async function buildWebsiteCardEmbed(
 	}
 	if (websiteCard.fetchOpenGraphTags === true) {
 		try {
-			const ogsResponse = await ogs({ url: websiteCard.uri });
+			await assertPublicMetadataUrl(websiteCard.uri);
+			// Reject redirects rather than following a public URL into an internal service.
+			const ogsResponse = await ogs({
+				url: websiteCard.uri,
+				timeout: 5,
+				fetchOptions: { redirect: 'error' },
+			});
 			if (ogsResponse.error || !ogsResponse.result)
 				throw new Error(`Error fetching Open Graph tags: ${ogsResponse.error || 'No result'}`);
 			const ogResult: any = ogsResponse.result;
 			if (ogResult.ogImage && ogResult.ogImage.length > 0 && ogResult.ogImage[0].url) {
 				const imageUrl = ogResult.ogImage[0].url as string;
-				const imageResponse = await fetch(imageUrl);
-				if (!imageResponse.ok)
-					throw new Error(
-						`Failed to fetch Open Graph image from ${imageUrl}: ${imageResponse.statusText}`,
-					);
-				const imageArrayBuffer = await imageResponse.arrayBuffer();
-				const imageBuffer = Buffer.from(imageArrayBuffer);
+				await assertPublicMetadataUrl(imageUrl);
+				const imageResponse = await fetch(imageUrl, {
+					redirect: 'error',
+					signal: AbortSignal.timeout(10_000),
+				});
+				if (!imageResponse.ok) throw new Error('Open Graph image download failed');
+				const imageBuffer = await readLimitedImageResponse(imageResponse);
 				const uploadResponse = await agent.uploadBlob(imageBuffer);
 				thumbBlob = uploadResponse.data.blob;
 			}

@@ -1,0 +1,43 @@
+name: Bug report
+description: Report a reproducible problem in the Bluesky n8n node
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report security vulnerabilities privately using SECURITY.md.
+        Remove all passwords, tokens, user data and credential exports.
+  - type: input
+    id: versions
+    attributes:
+      label: Package, n8n, and Node.js versions
+      placeholder: "Package 0.0.x; n8n 2.x; Node.js 22.x"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: "1. Configure ... 2. Execute ... 3. Observe ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and sanitized logs
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy checklist
+      options:
+        - label: I searched existing issues and removed secrets and personal information.
+          required: true

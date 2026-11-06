@@ -6,10 +6,10 @@ module.exports = {
 	setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 	detectOpenHandles: true,
 	transform: {
-		'^.+\.ts$': [
+		'^.+\\.ts$': [
 			'ts-jest',
 			{
-				tsconfig: 'tsconfig.json',
+				tsconfig: 'tsconfig.test.json',
 			},
 		],
 	},

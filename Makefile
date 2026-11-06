@@ -10,10 +10,10 @@ help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*##/ {printf "  %-18s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 install: ## Install dependencies (pnpm)
-	$(PNPM) install
+	$(PNPM) install --frozen-lockfile
 
-deps: ## Ensure build/test tooling dependencies
-	$(PNPM) run deps:ensure
+deps: ## Install exact locked dependencies
+	$(PNPM) install --frozen-lockfile
 
 clean: ## Remove build artifacts and dependencies
 	$(PNPM) run clean
