@@ -239,6 +239,7 @@ async function buildMediaEmbed(
 	agent: AtpAgent,
 	includeMedia?: boolean,
 	mediaItemsInput?: { mediaItems?: any[] },
+	itemIndex: number = 0,
 ): Promise<any | undefined> {
 	if (includeMedia !== true) return undefined;
 	if (
@@ -259,7 +260,7 @@ async function buildMediaEmbed(
 		const binaryPropName = item?.media?.binaryPropertyName as string | undefined;
 		if ((!mediaType || mediaType === 'image') && binaryPropName) {
 			try {
-				const mimeType = items[0]?.binary?.[binaryPropName]?.mimeType as string | undefined;
+				const mimeType = items[itemIndex]?.binary?.[binaryPropName]?.mimeType as string | undefined;
 				if (mimeType?.startsWith('video/')) mediaType = 'video';
 			} catch {}
 		}
@@ -280,7 +281,7 @@ async function buildMediaEmbed(
 	if (videos.length > 0) {
 		const videoItem = videos[0];
 		const binaryPropName = videoItem.media.binaryPropertyName;
-		const inputItem = items[0];
+		const inputItem = items[itemIndex];
 		if (!inputItem?.binary || !inputItem.binary[binaryPropName]) {
 			throw new NodeOperationError(
 				node,
@@ -293,6 +294,7 @@ async function buildMediaEmbed(
 			agent,
 			binaryPropName,
 			videoItem.media.altText,
+			itemIndex,
 		);
 		return {
 			$type: 'app.bsky.embed.video',
@@ -311,7 +313,7 @@ async function buildMediaEmbed(
 		for (const mediaItem of images) {
 			const binaryPropName = mediaItem?.media?.binaryPropertyName;
 			if (!binaryPropName) continue;
-			const inputItem = items[0];
+			const inputItem = items[itemIndex];
 			if (!inputItem?.binary || !inputItem.binary[binaryPropName]) {
 				throw new NodeOperationError(
 					node,
@@ -324,7 +326,7 @@ async function buildMediaEmbed(
 				agent,
 				binaryPropName,
 				mediaItem.media.altText,
-				0,
+				itemIndex,
 			);
 			imagesForEmbed.push({
 				image: uploadResult.blob,
@@ -349,6 +351,7 @@ async function buildWebsiteCardEmbed(
 		uri?: string;
 		fetchOpenGraphTags?: boolean;
 	},
+	itemIndex: number = 0,
 ): Promise<any | undefined> {
 	if (!websiteCard?.uri) return undefined;
 	const node = context.getNode();
@@ -356,7 +359,7 @@ async function buildWebsiteCardEmbed(
 	if (websiteCard.thumbnailBinaryProperty) {
 		try {
 			const binaryData = await context.helpers.getBinaryDataBuffer(
-				0,
+				itemIndex,
 				websiteCard.thumbnailBinaryProperty,
 			);
 			const uploadResponse = await agent.uploadBlob(binaryData);
@@ -421,12 +424,20 @@ async function tryBuildMediaEmbed(
 	mediaItemsInput?: { mediaItems?: any[] },
 	failOnError?: boolean,
 	operationType: 'Post' | 'Reply' | string = 'Post',
+	itemIndex: number = 0,
 ): Promise<{ embed?: any; warning?: string }> {
 	try {
-		const embed = await buildMediaEmbed(context, agent, includeMedia, mediaItemsInput);
+		const embed = await buildMediaEmbed(context, agent, includeMedia, mediaItemsInput, itemIndex);
 		return { embed };
 	} catch (error: any) {
-		if (failOnError) throw error;
+		// Never publish a text-only post when the requested video is still processing or failed.
+		const inputItem = context.getInputData()[itemIndex];
+		const requestedVideo = mediaItemsInput?.mediaItems?.some((item) => {
+			const selected = item?.media;
+			return selected?.mediaType === 'video' ||
+				Boolean(inputItem?.binary?.[selected?.binaryPropertyName]?.mimeType?.startsWith('video/'));
+		});
+		if (failOnError || requestedVideo) throw error;
 		const message = error instanceof Error ? error.message : String(error);
 		return {
 			warning: `Media processing failed: ${message}. ${operationType} continued without media.`,
@@ -449,6 +460,7 @@ export async function postOperation(
 	includeMedia?: boolean,
 	mediaItemsInput?: { mediaItems?: any[] },
 	failOnMediaProcessingError?: boolean,
+	itemIndex: number = 0,
 ): Promise<INodeExecutionData[]> {
 	const rt = new RichText({ text: postText });
 	await rt.detectFacets(agent as AtpAgent);
@@ -469,13 +481,14 @@ export async function postOperation(
 			mediaItemsInput,
 			failOnMediaProcessingError,
 			'Post',
+			itemIndex,
 		);
 		mediaEmbed = res.embed;
 		mediaWarning = res.warning;
 	}
 	if (mediaEmbed) postData.embed = mediaEmbed;
 	else {
-		const websiteEmbed = await buildWebsiteCardEmbed(this, agent, websiteCard);
+		const websiteEmbed = await buildWebsiteCardEmbed(this, agent, websiteCard, itemIndex);
 		if (websiteEmbed) postData.embed = websiteEmbed;
 	}
 	const postResponse: { uri: string; cid: string } = await agent.post(postData);
@@ -548,6 +561,7 @@ export async function replyOperation(
 	includeMedia?: boolean,
 	mediaItemsInput?: { mediaItems?: any[] },
 	failOnMediaProcessingError?: boolean,
+	itemIndex: number = 0,
 ): Promise<INodeExecutionData[]> {
 	const rt = new RichText({ text: replyText });
 	await rt.detectFacets(agent as AtpAgent);
@@ -582,13 +596,14 @@ export async function replyOperation(
 			mediaItemsInput,
 			failOnMediaProcessingError,
 			'Reply',
+			itemIndex,
 		);
 		mediaEmbed = res.embed;
 		mediaWarning = res.warning;
 	}
 	if (mediaEmbed) replyData.embed = mediaEmbed;
 	else {
-		const websiteEmbed = await buildWebsiteCardEmbed(this, agent, websiteCard);
+		const websiteEmbed = await buildWebsiteCardEmbed(this, agent, websiteCard, itemIndex);
 		if (websiteEmbed) replyData.embed = websiteEmbed;
 	}
 	const replyResponse: { uri: string; cid: string } = await agent.post(replyData);

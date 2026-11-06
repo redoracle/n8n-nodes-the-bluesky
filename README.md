@@ -34,7 +34,7 @@ A community-maintained [n8n](https://n8n.io/) node for Bluesky and the AT Protoc
 ## Features
 
 - **Posting**: Create posts, replies, quotes, and reposts with optional media or website cards. Includes likes, unlikes, and post deletion.
-- **Media**: Image uploads with automatic aspect ratio detection; video upload support (availability depends on your Bluesky account status).
+- **Media**: Image uploads with automatic aspect ratio detection. Video uploads require MP4 and a compatible Bluesky video-processing service; posting waits for a completed processing job with a real blob. Failed, unsupported, or timed-out video jobs abort instead of publishing a text-only post or an unprocessed video blob.
 - **Feeds**: Author feeds, timelines, thread contexts, list feeds, suggested feeds, feed skeletons, and pagination.
 - **Search**: Search users and posts with filtering options.
 - **Lists**: Create and manage lists, add or remove users, and retrieve list feeds.
@@ -139,6 +139,8 @@ Import any file in n8n via **Workflows > Import from File**.
 1. Add a Bluesky node.
 2. Set Resource to **Post** and Operation to **Create**.
 3. Fill in the **Text** field, and optionally include media or additional fields.
+
+**Video posting:** Use an MP4 binary input and select **Video** as the media type. The operation waits for processing completion (up to two minutes). If the video service fails or cannot be polled, the post/reply is not submitted. There is no fallback to a raw repository blob; retry only after confirming the video job state, as repeated uploads can create separate jobs.
 
 ```yaml
 - name: Create Post
