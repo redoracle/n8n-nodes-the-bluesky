@@ -1,3 +1,4 @@
+import { cborEncode } from '@atproto/lex-cbor';
 import { BlueskyTrigger } from '../nodes/BlueskyTrigger/BlueskyTrigger.node';
 import { matchesFilters, parseFirehoseMessage } from '../nodes/BlueskyTrigger/firehoseParser';
 
@@ -92,6 +93,64 @@ describe('BlueskyTrigger', () => {
 			expect(parsed?.operations[0].action).toBe('create');
 			expect(parsed?.operations[0].collection).toBe('app.bsky.feed.post');
 			expect(parsed?.operations[0].rkey).toBe('3k2j3h4');
+		});
+
+		it('decodes an unframed CBOR commit-shaped payload and preserves its event data', () => {
+			// This covers the decoded-commit helper, NOT the XRPC header/CAR wire protocol.
+			const commit = {
+				$type: 'com.atproto.sync.subscribeRepos#commit',
+				seq: 999,
+				result: 'ignored metadata',
+				repo: 'did:plc:fixture',
+				commit: { cid: 'bafycommit', rev: 'rev-test' },
+				time: '2026-11-06T12:00:00.000Z',
+				rebase: false,
+				tooBig: false,
+				ops: [{ op: 'create', path: 'app.bsky.feed.post/abc', cid: 'bafypost' }],
+			};
+			const parsed = parseFirehoseMessage(Buffer.from(cborEncode(commit)));
+			expect(parsed).toEqual({
+				type: 'com.atproto.sync.subscribeRepos#commit',
+				seq: 999,
+				repo: 'did:plc:fixture',
+				time: '2026-11-06T12:00:00.000Z',
+				commit: { cid: 'bafycommit', rev: 'rev-test' },
+				operations: [{
+					action: 'create',
+					collection: 'app.bsky.feed.post',
+					rkey: 'abc',
+					cid: 'bafypost',
+					record: undefined,
+				}],
+				rebase: false,
+				tooBig: false,
+			});
+		});
+
+		it('rejects malformed commit envelopes before emitting a workflow event', () => {
+			const valid = {
+				$type: 'com.atproto.sync.subscribeRepos#commit',
+				seq: 10,
+				repo: 'did:plc:valid',
+				time: '2026-11-06T12:00:00Z',
+				commit: { cid: 'bafycommit', rev: 'rev' },
+				rebase: false,
+				tooBig: false,
+				ops: [],
+			};
+			const corruptions: Array<Record<string, unknown>> = [
+				{ repo: null },
+				{ seq: 1.25 },
+				{ time: 123 },
+				{ commit: { cid: 'missing-rev' } },
+				{ rebase: 'false' },
+				{ tooBig: undefined },
+				{ ops: { op: 'create' } },
+			];
+			for (const corruption of corruptions) {
+				const encoded = Buffer.from(JSON.stringify({ ...valid, ...corruption }));
+				expect(parseFirehoseMessage(encoded)).toBeNull();
+			}
 		});
 
 		it('should return null for invalid message', () => {
@@ -294,6 +353,19 @@ describe('BlueskyTrigger', () => {
 			expect(matchesFilters(message, { action: 'create' })).toBe(true);
 			expect(matchesFilters(message, { action: 'delete' })).toBe(true);
 			expect(matchesFilters(message, { action: 'update' })).toBe(false);
+		});
+
+		it('requires collection and action filters to match the same operation', () => {
+			const message = createTestMessage({
+				operations: [
+					{ action: 'create', collection: 'app.bsky.feed.post', rkey: 'post1' },
+					{ action: 'delete', collection: 'app.bsky.feed.like', rkey: 'like1' },
+				],
+			});
+			expect(matchesFilters(message, { collection: 'post', action: 'delete' })).toBe(false);
+			expect(matchesFilters(message, { collection: 'like', action: 'create' })).toBe(false);
+			expect(matchesFilters(message, { collection: 'post', action: 'create' })).toBe(true);
+			expect(matchesFilters(message, { collection: 'like', action: 'delete' })).toBe(true);
 		});
 
 		it('should combine multiple filters', () => {

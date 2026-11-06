@@ -86,20 +86,26 @@ describe('Analytics Operations', () => {
 			expect(result[0].json).toHaveProperty('seenAt', seenAt);
 		});
 
-		it('should use current time when seenAt is not provided', async () => {
-			const before = Date.now();
-			const result = await updateSeenNotificationsOperation(agent);
-			const after = Date.now();
-			expect(agent.app.bsky.notification.updateSeen).toHaveBeenCalledWith(
-				expect.objectContaining({ seenAt: expect.any(String) }),
-			);
-			expect(result[0].json).toHaveProperty('success', true);
+		it('uses a deterministic current time when seenAt is omitted', async () => {
+			// Arrange
+			const fixedTime = new Date('2026-11-06T12:34:56.000Z');
+			jest.useFakeTimers().setSystemTime(fixedTime);
+			try {
+				// Act
+				const result = await updateSeenNotificationsOperation(agent);
 
-			// Verify the auto-generated seenAt is within expected time range
-			const mockCallArgs = (agent.app.bsky.notification.updateSeen as jest.Mock).mock.calls[0][0];
-			const seenAtTimestamp = new Date(mockCallArgs.seenAt).getTime();
-			expect(seenAtTimestamp).toBeGreaterThanOrEqual(before);
-			expect(seenAtTimestamp).toBeLessThanOrEqual(after);
+				// Assert
+				expect(agent.app.bsky.notification.updateSeen).toHaveBeenCalledTimes(1);
+				expect(agent.app.bsky.notification.updateSeen).toHaveBeenCalledWith({
+					seenAt: fixedTime.toISOString(),
+				});
+				expect(result[0].json).toMatchObject({
+					success: true,
+					seenAt: fixedTime.toISOString(),
+				});
+			} finally {
+				jest.useRealTimers();
+			}
 		});
 	});
 

@@ -36,8 +36,20 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Test
-        run: pnpm exec jest --runInBand
+      - name: Test with production-source coverage
+        run: pnpm exec jest --runInBand --coverage
+
+      - name: Enforce measured coverage regression floors
+        run: node scripts/check-coverage.mjs
+
+      - name: Upload coverage baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: node22-jest-coverage
+          path: coverage/coverage-summary.json
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Verify release-notes generator compatibility
         run: pnpm run test:release-notes
