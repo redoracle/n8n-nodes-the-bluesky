@@ -28,6 +28,27 @@ describe('Open Graph thumbnail limits', () => {
 		});
 		await expect(readLimitedImageResponse(response, 10)).rejects.toThrow('maximum permitted size');
 	});
+	it('rejects excessive declared Content-Length without reading the body', async () => {
+		const response = new Response(Buffer.from([1, 2, 3]), {
+			headers: { 'content-type': 'image/png', 'content-length': '900' },
+		});
+		await expect(readLimitedImageResponse(response, 10))
+			.rejects.toThrow('maximum permitted size');
+	});
+
+	it('rejects an oversized body even when Content-Length understates its size', async () => {
+		const response = new Response(Buffer.alloc(12), {
+			headers: { 'content-type': 'image/png', 'content-length': '2' },
+		});
+		await expect(readLimitedImageResponse(response, 10))
+			.rejects.toThrow('maximum permitted size');
+	});
+
+	it('rejects an image response without a readable stream', async () => {
+		const response = new Response(null, { headers: { 'content-type': 'image/png' } });
+		await expect(readLimitedImageResponse(response)).rejects.toThrow('no body');
+	});
+
 	it('rejects non-image responses', async () => {
 		const response = new Response('hello', { headers: { 'content-type': 'text/html' } });
 		await expect(readLimitedImageResponse(response)).rejects.toThrow('image MIME type');
