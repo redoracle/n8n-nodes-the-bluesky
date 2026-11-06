@@ -16,6 +16,9 @@ updates:
         versions: ['>=0.20.0']
       - dependency-name: '@atproto/lex-cbor'
         versions: ['>=0.1.0']
+      # semantic-release 25 uses conventional-changelog-writer@8; preset v10 requires writer@9.
+      - dependency-name: 'conventional-changelog-conventionalcommits'
+        versions: ['>=10.0.0']
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:

@@ -44,6 +44,9 @@ jobs:
       - name: Run tests
         run: pnpm exec jest --runInBand
 
+      - name: Verify release-notes generator compatibility
+        run: pnpm run test:release-notes
+
       - name: Build
         run: pnpm run build
 

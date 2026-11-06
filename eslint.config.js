@@ -5,7 +5,7 @@ const globals = require('globals');
 
 module.exports = [
 	{
-		ignores: ['.eslintrc.js', '**/*.js', '**/node_modules/**', '**/dist/**'],
+		ignores: ['.eslintrc.js', '**/*.js', '**/*.mjs', 'scripts/**', '**/node_modules/**', '**/dist/**'],
 	},
 	{
 		languageOptions: {
