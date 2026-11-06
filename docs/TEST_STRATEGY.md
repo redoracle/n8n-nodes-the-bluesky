@@ -51,6 +51,9 @@ that the packaged node works inside a deployed n8n instance.
 
 - Unit, dispatch, SDK-contract and integration suites run as separate CI jobs,
   with failure modes clearly reported.
+- CI collects source-level Jest coverage across `nodes/**/*.ts` and
+  `credentials/**/*.ts` and uploads `coverage/coverage-summary.json`
+  as an artifact, including unexercised production source files.
 - Record coverage baselines first, then require module-specific thresholds for
   security-sensitive, posting, and event-streaming branches.
 - Add contract fixtures pinned to upstream lexicon revisions, with an explicit

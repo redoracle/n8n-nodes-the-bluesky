@@ -5,6 +5,12 @@ module.exports = {
 	moduleFileExtensions: ['ts', 'js'],
 	setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 	detectOpenHandles: true,
+	// Collect coverage across the *production* node and credential sources,
+	// including files not touched by the unit suites. No artificial threshold
+	// until the measured baseline and integration gaps have been reviewed.
+	collectCoverageFrom: ['nodes/**/*.ts', 'credentials/**/*.ts', '!**/*.d.ts'],
+	coverageDirectory: '<rootDir>/coverage',
+	coverageReporters: ['text-summary', 'json-summary'],
 	transform: {
 		'^.+\\.ts$': [
 			'ts-jest',
