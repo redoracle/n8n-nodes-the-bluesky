@@ -3,7 +3,7 @@
  * Covers: getVideoUploadLimits
  * Note: uploadVideo requires IExecuteFunctions context (this-bound) and is skipped.
  */
-import { getVideoUploadLimits } from '../nodes/Bluesky/V2/videoOperations';
+import { getVideoUploadLimits, uploadVideo } from '../nodes/Bluesky/V2/videoOperations';
 
 describe('Video Operations', () => {
 	describe('getVideoUploadLimits', () => {
@@ -131,7 +131,6 @@ describe('Safe video upload', () => {
 	const makeAgent = (video: unknown): any => ({ api: { app: { bsky: { video } } } });
 
 	it('only returns the genuine completed video blob and uses the correct input item', async () => {
-		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
 		const upload = jest.fn().mockResolvedValue({
 			success: true,
 			data: { jobStatus: { jobId: 'job1', state: 'JOB_STATE_COMPLETED', blob: processedBlob } },
@@ -146,14 +145,12 @@ describe('Safe video upload', () => {
 	});
 
 	it('fails closed if the SDK lacks the video service', async () => {
-		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
 		const agent: any = { api: { app: { bsky: {} }, com: { atproto: { repo: { uploadBlob: jest.fn() } } } } };
 		await expect(uploadVideo.call(makeContext(makeItems()), agent, 'video')).rejects.toThrow(/does not expose app.bsky.video.uploadVideo/);
 		expect(agent.api.com.atproto.repo.uploadBlob).not.toHaveBeenCalled();
 	});
 
 	it('fails closed on a processing failure instead of uploading a generic blob', async () => {
-		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
 		const agent = makeAgent({
 			uploadVideo: jest.fn().mockResolvedValue({
 				success: true,
@@ -166,7 +163,6 @@ describe('Safe video upload', () => {
 	});
 
 	it('rejects an incomplete job when the SDK cannot poll it', async () => {
-		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
 		const agent = makeAgent({
 			uploadVideo: jest.fn().mockResolvedValue({
 				success: true,
@@ -177,7 +173,6 @@ describe('Safe video upload', () => {
 	});
 
 	it('rejects completed status without a real blob', async () => {
-		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
 		const agent = makeAgent({
 			uploadVideo: jest.fn().mockResolvedValue({
 				success: true,
@@ -188,7 +183,6 @@ describe('Safe video upload', () => {
 	});
 
 	it('requires MP4 rather than mislabeling unsupported video encoding', async () => {
-		const { uploadVideo } = await import('../nodes/Bluesky/V2/videoOperations');
 		const items = makeItems();
 		items[0].binary.video.mimeType = 'video/webm';
 		await expect(uploadVideo.call(makeContext(items), { api: {} } as any, 'video')).rejects.toThrow(/requires video\/mp4/);
