@@ -42,6 +42,7 @@ jobs:
 
   release:
     needs: audit
+    if: github.ref == 'refs/heads/main'
     name: Release
     runs-on: ubuntu-latest
     timeout-minutes: 30
