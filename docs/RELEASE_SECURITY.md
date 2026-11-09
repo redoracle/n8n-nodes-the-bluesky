@@ -2,7 +2,7 @@
 
 Publishing must never bypass the production dependency audit.
 
-The `Release` workflow starts with a production dependency audit job that has read-only repository permissions. The release job depends on that audit and is not started unless it succeeds. Only the release job receives `contents: write`; its checkout does not persist credentials, and its explicit `GITHUB_TOKEN` and `NPM_TOKEN` environment variables are limited to the final semantic-release step.
+The `Release` workflow starts with a production dependency audit job that has read-only repository permissions. The release job depends on that audit and is not started unless it succeeds. Only the release job receives `contents: write`; its checkout does not persist credentials, and its explicit `GITHUB_TOKEN` and `NPM_TOKEN` environment variables are limited to the final semantic-release step. The release job also requires `refs/heads/main`, so a manual dispatch from any other ref cannot reach the release step.
 
 The audit runs:
 
