@@ -27,5 +27,7 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: '22'
-      - name: Audit locked production dependencies
-        run: pnpm audit --prod --audit-level high
+      # Runtime code is bundled into dist/ at build time, so the former production
+      # dependencies live in devDependencies; `--prod` would audit nothing that ships.
+      - name: Audit locked dependencies (including bundled runtime code)
+        run: pnpm audit --audit-level high
