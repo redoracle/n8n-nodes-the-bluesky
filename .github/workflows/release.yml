@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: write
+  # npm Trusted Publishing: short-lived OIDC credentials.
+  id-token: write
 
 concurrency:
   group: release
@@ -31,9 +33,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org/'
-          cache: 'pnpm'
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Pin npm CLI for trusted publishing
+        run: npm install --global npm@12.2.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -53,9 +57,14 @@ jobs:
       - name: Gate - package must survive n8n's community-package install
         run: pnpm run test:install
 
-      - name: Release
+      - name: Check GitHub Actions OIDC context
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --version
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || { echo "::error::GitHub OIDC request URL unavailable"; exit 1; }
+
+      - name: Release via npm Trusted Publishing (OIDC)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm exec semantic-release
