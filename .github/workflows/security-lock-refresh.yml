@@ -1,0 +1,37 @@
+name: One-shot lockfile regeneration (security fixes)
+
+on:
+  push:
+    branches: [fix/security-zod-lodash-20261111]
+    paths:
+      - .github/workflows/security-lock-refresh.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.repository == 'redoracle/n8n-nodes-the-bluesky'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Resolve patched dependencies (no install scripts)
+        run: pnpm install --lockfile-only --no-frozen-lockfile --ignore-scripts
+      - name: Commit refreshed pnpm lockfile to this branch
+        run: |
+          set -euo pipefail
+          git add pnpm-lock.yaml
+          if git diff --cached --quiet; then
+            echo "No pnpm lockfile changes"
+          else
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(deps): resolve patched transitive dependencies'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
