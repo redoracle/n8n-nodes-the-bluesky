@@ -28,3 +28,7 @@ overrides:
   # --- dedup / modernisation of transitive versions present in the tree ---
   semver: "^7.7.4"
   glob: "^10.0.0"
+  # Security advisories GHSA-r5fr-rjxr-66jc and GHSA-mrhx-c7xc-m3w5.
+  # The older zod 3.x line has no patched version; use the fixed 4.x release.
+  lodash: "4.18.1"
+  zod: "4.6.7"
