@@ -13,6 +13,8 @@ overrides:
   qs: ^6.15.2
   semver: ^7.7.4
   glob: ^10.0.0
+  lodash: 4.18.1
+  zod: 4.6.7
 
 importers:
 
@@ -3438,9 +3440,6 @@ packages:
   lodash.uniqby@4.7.0:
     resolution: {integrity: sha512-e/zcLx6CSbmaEgFHCA7BnoQKyCtKMxnuWrJygbwPs/AIn+IMKl66L8/s+wBUn5LRw2pZx3bUHibiV1b6aTWIww==}
 
-  lodash@4.17.23:
-    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
-
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
@@ -3796,7 +3795,7 @@ packages:
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
-      zod: ^3.25 || ^4.0
+      zod: 4.6.7
     peerDependenciesMeta:
       ws:
         optional: true
@@ -4858,12 +4857,6 @@ packages:
     resolution: {integrity: sha512-xYqdZFUK/VYazNl/oCDYN+3WloWQwMfZxBoiNt6qNyk+xfOdi598muWE42rNZFp1kNOiqW936q5RhUdnpqElSg==}
     engines: {node: '>=18'}
 
-  zod@3.25.67:
-    resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
@@ -4894,21 +4887,21 @@ snapshots:
       await-lock: 2.2.2
       multiformats: 9.9.0
       tlds: 1.261.0
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@atproto/common-web@0.4.21':
     dependencies:
       '@atproto/lex-data': 0.0.15
       '@atproto/lex-json': 0.0.16
       '@atproto/syntax': 0.5.4
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@atproto/common-web@0.5.17':
     dependencies:
       '@atproto/lex-data': 0.1.10
       '@atproto/lex-json': 0.1.9
       '@atproto/syntax': 0.7.7
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@atproto/lex-cbor@0.0.14':
     dependencies:
@@ -4951,14 +4944,14 @@ snapshots:
       '@atproto/syntax': 0.5.4
       iso-datestring-validator: 2.2.2
       multiformats: 9.9.0
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@atproto/lexicon@0.7.19':
     dependencies:
       '@atproto/common-web': 0.5.17
       '@atproto/syntax': 0.7.7
       multiformats: 13.4.2
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@atproto/syntax@0.5.4':
     dependencies:
@@ -4972,7 +4965,7 @@ snapshots:
   '@atproto/xrpc@0.7.7':
     dependencies:
       '@atproto/lexicon': 0.6.2
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@aws-crypto/crc32@5.2.0':
     dependencies:
@@ -6046,7 +6039,7 @@ snapshots:
     dependencies:
       '@n8n/di': 0.10.0
       reflect-metadata: 0.2.2
-      zod: 3.25.67
+      zod: 4.6.7
 
   '@n8n/constants@0.14.2': {}
 
@@ -6083,7 +6076,7 @@ snapshots:
       md5: 2.3.0
       title-case: 3.0.3
       transliteration: 2.3.5
-      zod: 3.25.67
+      zod: 4.6.7
 
   '@n8n/expression-runtime@0.8.0':
     dependencies:
@@ -6091,7 +6084,7 @@ snapshots:
       isolated-vm: 6.2.0
       js-base64: 3.7.2
       jssha: 3.3.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       luxon: 3.7.2
       md5: 2.3.0
       title-case: 3.0.3
@@ -6099,7 +6092,7 @@ snapshots:
 
   '@n8n/permissions@0.43.2':
     dependencies:
-      zod: 3.25.67
+      zod: 4.6.7
 
   '@n8n/tournament@1.0.6':
     dependencies:
@@ -9117,8 +9110,6 @@ snapshots:
 
   lodash.uniqby@4.7.0: {}
 
-  lodash@4.17.23: {}
-
   lodash@4.18.1: {}
 
   logform@2.7.0:
@@ -9275,7 +9266,7 @@ snapshots:
       uuid: 11.1.1
       winston: 3.14.2
       xml2js: 0.6.2
-      zod: 3.25.67
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@opentelemetry/api'
       - '@opentelemetry/exporter-trace-otlp-proto'
@@ -9307,7 +9298,7 @@ snapshots:
       title-case: 3.0.3
       transliteration: 2.3.5
       xml2js: 0.6.2
-      zod: 3.25.67
+      zod: 4.6.7
 
   n8n-workflow@2.16.0:
     dependencies:
@@ -9322,7 +9313,7 @@ snapshots:
       js-base64: 3.7.2
       jsonrepair: 3.13.2
       jssha: 3.3.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       luxon: 3.7.2
       md5: 2.3.0
       recast: 0.22.0
@@ -9330,7 +9321,7 @@ snapshots:
       transliteration: 2.3.5
       uuid: 10.0.0
       xml2js: 0.6.2
-      zod: 3.25.67
+      zod: 4.6.7
 
   nan@2.30.0:
     optional: true
@@ -10562,9 +10553,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yoctocolors@2.2.0: {}
-
-  zod@3.25.67: {}
-
-  zod@3.25.76: {}
 
   zod@4.6.7: {}
