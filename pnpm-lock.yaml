@@ -76,7 +76,7 @@ importers:
         version: 30.5.2(@types/node@26.6.6)
       n8n-core:
         specifier: ^1.122.55
-        version: 1.122.55(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.22.1)(zod@4.6.7))(ws@8.22.1)
+        version: 1.122.55(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.23.0)(zod@4.6.7))(ws@8.23.0)
       n8n-workflow:
         specifier: ^2.16.0
         version: 2.16.0
@@ -97,7 +97,7 @@ importers:
         version: 6.0.3
       ws:
         specifier: ^8.22.1
-        version: 8.22.1
+        version: 8.23.0
 
 packages:
 
@@ -4794,8 +4794,8 @@ packages:
     resolution: {integrity: sha512-+QU2zd6OTD8XWIJCbffaiQeH9U73qIqafo1x6V1snCWYGJf6cVE0cDR4D8xRzcEnfI21IFrUPzPGtcPf8AC+Rw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  ws@8.22.1:
-    resolution: {integrity: sha512-oyL6OPYme/CmiFvNuGzeoxCJ4nOrZE2O1FwM9MWM1AsGri6nLXB2pg+lNA8aLeXMSav0J6eIVS1j6vUPzUtK9g==}
+  ws@8.23.0:
+    resolution: {integrity: sha512-wCkmX8QMOrKjgO8HW2WyDbTSGeqkocxgDzS9iR79rEAexty6/2qzilx3Ag8Tqf9ykop3irLKle0MtVn5qjVnoQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -5996,14 +5996,14 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@langchain/core@1.1.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.22.1)(zod@4.6.7))(ws@8.22.1)':
+  '@langchain/core@1.1.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.23.0)(zod@4.6.7))(ws@8.23.0)':
     dependencies:
       '@cfworker/json-schema': 4.1.6
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.21
-      langsmith: 0.11.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.22.1)(zod@4.6.7))(ws@8.22.1)
+      langsmith: 0.11.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.23.0)(zod@4.6.7))(ws@8.23.0)
       mustache: 4.2.0
       p-queue: 6.6.2
       uuid: 10.0.0
@@ -9034,14 +9034,14 @@ snapshots:
 
   kuler@2.0.0: {}
 
-  langsmith@0.11.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.22.1)(zod@4.6.7))(ws@8.22.1):
+  langsmith@0.11.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.23.0)(zod@4.6.7))(ws@8.23.0):
     dependencies:
       p-queue: 6.6.2
     optionalDependencies:
       '@opentelemetry/api': 1.10.0
       '@opentelemetry/sdk-trace-base': 1.30.1(@opentelemetry/api@1.10.0)
-      openai: 6.18.0(ws@8.22.1)(zod@4.6.7)
-      ws: 8.22.1
+      openai: 6.18.0(ws@8.23.0)(zod@4.6.7)
+      ws: 8.23.0
 
   last-run@2.0.0: {}
 
@@ -9227,10 +9227,10 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  n8n-core@1.122.55(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.22.1)(zod@4.6.7))(ws@8.22.1):
+  n8n-core@1.122.55(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.23.0)(zod@4.6.7))(ws@8.23.0):
     dependencies:
       '@aws-sdk/client-s3': 3.808.0
-      '@langchain/core': 1.1.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.22.1)(zod@4.6.7))(ws@8.22.1)
+      '@langchain/core': 1.1.8(@opentelemetry/api@1.10.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.10.0))(openai@6.18.0(ws@8.23.0)(zod@4.6.7))(ws@8.23.0)
       '@n8n/backend-common': 0.33.40
       '@n8n/client-oauth2': 0.33.7
       '@n8n/config': 1.65.10
@@ -9455,9 +9455,9 @@ snapshots:
       iconv-lite: 0.7.3
       undici: 7.30.2
 
-  openai@6.18.0(ws@8.22.1)(zod@4.6.7):
+  openai@6.18.0(ws@8.23.0)(zod@4.6.7):
     optionalDependencies:
-      ws: 8.22.1
+      ws: 8.23.0
       zod: 4.6.7
     optional: true
 
@@ -10500,7 +10500,7 @@ snapshots:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
 
-  ws@8.22.1: {}
+  ws@8.23.0: {}
 
   xml2js@0.6.2:
     dependencies:
