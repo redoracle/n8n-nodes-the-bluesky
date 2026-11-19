@@ -169,6 +169,53 @@ describe('Bluesky V2 - Execute', () => {
 		});
 	});
 
+	it('preserves per-input search parameters and output ordering for two workflow items', async () => {
+		// Arrange two different incoming n8n items, with parameters evaluated per item.
+		(searchUsersOperation as jest.Mock).mockImplementation(
+			async (_agent: unknown, query: string) => [{ json: { query } }],
+		);
+		const ctx = makeCtx();
+		(ctx.getInputData as jest.Mock).mockReturnValue([{ json: { q: 'first' } }, { json: { q: 'second' } }]);
+		(ctx.getCredentials as jest.Mock).mockResolvedValue({
+			identifier: 'did:plc:test',
+			appPassword: 'app-pass',
+			serviceUrl: 'https://bsky.social',
+		});
+		(ctx.getNodeParameter as jest.Mock).mockImplementation(
+			(name: string, itemIndex: number, fallback?: unknown) => {
+				if (name === 'resource') return 'search';
+				if (name === 'operation') return 'searchUsers';
+				if (name === 'q') return itemIndex === 0 ? 'first' : 'second';
+				if (name === 'limit') return itemIndex === 0 ? 2 : 3;
+				return fallback;
+			},
+		);
+
+		// Act
+		const result = await new BlueskyV2(baseDescription).execute.call(ctx as IExecuteFunctions);
+
+		// Assert independent parameter evaluation and stable results.
+		expect(searchUsersOperation).toHaveBeenCalledTimes(2);
+		expect(searchUsersOperation).toHaveBeenNthCalledWith(1, expect.anything(), 'first', 2);
+		expect(searchUsersOperation).toHaveBeenNthCalledWith(2, expect.anything(), 'second', 3);
+		expect(result).toEqual([[{ json: { query: 'first' } }, { json: { query: 'second' } }]]);
+	});
+
+	it('rejects an unsupported resource rather than returning fake success', async () => {
+		const ctx = makeCtx();
+		(ctx.getCredentials as jest.Mock).mockResolvedValue({
+			identifier: 'did:plc:test',
+			appPassword: 'app-pass',
+			serviceUrl: 'https://bsky.social',
+		});
+		(ctx.getNodeParameter as jest.Mock).mockImplementation(
+			(name: string) => name === 'resource' ? 'unimplemented' : 'unknown',
+		);
+		await expect(new BlueskyV2(baseDescription).execute.call(ctx as IExecuteFunctions))
+			.rejects.toThrow('The resource "unimplemented" is not supported!');
+		expect(searchUsersOperation).not.toHaveBeenCalled();
+	});
+
 	it('should execute analytics listNotifications operation', async () => {
 		(listNotificationsOperation as jest.Mock).mockResolvedValue([{ json: { n: 1 } }]);
 
