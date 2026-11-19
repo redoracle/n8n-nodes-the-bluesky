@@ -933,6 +933,7 @@ export class BlueskyV2 implements INodeType {
 									// Transform the array to match our expected structure
 									const transformedItems = mediaArray.map((item: any) => ({
 										media: {
+											mediaType: item.mediaType || 'image',
 											binaryPropertyName: item.binaryPropertyName || 'data',
 											altText: item.altText || '',
 										},
@@ -998,6 +999,7 @@ export class BlueskyV2 implements INodeType {
 								includeMedia,
 								mediaItemsInput,
 								failOnMediaProcessingError,
+								i,
 							);
 
 							returnData.push(...postData);
@@ -1060,10 +1062,20 @@ export class BlueskyV2 implements INodeType {
 								try {
 									const rawMediaItems = this.getNodeParameter('mediaItems', i, {}) as any;
 									let mediaArray: any[] = [];
-									if (rawMediaItems && rawMediaItems.media && Array.isArray(rawMediaItems.media)) {
-										mediaArray = rawMediaItems.media;
+									if (rawMediaItems?.media) {
+										mediaArray = Array.isArray(rawMediaItems.media)
+											? rawMediaItems.media
+											: [rawMediaItems.media];
 									}
-									mediaItemsInputReply = { mediaItems: mediaArray };
+									mediaItemsInputReply = {
+										mediaItems: mediaArray.map((item: any) => ({
+											media: {
+												mediaType: item.mediaType || 'image',
+												binaryPropertyName: item.binaryPropertyName || 'data',
+												altText: item.altText || '',
+											},
+										})),
+									};
 								} catch (error) {
 									LoggerProxy.error(`Error processing media items`, {
 										error,
@@ -1108,6 +1120,7 @@ export class BlueskyV2 implements INodeType {
 								includeMediaReply,
 								mediaItemsInputReply,
 								failOnMediaProcessingErrorReply,
+								i,
 							);
 							returnData.push(...replyData);
 						} catch (error) {
