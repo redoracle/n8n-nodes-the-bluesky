@@ -80,7 +80,7 @@
     "image-size": "^2.0.4",
     "jest": "^30.5.2",
     "n8n-core": "^1.122.55",
-    "n8n-workflow": "^2.16.0",
+    "n8n-workflow": "^3.3.0",
     "open-graph-scraper": "^6.13.0",
     "prettier": "^3.9.10",
     "semantic-release": "^25.0.9",
