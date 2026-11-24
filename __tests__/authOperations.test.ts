@@ -127,6 +127,34 @@ describe('Auth Operations', () => {
 		});
 	});
 
+	describe('session failure contracts', () => {
+		it('propagates rejected credentials without returning a successful session', async () => {
+			const invalidPassword = Object.assign(new Error('Invalid identifier or password'), { status: 401 });
+			agent.api.com.atproto.server.createSession.mockRejectedValueOnce(invalidPassword);
+			await expect(createSessionOperation(agent, 'alice.bsky.social', 'wrong'))
+				.rejects.toBe(invalidPassword);
+			expect(agent.api.com.atproto.server.createSession).toHaveBeenCalledTimes(1);
+			expect(agent.api.com.atproto.server.createSession).toHaveBeenCalledWith({
+				identifier: 'alice.bsky.social',
+				password: 'wrong',
+			});
+		});
+
+		it('propagates expired refresh credentials rather than inventing new tokens', async () => {
+			const expired = Object.assign(new Error('ExpiredToken'), { status: 401 });
+			agent.api.com.atproto.server.refreshSession.mockRejectedValueOnce(expired);
+			await expect(refreshSessionOperation(agent)).rejects.toBe(expired);
+			expect(agent.api.com.atproto.server.refreshSession).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not report a successful logout if the remote session deletion fails', async () => {
+			const networkError = new Error('network unavailable');
+			agent.api.com.atproto.server.deleteSession.mockRejectedValueOnce(networkError);
+			await expect(deleteSessionOperation(agent)).rejects.toBe(networkError);
+			expect(agent.api.com.atproto.server.deleteSession).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('rotateSigningKeyOperation', () => {
 		it('should call rotateSigningKey with optional body', async () => {
 			const body = { rotation: 'force' };
