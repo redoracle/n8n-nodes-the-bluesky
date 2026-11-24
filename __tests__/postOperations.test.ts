@@ -14,6 +14,7 @@ import {
 	likeOperation,
 	quoteOperation,
 	repostOperation,
+	postOperation,
 } from '../nodes/Bluesky/V2/postOperations';
 
 jest.mock('open-graph-scraper');
@@ -208,5 +209,21 @@ describe('Post Operations', () => {
 				}),
 			).rejects.toThrow('Failed to process Open Graph data for website card');
 		});
+	});
+});
+
+describe('Media publishing safety', () => {
+	it('never creates a text-only post after a requested video processing error even with failOnMediaProcessingError disabled', async () => {
+		const agent = createMockAgent();
+		const ctx: any = {
+			getNode: () => ({ name: 'Bluesky', type: 'bluesky', typeVersion: 2, position: [0, 0], parameters: {} }),
+			getInputData: () => [{ json: {}, binary: { clip: { mimeType: 'video/mp4' } } }],
+		};
+		await expect(postOperation.call(
+			ctx, agent, 'a video', ['en'], undefined, true,
+			{ mediaItems: [{ media: { mediaType: 'video', binaryPropertyName: 'clip', altText: '' } }] },
+			false,
+		)).rejects.toThrow(/video/i);
+		expect(agent.post).not.toHaveBeenCalled();
 	});
 });
