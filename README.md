@@ -77,6 +77,10 @@ A community-maintained [n8n](https://n8n.io/) node for Bluesky and the AT Protoc
 pnpm install n8n-nodes-the-bluesky
 ```
 
+The package is self-contained (no runtime dependencies), so installing or
+updating it from n8n's **Settings → Community nodes** screen does not need to
+fetch any additional packages.
+
 ### Building with or without the plugin
 
 The Dockerfiles in this repository use a multistage build with an optional plugin install step.

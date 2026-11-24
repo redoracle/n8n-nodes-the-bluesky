@@ -339,7 +339,7 @@ async function buildMediaEmbed(
 	return undefined;
 }
 
-async function buildWebsiteCardEmbed(
+export async function buildWebsiteCardEmbed(
 	context: IExecuteFunctions,
 	agent: AtpAgent,
 	websiteCard?: {
@@ -380,22 +380,32 @@ async function buildWebsiteCardEmbed(
 				throw new Error(`Error fetching Open Graph tags: ${ogsResponse.error || 'No result'}`);
 			const ogResult: any = ogsResponse.result;
 			if (ogResult.ogImage && ogResult.ogImage.length > 0 && ogResult.ogImage[0].url) {
-				const imageUrl = ogResult.ogImage[0].url as string;
-				await assertPublicMetadataUrl(imageUrl);
-				const imageResponse = await fetch(imageUrl, {
-					redirect: 'error',
-					signal: AbortSignal.timeout(10_000),
-				});
-				if (!imageResponse.ok) throw new Error('Open Graph image download failed');
-				const imageBuffer = await readLimitedImageResponse(imageResponse);
-				const uploadResponse = await agent.uploadBlob(imageBuffer);
-				thumbBlob = uploadResponse.data.blob;
+				try {
+					const imageUrl = ogResult.ogImage[0].url as string;
+					await assertPublicMetadataUrl(imageUrl);
+					const imageResponse = await fetch(imageUrl, {
+						redirect: 'error',
+						signal: AbortSignal.timeout(10_000),
+					});
+					if (!imageResponse.ok)
+						throw new Error(`Open Graph image download failed with HTTP ${imageResponse.status}`);
+					const imageBuffer = await readLimitedImageResponse(imageResponse);
+					const uploadResponse = await agent.uploadBlob(imageBuffer);
+					thumbBlob = uploadResponse.data.blob;
+				} catch (imageError) {
+					// Thumbnail fetching is best-effort; a rate-limited or broken image
+					// should not prevent publishing the website card with title and description.
+					context.logger?.warn?.(
+						`[Bluesky] Failed to fetch or upload Open Graph thumbnail: ${imageError instanceof Error ? imageError.message : String(imageError)}`,
+					);
+				}
 			}
 			if (ogResult.ogTitle) websiteCard.title = ogResult.ogTitle as string;
 			if (ogResult.ogDescription) websiteCard.description = ogResult.ogDescription as string;
 		} catch (error: any) {
+			const detail = error instanceof Error ? `: ${error.message}` : '';
 			throw new NodeOperationError(node, error, {
-				message: 'Failed to process Open Graph data for website card',
+				message: `Failed to process Open Graph data for website card${detail}`,
 			});
 		}
 	}
