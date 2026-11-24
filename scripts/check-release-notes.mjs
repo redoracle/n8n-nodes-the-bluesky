@@ -15,8 +15,8 @@ const generatorPath = requireFromSemanticRelease.resolve(
 const { generateNotes } = await import(generatorPath);
 
 const changes = [
-    { hash: "a".repeat(40), message: "feat: demonstrate vault sync routing" },
-    { hash: "b".repeat(40), message: "fix: protect forge API credentials" },
+    { hash: "a".repeat(40), message: "feat: add Bluesky feed discovery" },
+    { hash: "b".repeat(40), message: "fix: validate Bluesky video processing" },
 ];
 
 const notes = await generateNotes(
@@ -35,7 +35,7 @@ const notes = await generateNotes(
         },
         options: {
             repositoryUrl:
-                "https://github.com/redoracle/obsidian-git-vault.git",
+                "https://github.com/redoracle/n8n-nodes-the-bluesky.git",
         },
         cwd: process.cwd(),
     }
@@ -48,8 +48,8 @@ for (const heading of ["### Features", "### Bug Fixes"]) {
 }
 
 if (
-    !notes.includes("vault sync routing") ||
-    !notes.includes("forge API credentials")
+    !notes.includes("Bluesky feed discovery") ||
+    !notes.includes("Bluesky video processing")
 ) {
     throw new Error("Release notes omitted expected commit messages");
 }
