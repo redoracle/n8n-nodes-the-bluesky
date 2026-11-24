@@ -58,3 +58,6 @@ jobs:
           tar -tzf "$RUNNER_TEMP"/n8n-nodes-the-bluesky-*.tgz | grep -q 'package/dist/nodes/Bluesky/Bluesky.node.js'
           tar -tzf "$RUNNER_TEMP"/n8n-nodes-the-bluesky-*.tgz | grep -q 'package/index.js'
 
+      - name: Verify package survives n8n's community-package install
+        run: pnpm run test:install
+

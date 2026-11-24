@@ -150,7 +150,7 @@ describe('Auth Operations', () => {
 		});
 
 		it('should reject when provided invalid JSON body', async () => {
-			await expect(rotateSigningKeyOperation(agent, '{invalid')).rejects.toThrowError(
+			await expect(rotateSigningKeyOperation(agent, '{invalid')).rejects.toThrow(
 				/Invalid JSON for rotateSigningKey body/,
 			);
 		});
