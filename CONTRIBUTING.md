@@ -1,7 +1,11 @@
 # Contributing
 
 Thanks for improving the Bluesky community node. Keep changes compatible
-with existing n8n workflows and minimize unnecessary production dependencies.
+with existing n8n workflows. The published package has **no runtime
+dependencies**: `pnpm build` bundles the node and credential entry points
+(`scripts/bundle.mjs`), so libraries such as `@atproto/api` belong in
+`devDependencies`. Only `n8n-workflow` and `n8n-core` stay external because
+n8n provides them.
 
 ## Local verification
 
@@ -11,7 +15,10 @@ with existing n8n workflows and minimize unnecessary production dependencies.
 3. Run `pnpm lint`, `pnpm exec jest --runInBand`, and `pnpm build`.
 4. Run `pnpm pack` and inspect the archive to confirm only the expected
    `dist/` paths are published.
-5. For behavior changes, exercise the node with a self-hosted n8n
+5. Run `pnpm run test:install`. It replays n8n's community-package install
+   (`npm install --install-strategy=shallow`) on the packed tarball several
+   times and loads every node. CI and the release workflow run it as a gate.
+6. For behavior changes, exercise the node with a self-hosted n8n
    instance following [DEV_SETUP.md](DEV_SETUP.md).
 
 CI enforces those checks on every pull request. Any change to the package

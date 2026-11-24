@@ -73,6 +73,7 @@ jest.mock('../nodes/Bluesky/V2/listOperations', () => ({
 	removeUserFromListOperation: jest.fn(),
 }));
 
+import { postOperation, replyOperation } from '../nodes/Bluesky/V2/postOperations';
 import { muteThreadOperation } from '../nodes/Bluesky/V2/graphOperations';
 import { listNotificationsOperation } from '../nodes/Bluesky/V2/notificationOperations';
 import { searchUsersOperation } from '../nodes/Bluesky/V2/searchOperations';
@@ -169,6 +170,53 @@ describe('Bluesky V2 - Execute', () => {
 		});
 	});
 
+	it('preserves per-input search parameters and output ordering for two workflow items', async () => {
+		// Arrange two different incoming n8n items, with parameters evaluated per item.
+		(searchUsersOperation as jest.Mock).mockImplementation(
+			async (_agent: unknown, query: string) => [{ json: { query } }],
+		);
+		const ctx = makeCtx();
+		(ctx.getInputData as jest.Mock).mockReturnValue([{ json: { q: 'first' } }, { json: { q: 'second' } }]);
+		(ctx.getCredentials as jest.Mock).mockResolvedValue({
+			identifier: 'did:plc:test',
+			appPassword: 'app-pass',
+			serviceUrl: 'https://bsky.social',
+		});
+		(ctx.getNodeParameter as jest.Mock).mockImplementation(
+			(name: string, itemIndex: number, fallback?: unknown) => {
+				if (name === 'resource') return 'search';
+				if (name === 'operation') return 'searchUsers';
+				if (name === 'q') return itemIndex === 0 ? 'first' : 'second';
+				if (name === 'limit') return itemIndex === 0 ? 2 : 3;
+				return fallback;
+			},
+		);
+
+		// Act
+		const result = await new BlueskyV2(baseDescription).execute.call(ctx as IExecuteFunctions);
+
+		// Assert independent parameter evaluation and stable results.
+		expect(searchUsersOperation).toHaveBeenCalledTimes(2);
+		expect(searchUsersOperation).toHaveBeenNthCalledWith(1, expect.anything(), 'first', 2);
+		expect(searchUsersOperation).toHaveBeenNthCalledWith(2, expect.anything(), 'second', 3);
+		expect(result).toEqual([[{ json: { query: 'first' } }, { json: { query: 'second' } }]]);
+	});
+
+	it('rejects an unsupported resource rather than returning fake success', async () => {
+		const ctx = makeCtx();
+		(ctx.getCredentials as jest.Mock).mockResolvedValue({
+			identifier: 'did:plc:test',
+			appPassword: 'app-pass',
+			serviceUrl: 'https://bsky.social',
+		});
+		(ctx.getNodeParameter as jest.Mock).mockImplementation(
+			(name: string) => name === 'resource' ? 'unimplemented' : 'unknown',
+		);
+		await expect(new BlueskyV2(baseDescription).execute.call(ctx as IExecuteFunctions))
+			.rejects.toThrow('The resource "unimplemented" is not supported!');
+		expect(searchUsersOperation).not.toHaveBeenCalled();
+	});
+
 	it('should execute analytics listNotifications operation', async () => {
 		(listNotificationsOperation as jest.Mock).mockResolvedValue([{ json: { n: 1 } }]);
 
@@ -197,5 +245,62 @@ describe('Bluesky V2 - Execute', () => {
 
 		expect(listNotificationsOperation).toHaveBeenCalledWith(expect.anything(), 3, true, false);
 		expect(result).toEqual([[{ json: { n: 1 } }]]);
+	});
+});
+
+describe('Bluesky V2 media item dispatch', () => {
+	const baseCtx: any = {
+		getInputData: jest.fn().mockReturnValue([{ json: {} }, { json: {} }]),
+		prepareOutputData: (data: any) => [data],
+		getCredentials: jest.fn().mockResolvedValue({
+			identifier: 'did:plc:test', appPassword: 'app-password', serviceUrl: 'https://bsky.social',
+		}),
+		getNode: () => ({ name: 'Bluesky', type: 'bluesky', typeVersion: 2, position: [0, 0], parameters: {} }),
+	};
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('preserves video mediaType and input index for each item', async () => {
+		(postOperation as jest.Mock).mockResolvedValue([{ json: { ok: true } }]);
+		const ctx = {
+			...baseCtx,
+			getNodeParameter: (name: string, index: number, fallback?: unknown) => {
+				const values: Record<string, unknown> = {
+					resource: 'post', operation: 'post', postText: 'A post',
+					langs: ['en'], includeMedia: true,
+					mediaItems: { media: [{ mediaType: index === 0 ? 'image' : 'video', binaryPropertyName: 'data', altText: 'Alt' }] },
+				};
+				return values[name] ?? fallback;
+			},
+		};
+		await new BlueskyV2(baseDescription).execute.call(ctx as IExecuteFunctions);
+		expect(postOperation).toHaveBeenCalledTimes(2);
+		expect((postOperation as jest.Mock).mock.calls[1][5]).toEqual({
+			mediaItems: [{ media: { mediaType: 'video', binaryPropertyName: 'data', altText: 'Alt' } }],
+		});
+		expect((postOperation as jest.Mock).mock.calls[1][7]).toBe(1);
+	});
+
+	it('normalizes a single reply media item into the expected wrapper', async () => {
+		(replyOperation as jest.Mock).mockResolvedValue([{ json: { ok: true } }]);
+		const ctx = {
+			...baseCtx,
+			getInputData: () => [{ json: {} }],
+			getNodeParameter: (name: string, _index: number, fallback?: unknown) => {
+				const values: Record<string, unknown> = {
+					resource: 'post', operation: 'reply', uri: 'at://parent', cid: 'bafyparent',
+					replyText: 'Reply', replyLangs: ['en'], includeMedia: true,
+					mediaItems: { media: { mediaType: 'video', binaryPropertyName: 'clip', altText: 'Reply clip' } },
+				};
+				return values[name] ?? fallback;
+			},
+		};
+		await new BlueskyV2(baseDescription).execute.call(ctx as IExecuteFunctions);
+		expect((replyOperation as jest.Mock).mock.calls[0][7]).toEqual({
+			mediaItems: [{ media: { mediaType: 'video', binaryPropertyName: 'clip', altText: 'Reply clip' } }],
+		});
+		expect((replyOperation as jest.Mock).mock.calls[0][9]).toBe(0);
 	});
 });

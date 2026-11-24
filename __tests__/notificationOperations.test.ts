@@ -117,6 +117,83 @@ describe('Notification Operations', () => {
 			expect(result).toHaveLength(1);
 		});
 
+
+		it('collects unread results across pages without losing source order or marking them seen', async () => {
+			// Arrange: first page has a read notification; second page has the remaining unread item.
+			const request = agent.app.bsky.notification.listNotifications;
+			request.mockReset()
+				.mockResolvedValueOnce({
+					data: {
+						notifications: [
+							{ uri: 'at://read', isRead: true, indexedAt: '2025-01-03T00:00:00Z' },
+							{ uri: 'at://unread-1', isRead: false, indexedAt: '2025-01-02T00:00:00Z', reasonSubject: 'at://post-1' },
+						],
+						cursor: 'next-page',
+					},
+				})
+				.mockResolvedValueOnce({
+					data: {
+						notifications: [
+							{ uri: 'at://unread-2', isRead: false, indexedAt: '2025-01-01T00:00:00Z', reasonSubject: 'at://post-2' },
+						],
+					},
+				});
+
+			// Act
+			const result = await listNotificationsOperation(agent, 2, true, false);
+
+			// Assert the output, both remote requests, and absence of a state mutation.
+			expect(result.map((item) => item.json.uri)).toEqual(['at://unread-1', 'at://unread-2']);
+			expect(result.map((item) => item.json.reasonSubjectUri)).toEqual(['at://post-1', 'at://post-2']);
+			expect(request).toHaveBeenCalledTimes(2);
+			expect(request).toHaveBeenNthCalledWith(1, { limit: 100, cursor: undefined });
+			expect(request).toHaveBeenNthCalledWith(2, { limit: 100, cursor: 'next-page' });
+			expect(agent.app.bsky.notification.updateSeen).not.toHaveBeenCalled();
+		});
+
+		it('returns only the requested number of results across multiple pages', async () => {
+			const request = agent.app.bsky.notification.listNotifications;
+			request.mockReset()
+				.mockResolvedValueOnce({
+					data: { notifications: [{ uri: 'at://one', isRead: false }], cursor: 'next-page' },
+				})
+				.mockResolvedValueOnce({
+					data: { notifications: [{ uri: 'at://two', isRead: false }, { uri: 'at://three', isRead: false }] },
+				});
+			const result = await listNotificationsOperation(agent, 2, false, false);
+			expect(result.map((item) => item.json.uri)).toEqual(['at://one', 'at://two']);
+			expect(request).toHaveBeenNthCalledWith(1, { limit: 2, cursor: undefined });
+			expect(request).toHaveBeenNthCalledWith(2, { limit: 1, cursor: 'next-page' });
+			expect(request).toHaveBeenCalledTimes(2);
+			expect(agent.app.bsky.notification.updateSeen).not.toHaveBeenCalled();
+		});
+
+		it('marks only up to the newest collected unread timestamp in its timestamp-based API call', async () => {
+			const request = agent.app.bsky.notification.listNotifications;
+			request.mockReset().mockResolvedValueOnce({
+				data: {
+					notifications: [
+						{ uri: 'at://read', isRead: true, indexedAt: '2025-04-04T00:00:00Z' },
+						{ uri: 'at://first', isRead: false, indexedAt: '2025-04-02T00:00:00Z' },
+						{ uri: 'at://second', isRead: false, indexedAt: '2025-04-01T00:00:00Z' },
+					],
+				},
+			});
+			const result = await listNotificationsOperation(agent, 2, true, true);
+			expect(result.map((item) => item.json.uri)).toEqual(['at://first', 'at://second']);
+			expect(agent.app.bsky.notification.updateSeen).toHaveBeenCalledTimes(1);
+			expect(agent.app.bsky.notification.updateSeen).toHaveBeenCalledWith({
+				seenAt: '2025-04-02T00:00:00Z',
+			});
+		});
+
+		it('does not request any notification pages or mutate state when limit is zero', async () => {
+			const result = await listNotificationsOperation(agent, 0, true, true);
+			expect(result).toEqual([]);
+			expect(agent.app.bsky.notification.listNotifications).not.toHaveBeenCalled();
+			expect(agent.app.bsky.notification.updateSeen).not.toHaveBeenCalled();
+		});
+
 		it('should include reasonSubjectUri in output', async () => {
 			const result = await listNotificationsOperation(agent, 50, true, false);
 			expect(result[0].json).toHaveProperty('reasonSubjectUri', 'at://post1');
